@@ -39,7 +39,8 @@ import {
   Percent,
   SlidersHorizontal,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  BookOpen
 } from 'lucide-react';
 import { 
   EmployeeUser, 
@@ -61,6 +62,8 @@ import { CsvCronManager } from './CsvCronManager';
 import { StockErpHub } from './StockErpHub';
 import { LiveEnterpriseDemoHub } from './LiveEnterpriseDemoHub';
 import { SyncHealthDashboard } from './SyncHealthDashboard';
+import { DocumentationViewer } from './DocumentationViewer';
+import { KoalaLogo } from './KoalaLogo';
 import { INITIAL_STOCK_MOVEMENTS } from '../data/adminData';
 
 interface AdminPanelModalProps {
@@ -123,7 +126,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   onNavigateToDedicatedRoute,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    'enterprise_demo' | 'sync_health' | 'dashboard' | 'quotes' | 'inventory' | 'transfers' | 'invoices' | 'prices_import' | 'csv_cron' | 'staff' | 'erp_config' | 'api_tester'
+    'enterprise_demo' | 'sync_health' | 'docs' | 'dashboard' | 'quotes' | 'inventory' | 'transfers' | 'invoices' | 'prices_import' | 'csv_cron' | 'staff' | 'erp_config' | 'api_tester'
   >(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -133,6 +136,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       if (hash.includes('demo')) return 'enterprise_demo';
       if (hash.includes('health') || hash.includes('sync')) return 'sync_health';
       if (hash.includes('inventory') || hash.includes('stock')) return 'inventory';
+      if (hash.includes('doc') || hash.includes('dossier') || hash.includes('propuesta')) return 'docs';
     }
     return 'erp_config';
   });
@@ -237,7 +241,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const handleCreateTransferOrder = (e: React.FormEvent) => {
     e.preventDefault();
     if (transferFrom === transferTo) {
-      alert('La sucursal de origen no puede ser igual a la de destino.');
+      showNotification('La sucursal de origen no puede ser igual a la de destino.');
       return;
     }
 
@@ -400,7 +404,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   // Role permissions checker helper
   const canAccess = (tab: typeof activeTab) => {
-    if (tab === 'enterprise_demo' || tab === 'sync_health') return true;
+    if (tab === 'enterprise_demo' || tab === 'sync_health' || tab === 'docs') return true;
     if (currentUser.role === 'admin') return true;
     if (currentUser.role === 'ventas') return tab === 'quotes' || tab === 'inventory' || tab === 'invoices' || tab === 'csv_cron';
     if (currentUser.role === 'deposito') return tab === 'inventory' || tab === 'transfers' || tab === 'quotes';
@@ -480,10 +484,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               </button>
             )}
 
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 p-0.5 shadow-md flex items-center justify-center">
-              <div className="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center">
-                <Database className="w-5 h-5 text-orange-400" />
-              </div>
+            <div className="bg-white p-1 rounded-xl shadow-md flex items-center justify-center shrink-0">
+              <KoalaLogo size="xs" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
@@ -646,6 +648,23 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               </button>
             )}
 
+            {canAccess('docs') && (
+              <button
+                onClick={() => setActiveTab('docs')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
+                  activeTab === 'docs'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <BookOpen className="w-4 h-4 text-orange-500" />
+                <span>Dossier & Documentación</span>
+                <span className="text-[10px] bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 px-1.5 py-0.5 rounded font-extrabold border border-orange-200 dark:border-orange-800">
+                  6 docs
+                </span>
+              </button>
+            )}
+
             {canAccess('dashboard') && (
               <button
                 onClick={() => setActiveTab('dashboard')}
@@ -799,6 +818,13 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
         {/* Tab Content Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/60 dark:bg-slate-950/40">
+          
+          {/* TAB: DOSSIER & DOCUMENTACION */}
+          {activeTab === 'docs' && (
+            <div className="h-full">
+              <DocumentationViewer />
+            </div>
+          )}
           
           {/* TAB 0: LIVE ENTERPRISE DEMO (5 DEPARTMENTS & SLA/ISO) */}
           {activeTab === 'enterprise_demo' && (

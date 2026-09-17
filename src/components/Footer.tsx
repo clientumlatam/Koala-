@@ -9,6 +9,7 @@ import {
   Gift
 } from 'lucide-react';
 import { BranchInfo } from '../types';
+import { KoalaLogo } from './KoalaLogo';
 
 interface FooterProps {
   branches: BranchInfo[];
@@ -26,13 +27,8 @@ export const Footer: React.FC<FooterProps> = ({ branches, onScrollToSection, onO
           
           {/* Col 1: Brand Info */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-orange-600 text-white flex items-center justify-center font-black font-fredoka text-xl">
-                🦘
-              </div>
-              <span className="text-xl font-black font-fredoka text-white tracking-wide">
-                Koala <span className="text-orange-500">Lo tiene!</span>
-              </span>
+            <div className="bg-white p-2.5 rounded-2xl inline-block shadow-sm">
+              <KoalaLogo size="md" />
             </div>
 
             <p className="text-slate-400 leading-relaxed">
@@ -161,7 +157,19 @@ export const Footer: React.FC<FooterProps> = ({ branches, onScrollToSection, onO
             © {new Date().getFullYear()} Koala Lo Tiene. Todos los derechos reservados. General Roca, Río Negro y Neuquén.
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-end">
+            <a 
+              href="/docs" 
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/docs');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
+              className="hover:text-orange-400 font-semibold transition-colors flex items-center gap-1 text-slate-400"
+            >
+              📄 Dossier & Propuesta Oficial
+            </a>
+            <span>•</span>
             <span className="hover:text-slate-400 transition-colors">koalalotiene.com.ar</span>
             <span>•</span>
             <span className="hover:text-slate-400 transition-colors">Venta en local y envíos a domicilio</span>

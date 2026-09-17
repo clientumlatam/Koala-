@@ -78,9 +78,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </div>
 
-          <span className="text-[10px] text-slate-400 font-semibold bg-slate-100 px-1.5 py-0.5 rounded flex items-center gap-1" title="Foto oficial catálogo e-commerce fondo blanco">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            Fondo Blanco MeLi
+          <span className="text-[10px] text-slate-500 font-semibold bg-slate-50 border border-slate-200/60 px-2 py-0.5 rounded-md flex items-center gap-1.5" title="Foto oficial de catálogo Koala Lo Tiene">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            Foto Oficial
           </span>
         </div>
 

@@ -14,6 +14,7 @@ import {
   Factory
 } from 'lucide-react';
 import { BranchInfo } from '../types';
+import { KoalaLogo } from './KoalaLogo';
 
 interface HeroBannerProps {
   currentBranch: BranchInfo;
@@ -121,8 +122,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               {/* Mascot Badge Banner */}
               <div className="flex items-center justify-between border-b border-slate-700/80 pb-4 mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-orange-500 text-white flex items-center justify-center font-black font-fredoka text-xl shadow-md">
-                    🦘
+                  <div className="bg-white p-1 rounded-2xl shadow-md">
+                    <KoalaLogo size="sm" variant="mascot-only" />
                   </div>
                   <div>
                     <h3 className="font-bold text-white text-base">Koala Lo Tiene</h3>

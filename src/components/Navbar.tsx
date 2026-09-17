@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { BranchId, BranchInfo, EmployeeUser, LoyaltyProfile } from '../types';
 import { checkStoreStatus } from '../utils/helpers';
+import { KoalaLogo } from './KoalaLogo';
 
 interface NavbarProps {
   currentBranch: BranchInfo;
@@ -127,25 +128,15 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Brand Logo */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => onScrollToSection('hero')}>
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 p-0.5 shadow-md shadow-orange-500/20 flex items-center justify-center shrink-0">
-              <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center relative overflow-hidden group">
-                <span className="text-2xl font-black text-orange-600 font-fredoka tracking-tighter">K</span>
-                <span className="absolute -bottom-1 -right-1 text-[10px] font-bold bg-emerald-500 text-white px-1 rounded-tl-md">
-                  Roca/Nqn
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-2xl font-black font-fredoka text-slate-900 tracking-wide">
-                  Koala <span className="text-orange-600">Lo tiene!</span>
-                </span>
-              </div>
-              <p className="text-xs font-semibold text-slate-500 hidden sm:block">
+          <div className="flex items-center gap-3 cursor-pointer py-1" onClick={() => onScrollToSection('hero')}>
+            <KoalaLogo size="md" withTagline={true} />
+            <div className="hidden xl:block pl-2 border-l border-slate-200">
+              <span className="text-[11px] font-semibold text-slate-500 block leading-tight">
                 Polietileno • Descartables • Cotillón • Repostería
-              </p>
+              </span>
+              <span className="text-[10px] text-emerald-600 font-bold">
+                Atención en Roca y Neuquén
+              </span>
             </div>
           </div>
 

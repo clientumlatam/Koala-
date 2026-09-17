@@ -1,6 +1,6 @@
 {
-  "name": "Koala Lo Tiene - E-Commerce y Fidelidad Club Koala",
-  "description": "E-commerce oficial, catálogo de descartables, polietileno, cotillón, repostería y programa de puntos Club Koala para General Roca y Neuquén.",
+  "name": "Koala Lo Tiene × Clientum — Transformación Digital & E-Commerce",
+  "description": "Plataforma e-commerce, sincronización ERP multi-sucursal y transformación digital para Koala Cotillón (General Roca y Neuquén) y Ferretería.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

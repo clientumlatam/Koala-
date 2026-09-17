@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { CategoryId, CategoryInfo, Product } from '../types';
 import { ProductCard } from './ProductCard';
+import { KoalaLogo } from './KoalaLogo';
+import { normalizeSearchText } from '../utils/helpers';
 
 interface ProductCatalogProps {
   categories: CategoryInfo[];
@@ -47,7 +49,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   const filteredProducts = React.useMemo(() => {
     return products.filter((p) => {
       // If user has typed a search query and searchGlobally is true, search across all categories
-      const activeSearch = searchQuery.trim().toLowerCase();
+      const activeSearch = normalizeSearchText(searchQuery);
       
       if (!activeSearch || !searchGlobally) {
         // Category filter applies when no active search OR explicitly searching inside category
@@ -61,12 +63,12 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
       if (filterWholesale && !p.wholesalePrice) return false;
       if (filterBestSeller && !p.isBestSeller) return false;
 
-      // Text search query
+      // Text search query (accent-insensitive & case-insensitive)
       if (activeSearch) {
-        const matchName = p.name.toLowerCase().includes(activeSearch);
-        const matchDesc = p.description.toLowerCase().includes(activeSearch);
-        const matchSubcat = p.subcategory.toLowerCase().includes(activeSearch);
-        const matchTags = p.tags.some((t) => t.toLowerCase().includes(activeSearch));
+        const matchName = normalizeSearchText(p.name).includes(activeSearch);
+        const matchDesc = normalizeSearchText(p.description).includes(activeSearch);
+        const matchSubcat = normalizeSearchText(p.subcategory).includes(activeSearch);
+        const matchTags = p.tags.some((t) => normalizeSearchText(t).includes(activeSearch));
         return matchName || matchDesc || matchSubcat || matchTags;
       }
 
@@ -76,13 +78,13 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
 
   // Count matches in current category vs all
   const categoryMatchCount = React.useMemo(() => {
-    if (!searchQuery.trim()) return 0;
-    const q = searchQuery.trim().toLowerCase();
+    const q = normalizeSearchText(searchQuery);
+    if (!q) return 0;
     return products.filter(p => p.category === selectedCategory && (
-      p.name.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q) ||
-      p.subcategory.toLowerCase().includes(q) ||
-      p.tags.some(t => t.toLowerCase().includes(q))
+      normalizeSearchText(p.name).includes(q) ||
+      normalizeSearchText(p.description).includes(q) ||
+      normalizeSearchText(p.subcategory).includes(q) ||
+      p.tags.some(t => normalizeSearchText(t).includes(q))
     )).length;
   }, [products, selectedCategory, searchQuery]);
 
@@ -281,8 +283,8 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
       ) : (
         /* Empty State */
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center border border-dashed border-slate-300 dark:border-slate-800 max-w-lg mx-auto space-y-4">
-          <div className="w-16 h-16 bg-orange-100 dark:bg-orange-950/60 rounded-full flex items-center justify-center mx-auto text-orange-600 dark:text-orange-400 text-2xl font-black">
-            🦘
+          <div className="w-20 h-20 bg-orange-50 dark:bg-orange-950/40 rounded-full flex items-center justify-center mx-auto p-2 border border-orange-200 dark:border-orange-900/50">
+            <KoalaLogo size="sm" variant="mascot-only" />
           </div>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white font-fredoka">
             No encontramos productos con esos filtros

@@ -162,3 +162,16 @@ _Consulta generada desde el catálogo web oficial de Koala Lo Tiene._`;
 
   return encodeURIComponent(text);
 }
+
+/**
+ * Normalizes text for accent-insensitive and case-insensitive search.
+ * e.g. "Cotillón" -> "cotillon", "Térmica" -> "termica"
+ */
+export function normalizeSearchText(text: string): string {
+  if (!text) return '';
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+}

@@ -27,7 +27,7 @@ Esta guía está diseñada para estructurar la reunión de presentación y demos
 ### Minuto 03 - 08: Demostración de la Etapa 1 (E-commerce + Catálogo + SEO)
 * **Acciones en Pantalla**:
   - Mostrar la interfaz limpia, moderna y adaptada a móviles.
-  - Mostrar el selector de sucursal (**General Roca - Mitre 642** vs **Neuquén Capital - Sarmiento 235**).
+  - Mostrar el selector de sucursal (**General Roca - Av. Roca 1350** vs **Neuquén Capital - Mitre 678**).
   - Navegar por las categorías (Polietileno, Descartables, Cotillón, Repostería, Envases PET).
   - Mostrar las fichas de producto con **fotografía profesional sobre fondo blanco (estándar MercadoLibre)** y etiquetas mayoristas/minoristas.
 

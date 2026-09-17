@@ -11,6 +11,10 @@ import { AdminPanelModal } from './components/AdminPanelModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { OfflineStatusBanner } from './components/OfflineStatusBanner';
 import { LoyaltyProgramModal } from './components/LoyaltyProgramModal';
+import { DocumentationViewer } from './components/DocumentationViewer';
+import { KoalaLogo } from './components/KoalaLogo';
+import { MobileCartBar } from './components/MobileCartBar';
+import { CartToast, CartToastItem } from './components/CartToast';
 
 import { STORES_DATA, CATEGORIES, PRODUCTS_CATALOG } from './data/products';
 import { DEFAULT_DEMO_LOYALTY_PROFILE } from './data/loyaltyData';
@@ -155,6 +159,26 @@ export default function App() {
   const [adminOpen, setAdminOpen] = React.useState(false);
   const [loginOpen, setLoginOpen] = React.useState(false);
   const [loyaltyOpen, setLoyaltyOpen] = React.useState(false);
+  const [cartToast, setCartToast] = React.useState<CartToastItem | null>(null);
+
+  // Auto dismiss toast after 3.5 seconds
+  React.useEffect(() => {
+    if (!cartToast) return;
+    const timer = setTimeout(() => {
+      setCartToast(null);
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, [cartToast]);
+
+  // Cart Total calculation for mobile bar
+  const cartTotal = React.useMemo(() => {
+    return cartItems.reduce((acc, item) => {
+      const price = item.isWholesale && item.product.wholesalePrice 
+        ? item.product.wholesalePrice 
+        : item.product.price;
+      return acc + (price * item.quantity);
+    }, 0);
+  }, [cartItems]);
 
   // Authenticated Employee State
   const [currentUser, setCurrentUser] = React.useState<EmployeeUser | null>(() => {
@@ -192,7 +216,12 @@ export default function App() {
 
   const handleRedeemReward = (reward: LoyaltyReward) => {
     if (loyaltyProfile.pointsBalance < reward.pointsRequired) {
-      alert(`Necesitás ${reward.pointsRequired} puntos para canjear ${reward.name}. Actual: ${loyaltyProfile.pointsBalance}`);
+      setCartToast({
+        id: Date.now(),
+        productName: `Cupón ${reward.name} (Requiere ${reward.pointsRequired} pts. Tu saldo: ${loyaltyProfile.pointsBalance})`,
+        quantity: 0,
+        unit: 'puntos',
+      });
       return;
     }
 
@@ -215,6 +244,13 @@ export default function App() {
     setAppliedReward(reward);
     setLoyaltyOpen(false);
     setCartOpen(true);
+
+    setCartToast({
+      id: Date.now(),
+      productName: `Cupón "${reward.name}" aplicado a tu pedido`,
+      quantity: 1,
+      unit: 'beneficio',
+    });
   };
 
   const handleCompletePurchaseLoyaltyUpdate = (pointsEarned: number, earnsStamp: boolean) => {
@@ -398,6 +434,14 @@ export default function App() {
       }
       return [...prev, { product, quantity, isWholesale }];
     });
+
+    setCartToast({
+      id: Date.now(),
+      productName: product.name,
+      quantity,
+      unit: product.unit,
+      isWholesale,
+    });
   };
 
   const handleUpdateQuantity = (productId: string, delta: number) => {
@@ -454,6 +498,50 @@ export default function App() {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  // Dedicated /docs and /propuesta route for direct client / stakeholder sharing
+  if (currentPath === '/docs' || currentPath === '/propuesta') {
+    return (
+      <div className="min-h-screen bg-slate-100 flex flex-col font-sans text-slate-900 selection:bg-orange-500 selection:text-white">
+        <header className="bg-slate-900 border-b border-slate-800 text-white px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-md">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigateTo('/')}
+              className="flex items-center gap-3 hover:opacity-90 transition-opacity cursor-pointer bg-white px-2.5 py-1 rounded-xl shadow-xs"
+            >
+              <KoalaLogo size="xs" />
+              <span className="text-slate-500 text-xs font-bold border-l border-slate-200 pl-2">
+                × Clientum
+              </span>
+            </button>
+            <span className="text-slate-600 hidden sm:inline">|</span>
+            <span className="text-xs font-semibold text-orange-400 bg-orange-950/60 px-2 py-0.5 rounded border border-orange-800 hidden sm:inline">
+              Dossier Comercial & Documentación ERP
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigateTo('/admin?tab=docs')}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer"
+            >
+              Panel Admin
+            </button>
+            <button
+              onClick={() => navigateTo('/')}
+              className="text-xs font-bold px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white transition-colors shadow-xs cursor-pointer"
+            >
+              Volver a la Tienda
+            </button>
+          </div>
+        </header>
+
+        <div className="flex-1 p-3 sm:p-6 max-w-7xl w-full mx-auto">
+          <DocumentationViewer />
+        </div>
+      </div>
+    );
+  }
 
   // If active route is /admin, render the standalone Admin Panel & ERP Hub or Staff Login
   if (currentPath === '/admin') {
@@ -605,12 +693,29 @@ export default function App() {
         products={PRODUCTS_CATALOG}
       />
 
+      {/* Mobile Sticky Cart Bar */}
+      <MobileCartBar
+        cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+        cartTotal={cartTotal}
+        branchCity={currentBranch.city}
+        onOpenCart={() => setCartOpen(true)}
+      />
+
+      {/* Floating Add-to-Cart Toast Notification */}
+      <CartToast
+        toast={cartToast}
+        branchCity={currentBranch.city}
+        onClose={() => setCartToast(null)}
+        onOpenCart={() => setCartOpen(true)}
+      />
+
       {/* Floating Quick Access WhatsApp Widget */}
       <FloatingWhatsApp 
         currentBranch={currentBranch}
         inventory={inventory}
         onUpdateStock={handleUpdateBranchStock}
         onSelectBranch={handleSelectBranch}
+        hasCartItems={cartItems.length > 0}
       />
 
       {/* Staff & Admin Login Modal */}

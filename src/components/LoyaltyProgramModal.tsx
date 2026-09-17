@@ -21,6 +21,7 @@ import {
 import { LoyaltyProfile, LoyaltyReward } from '../types';
 import { AVAILABLE_LOYALTY_REWARDS } from '../data/loyaltyData';
 import { formatCurrency } from '../utils/helpers';
+import { KoalaLogo } from './KoalaLogo';
 
 interface LoyaltyProgramModalProps {
   isOpen: boolean;
@@ -181,10 +182,8 @@ export const LoyaltyProgramModal: React.FC<LoyaltyProgramModalProps> = ({
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 p-0.5 shadow-lg shadow-orange-500/30 shrink-0 flex items-center justify-center">
-                <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-2xl font-black text-amber-400 font-fredoka">
-                  🦘
-                </div>
+              <div className="w-14 h-14 rounded-2xl bg-white p-1.5 shadow-lg shadow-orange-500/30 shrink-0 flex items-center justify-center">
+                <KoalaLogo size="sm" variant="mascot-only" />
               </div>
               <div>
                 <div className="flex items-center gap-2">

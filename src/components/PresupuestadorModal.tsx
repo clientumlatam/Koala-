@@ -29,6 +29,7 @@ import {
 import { BranchInfo, CartItem, OrderQuote, LoyaltyProfile, LoyaltyReward, CompletedOrderReceipt } from '../types';
 import { formatCurrency, buildWhatsAppMessage } from '../utils/helpers';
 import { downloadQuotePDF } from '../utils/pdfExport';
+import { KoalaLogo } from './KoalaLogo';
 
 interface PresupuestadorModalProps {
   isOpen: boolean;
@@ -86,6 +87,18 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
   // PDF Export state
   const [isExportingPdf, setIsExportingPdf] = React.useState(false);
   const [completedOrder, setCompletedOrder] = React.useState<CompletedOrderReceipt | null>(null);
+  const [formError, setFormError] = React.useState<string | null>(null);
+
+  const handleAutofillDemoData = () => {
+    setClientName('Panadería & Confitería San Martín');
+    setClientPhone('298 450-8899');
+    setClientEmail('pedidos@panaderiasanmartin.com');
+    setInvoiceType('Factura A (Responsable Inscripto)');
+    setClientCuitOrDni('30-71458920-4');
+    setDeliveryType('envio');
+    setDeliveryAddress('Av. San Martín 1420, General Roca, Río Negro');
+    setFormError(null);
+  };
 
   React.useEffect(() => {
     if (loyaltyProfile) {
@@ -178,14 +191,17 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
 
   const handleProcessOrderPayment = () => {
     if (!clientName || !clientPhone) {
-      alert('Por favor completá tu nombre y teléfono para procesar el pedido.');
+      setFormError('Por favor completá tu nombre y teléfono para procesar el pedido.');
+      setCheckoutStep(2);
       return;
     }
     if (deliveryType === 'envio' && !deliveryAddress) {
-      alert('Por favor ingresá la dirección completa para el envío.');
+      setFormError('Por favor ingresá la dirección completa para el envío a domicilio.');
+      setCheckoutStep(2);
       return;
     }
 
+    setFormError(null);
     setIsProcessingPayment(true);
 
     setTimeout(() => {
@@ -244,8 +260,8 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
               </button>
             )}
 
-            <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center font-black font-fredoka text-lg shadow-md shadow-orange-600/30">
-              🦘
+            <div className="bg-white p-1 rounded-xl shadow-md flex items-center justify-center shrink-0">
+              <KoalaLogo size="xs" variant="mascot-only" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -493,9 +509,35 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
                       onClick={() => setCheckoutStep(2)}
                       className="w-full py-3.5 px-4 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-sm shadow-lg shadow-orange-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer"
                     >
-                      <span>Continuar a Entrega & Datos</span>
+                      <span>Comprar Online (Entrega & Pago)</span>
                       <ArrowRight className="w-5 h-5" />
                     </button>
+
+                    <div className="pt-2 border-t border-slate-800/80">
+                      <p className="text-[11px] text-slate-400 text-center mb-2 font-medium">
+                        ¿Sos empresa, escuela o comerciante mayorista?
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={handleExportPDF}
+                          disabled={isExportingPdf}
+                          className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-slate-700 hover:border-slate-600"
+                        >
+                          <FileDown className="w-4 h-4 text-orange-400" />
+                          <span>{isExportingPdf ? 'Generando...' : 'Descargar Presupuesto PDF'}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={handleSendWhatsApp}
+                          className="py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          <span>Pedir Cotización WhatsApp</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -503,9 +545,27 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
               {/* STEP 2: SHIPPING & BILLING FORM */}
               {checkoutStep === 2 && (
                 <div className="space-y-5">
-                  <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider font-fredoka">
-                    2. Modalidad de Entrega y Datos Fiscales
-                  </h3>
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-1 border-b border-slate-200 dark:border-slate-800">
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider font-fredoka">
+                      2. Modalidad de Entrega y Datos Fiscales
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={handleAutofillDemoData}
+                      className="px-2.5 py-1 rounded-lg bg-orange-100 dark:bg-orange-950/60 hover:bg-orange-200 text-orange-800 dark:text-orange-300 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-orange-300 dark:border-orange-800 shadow-xs"
+                      title="Carga automática de datos de cliente mayorista para demostración en vivo"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
+                      <span>⚡ Autocompletar Demo (Panadería)</span>
+                    </button>
+                  </div>
+
+                  {formError && (
+                    <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                      <span>{formError}</span>
+                    </div>
+                  )}
 
                   {/* Delivery Selection */}
                   <div className="space-y-2">
@@ -515,7 +575,10 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
                         type="button"
-                        onClick={() => setDeliveryType('retiro')}
+                        onClick={() => {
+                          setDeliveryType('retiro');
+                          setFormError(null);
+                        }}
                         className={`p-4 rounded-2xl border text-left transition-all ${
                           deliveryType === 'retiro'
                             ? 'bg-orange-50 dark:bg-orange-950/40 border-orange-500 text-orange-900 dark:text-orange-300 shadow-sm'
@@ -533,7 +596,10 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
 
                       <button
                         type="button"
-                        onClick={() => setDeliveryType('envio')}
+                        onClick={() => {
+                          setDeliveryType('envio');
+                          setFormError(null);
+                        }}
                         className={`p-4 rounded-2xl border text-left transition-all ${
                           deliveryType === 'envio'
                             ? 'bg-orange-50 dark:bg-orange-950/40 border-orange-500 text-orange-900 dark:text-orange-300 shadow-sm'
@@ -547,6 +613,10 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                           {deliveryFee === 0 ? '¡GRATIS por superar $35.000!' : `Costo de envío: ${formatCurrency(2500)}`}
                         </p>
+                        <div className="mt-1.5 flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-400 font-medium">
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>Despacho en 24/48 hs hábiles (Roca y Neuquén)</span>
+                        </div>
                       </button>
                     </div>
                   </div>
@@ -643,10 +713,19 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
 
                   <button
                     onClick={() => {
-                      if (!clientName || !clientPhone) {
-                        alert('Por favor ingresá tu nombre y teléfono.');
+                      if (!clientName.trim() || !clientPhone.trim()) {
+                        setFormError('Por favor ingresá tu nombre y teléfono para continuar.');
                         return;
                       }
+                      if (deliveryType === 'envio' && !deliveryAddress.trim()) {
+                        setFormError('Por favor ingresá la dirección completa de entrega.');
+                        return;
+                      }
+                      if (invoiceType === 'Factura A (Responsable Inscripto)' && !clientCuitOrDni.trim()) {
+                        setFormError('Para Factura A es necesario ingresar el CUIT del comercio.');
+                        return;
+                      }
+                      setFormError(null);
                       setCheckoutStep(3);
                     }}
                     className="w-full py-3.5 px-4 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-sm shadow-lg shadow-orange-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer"
@@ -660,9 +739,26 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
               {/* STEP 3: PAYMENT GATEWAY SELECTION & INTEGRATION SIMULATOR */}
               {checkoutStep === 3 && (
                 <div className="space-y-5">
-                  <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider font-fredoka">
-                    3. Integración de Pasarela de Pago
-                  </h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider font-fredoka">
+                      3. Integración de Pasarela de Pago
+                    </h3>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-[11px] font-extrabold text-emerald-700 dark:text-emerald-300">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      Reserva Atómica ERP: 15 min
+                    </span>
+                  </div>
+
+                  {/* Stock lock announcement */}
+                  <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-2xl flex items-center gap-3 text-xs text-emerald-800 dark:text-emerald-300">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <div>
+                      <strong>¡Stock bloqueado para tu compra!</strong>
+                      <p className="text-[11px] text-emerald-700 dark:text-emerald-400">
+                        Los {cartItems.reduce((s, i) => s + i.quantity, 0)} artículos de tu carrito están reservados en {currentBranch.name} para que nadie compre el último producto en mostrador mientras abonás.
+                      </p>
+                    </div>
+                  </div>
 
                   {/* Payment Methods Options */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">

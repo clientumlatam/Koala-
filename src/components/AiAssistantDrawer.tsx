@@ -12,6 +12,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { BranchInfo, Product } from '../types';
+import { KoalaLogo } from './KoalaLogo';
 
 interface Message {
   id: string;
@@ -153,8 +154,8 @@ export const AiAssistantDrawer: React.FC<AiAssistantDrawerProps> = ({
               className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.sender === 'ai' && (
-                <div className="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-1">
-                  🦘
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center p-0.5 shrink-0 shadow-sm border border-slate-200 mt-1">
+                  <KoalaLogo size="xs" variant="mascot-only" />
                 </div>
               )}
 
@@ -185,8 +186,8 @@ export const AiAssistantDrawer: React.FC<AiAssistantDrawerProps> = ({
 
           {isLoading && (
             <div className="flex gap-3 justify-start">
-              <div className="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm mt-1">
-                🦘
+              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center p-0.5 shrink-0 shadow-sm border border-slate-200 mt-1">
+                <KoalaLogo size="xs" variant="mascot-only" />
               </div>
               <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl rounded-tl-none p-3 text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 shadow-xs">
                 <Loader2 className="w-4 h-4 animate-spin text-orange-600 dark:text-orange-400" />
