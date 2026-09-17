@@ -14,10 +14,12 @@ import {
   PartyPopper, 
   HelpCircle,
   PhoneCall,
-  CheckCircle2
+  CheckCircle2,
+  UserCheck
 } from 'lucide-react';
 import { BranchInfo, ProductInventoryRecord } from '../types';
 import { KoalaLogo } from './KoalaLogo';
+import { TechnicalExpertModal } from './TechnicalExpertModal';
 
 interface FloatingWhatsAppProps {
   currentBranch: BranchInfo;
@@ -64,6 +66,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
   hasCartItems = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isExpertModalOpen, setIsExpertModalOpen] = useState(false);
   const [selectedBranchId, setSelectedBranchId] = useState<'roca' | 'neuquen'>(
     currentBranch.id === 'neuquen' ? 'neuquen' : 'roca'
   );
@@ -96,6 +99,34 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
         specialty: 'Salón de cotillón, descartables, repostería y bazar'
       };
 
+  // Validar si estamos en horario comercial definido en activeBranchData.hours
+  const isBusinessHours = React.useMemo(() => {
+    // Hora actual en huso horario de Argentina (UTC-3)
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const argDate = new Date(utc + (3600000 * -3));
+
+    const day = argDate.getDay(); // 0 = Domingo, 1 a 5 = Lun a Vie, 6 = Sábado
+    const currentMinutes = argDate.getHours() * 60 + argDate.getMinutes();
+
+    if (day === 0) {
+      // Domingo cerrado
+      return false;
+    }
+
+    if (day === 6) {
+      // Sábado: 9:00 a 13:30 hs
+      return currentMinutes >= 9 * 60 && currentMinutes < 13 * 60 + 30;
+    }
+
+    // Lunes a Viernes según activeBranchData.hours (8:30 o 9:00 hasta 19:30 hs)
+    const isEarlyStart = activeBranchData.hours.includes('8:30');
+    const startMinutes = isEarlyStart ? 8 * 60 + 30 : 9 * 60;
+    const endMinutes = 19 * 60 + 30; // 19:30 hs
+
+    return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+  }, [activeBranchData.hours]);
+
   const handleBranchChange = (branchId: 'roca' | 'neuquen') => {
     setSelectedBranchId(branchId);
     if (onSelectBranch) {
@@ -123,35 +154,68 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
             className="mb-4 w-90 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[85vh]"
           >
             {/* WhatsApp Header */}
-            <div className="bg-emerald-600 text-white p-4 flex items-center justify-between relative shadow-sm">
+            <div className={`${isBusinessHours ? 'bg-emerald-600' : 'bg-slate-700'} text-white p-4 flex items-center justify-between relative shadow-sm transition-colors duration-300`}>
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center p-1 shadow-sm">
                     <KoalaLogo size="xs" variant="mascot-only" />
                   </div>
-                  <span className="w-3 h-3 rounded-full bg-emerald-300 border-2 border-emerald-600 absolute bottom-0 right-0 animate-pulse" />
+                  <span
+                    className={`w-3 h-3 rounded-full absolute bottom-0 right-0 border-2 ${
+                      isBusinessHours
+                        ? 'bg-emerald-300 border-emerald-600 animate-pulse'
+                        : 'bg-slate-400 border-slate-700'
+                    }`}
+                  />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm leading-tight flex items-center gap-1.5">
                     WhatsApp Ventas Koala
-                    <span className="text-[10px] bg-emerald-500/80 px-1.5 py-0.2 rounded font-semibold text-white">
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded font-semibold text-white ${
+                        isBusinessHours ? 'bg-emerald-500/80' : 'bg-slate-600'
+                      }`}
+                    >
                       Oficial
                     </span>
                   </h3>
-                  <p className="text-[11px] text-emerald-100 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-200"></span>
-                    En línea • Responde en ~5 minutos
+                  <p
+                    className={`text-[11px] flex items-center gap-1 ${
+                      isBusinessHours ? 'text-emerald-100' : 'text-slate-300'
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        isBusinessHours ? 'bg-emerald-200' : 'bg-slate-400'
+                      }`}
+                    />
+                    {isBusinessHours
+                      ? 'En línea • Responde en ~5 minutos'
+                      : 'Fuera de horario - Respondemos mañana'}
                   </p>
                 </div>
               </div>
 
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1.5 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
-                aria-label="Cerrar chat de WhatsApp"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsExpertModalOpen(true)}
+                  className="px-2.5 py-1 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-[11px] sm:text-xs flex items-center gap-1.5 transition-all cursor-pointer border border-white/30 shadow-xs active:scale-95"
+                  title="Solicitar atención de un especialista técnico en polietileno y packaging"
+                >
+                  <UserCheck className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                  <span className="hidden sm:inline">Hablar con un Experto</span>
+                  <span className="sm:hidden">Experto</span>
+                </button>
+
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-1.5 text-white/80 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                  aria-label="Cerrar chat de WhatsApp"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Branch Selector Tabs */}
@@ -299,6 +363,22 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
           </span>
         )}
       </motion.button>
+
+      {/* Technical Specialist Request Popup Modal */}
+      <TechnicalExpertModal
+        isOpen={isExpertModalOpen}
+        onClose={() => setIsExpertModalOpen(false)}
+        activeBranch={{
+          id: selectedBranchId,
+          name: activeBranchData.name,
+          city: selectedBranchId === 'roca' ? 'General Roca' : 'Neuquén',
+          address: activeBranchData.address,
+          phone: activeBranchData.phone,
+          hours: activeBranchData.hours,
+          whatsappPhone: activeBranchData.whatsappNum,
+        }}
+        isBusinessHours={isBusinessHours}
+      />
     </div>
   );
 };
