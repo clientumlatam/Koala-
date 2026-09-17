@@ -25,7 +25,7 @@ La plataforma opera bajo un modelo **híbrido y multi-sucursal** con sincronizac
               ▼                              │
 ┌──────────────────────────────────────────────────────────┐
 │            CATÁLOGO & PRESUPUESTADOR CLIENTE             │
-│        (General Roca - Mitre 642 / Nqn - Sarmiento 235)  │
+│   (General Roca - Av. Roca 1350 / Nqn - Mitre 678)       │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -35,8 +35,8 @@ La plataforma opera bajo un modelo **híbrido y multi-sucursal** con sincronizac
 
 | ID Sucursal | Código ERP | Nombre / Ubicación | Rol en el Sistema |
 | :--- | :--- | :--- | :--- |
-| `roca` | `DEP-01` | **Casa Central & Fábrica** (Mitre 642, General Roca) | Depósito principal de polietileno y venta mayorista/minorista |
-| `neuquen` | `DEP-02` | **Salón Comercial** (Sarmiento 235, Neuquén Capital) | Salón de venta directa, cotillón y repostería |
+| `roca` | `DEP-01` | **Casa Central & Fábrica** (Av. Roca 1350, General Roca) | Depósito principal de polietileno y venta mayorista/minorista |
+| `neuquen` | `DEP-02` | **Salón Comercial** (Mitre 678, Neuquén Capital) | Salón de venta directa, cotillón y repostería |
 
 ---
 

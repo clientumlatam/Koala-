@@ -104,7 +104,9 @@ interface StockAlertRegistration {
   sku: string;
   productName: string;
   email: string;
+  requestedCount?: number;
   createdAt: string;
+  branchCity?: string;
 }
 
 export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({ 
@@ -133,9 +135,38 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
   const [activeTransfers, setActiveTransfers] = React.useState<StockTransferLogisticsRecord[]>([]);
 
   // Email Notifications for Out of Stock Items State
-  const [stockAlerts, setStockAlerts] = React.useState<StockAlertRegistration[]>([]);
+  const [stockAlerts, setStockAlerts] = React.useState<StockAlertRegistration[]>(() => [
+    {
+      id: 'alert-init-1',
+      sku: 'INS-JURID-01',
+      productName: 'Combo Carpetas Oficio + Folios x500 + Broches',
+      email: 'compras@estudiojuridicod.com.ar',
+      requestedCount: 5,
+      createdAt: '15:20 hs',
+      branchCity: currentBranch.city,
+    },
+    {
+      id: 'alert-init-2',
+      sku: 'MAY-ESC-PK100',
+      productName: 'Pack Escolar Mayorista (Cartulinas, Afiches, Goma Eva x100)',
+      email: 'silvia.docente@escuela42.edu.ar',
+      requestedCount: 10,
+      createdAt: '14:10 hs',
+      branchCity: currentBranch.city,
+    },
+    {
+      id: 'alert-init-3',
+      sku: 'ART-POSCA-PC3M8',
+      productName: 'Set Marcadores Uni Posca PC-3M Punta Fina x8 colores',
+      email: 'taller.patagonia@gmail.com',
+      requestedCount: 3,
+      createdAt: '18:45 hs',
+      branchCity: currentBranch.city,
+    }
+  ]);
   const [alertModalItem, setAlertModalItem] = React.useState<{ sku: string; productName: string } | null>(null);
   const [alertEmailInput, setAlertEmailInput] = React.useState('');
+  const [alertQtyInput, setAlertQtyInput] = React.useState<number>(1);
   const [alertSuccessEmail, setAlertSuccessEmail] = React.useState<string | null>(null);
 
   // Dynamically confirmed Mercado Pago payments by inquiry id
@@ -550,7 +581,9 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
       sku: alertModalItem.sku,
       productName: alertModalItem.productName,
       email: cleanEmail,
+      requestedCount: alertQtyInput || 1,
       createdAt: new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+      branchCity: currentBranch.city,
     };
 
     setStockAlerts(prev => [newAlert, ...prev.filter(a => !(a.sku === alertModalItem.sku && a.email === cleanEmail))]);
@@ -559,6 +592,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
       setAlertSuccessEmail(null);
       setAlertModalItem(null);
       setAlertEmailInput('');
+      setAlertQtyInput(1);
     }, 2200);
   };
 
@@ -606,8 +640,12 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
   };
 
   const handleExportMpSessionCsv = () => {
-    // Generate CSV content for Mercado Pago session transactions
-    const headers = [
+    // SECTION 1: Mercado Pago Session Transactions
+    const section1Header = [
+      '=== SECCION 1: TRANSACCIONES Y CONSULTAS MERCADO PAGO / WHATSAPP ==='
+    ];
+
+    const headersSection1 = [
       'ID_Consulta',
       'Fecha_Hora',
       'Sucursal',
@@ -623,15 +661,15 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
       'Detalle_Consulta'
     ];
 
-    const rows = recentInquiries.map((item) => {
+    const rowsSection1 = recentInquiries.map((item) => {
       const isPaid = !!confirmedPayments[item.id];
       const payment = confirmedPayments[item.id];
       const amount = payment ? payment.amount : item.estimatedPrice;
-      const refId = payment ? payment.paymentRef : 'PENDIENTE_CHECKOUT';
+      const refId = payment ? payment.refId : 'PENDIENTE_CHECKOUT';
       const paymentMethod = payment 
-        ? (payment.paymentMethod === 'tarjeta' ? 'Tarjeta de Crédito / Débito' : payment.paymentMethod === 'dinero_mp' ? 'Dinero en Cuenta MP' : 'Efectivo Rapipago')
+        ? payment.method
         : 'A coordinar';
-      const installmentsText = payment && payment.installments ? `${payment.installments} cuotas` : item.installmentsText || '1 pago';
+      const installmentsText = payment ? 'Acreditado' : item.installmentsText || '1 pago';
 
       return [
         `"${item.id}"`,
@@ -644,9 +682,39 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
         amount,
         `"${isPaid ? 'ACREDITADO' : 'CONSULTA_PRESUPUESTADA'}"`,
         `"${refId}"`,
-        `"${paymentMethod}"`,
-        `"${installmentsText}"`,
+        `"${paymentMethod.replace(/"/g, '""')}"`,
+        `"${installmentsText.replace(/"/g, '""')}"`,
         `"${item.query.replace(/"/g, '""')}"`
+      ].join(';');
+    });
+
+    // SECTION 2: Out-of-Stock Alerts (Alertas de Stock Faltante)
+    const section2Header = [
+      '',
+      '=== SECCION 2: ALERTAS DE STOCK FALTANTE (OUT-OF-STOCK ALERTS) ==='
+    ];
+
+    const headersSection2 = [
+      'ID_Alerta',
+      'SKU_Producto',
+      'Nombre_Producto',
+      'Cantidad_Solicitada',
+      'Email_Contacto_Cliente',
+      'Fecha_Registro',
+      'Sucursal_Solicitud',
+      'Estado_Alerta'
+    ];
+
+    const rowsSection2 = stockAlerts.map((alert) => {
+      return [
+        `"${alert.id}"`,
+        `"${alert.sku}"`,
+        `"${alert.productName.replace(/"/g, '""')}"`,
+        alert.requestedCount || 1,
+        `"${alert.email}"`,
+        `"${alert.createdAt}"`,
+        `"${alert.branchCity || currentBranch.city}"`,
+        `"PENDIENTE_REPOSICION_ERP"`
       ].join(';');
     });
 
@@ -655,28 +723,41 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
       return acc + (paid ? paid.amount : item.estimatedPrice);
     }, 0);
     const totalAcreditados = Object.keys(confirmedPayments).length;
+    const totalOutStockAlerts = stockAlerts.length;
+    const totalRequestedUnitsOutStock = stockAlerts.reduce((acc, a) => acc + (a.requestedCount || 1), 0);
     const nowIso = new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
 
     // Summary lines at bottom
     const summaryRows = [
       '',
-      `"--- RESUMEN CONSOLIDADO MERCADO PAGO SESION ---"`,
+      '=== RESUMEN CONSOLIDADO GENERAL ===',
       `"Sucursal:";"${currentBranch.name} - ${currentBranch.city}"`,
       `"Fecha y Hora de Exportación:";"${nowIso}"`,
       `"Total Transacciones / Consultas:";"${recentInquiries.length}"`,
       `"Pagos Acreditados Checkout Pro:";"${totalAcreditados}"`,
       `"Consultas / Pendientes:";"${recentInquiries.length - totalAcreditados}"`,
-      `"Monto Total Recaudado / Estimado ARS:";"${totalRecaudado}"`
+      `"Monto Total Recaudado / Estimado ARS:";"${totalRecaudado}"`,
+      `"Total Alertas Stock Faltante Registradas:";"${totalOutStockAlerts}"`,
+      `"Total Unidades Demandadas sin Stock:";"${totalRequestedUnitsOutStock}"`
     ];
 
-    const csvContent = '\uFEFF' + [headers.join(';'), ...rows, ...summaryRows].join('\r\n');
+    const csvContent = '\uFEFF' + [
+      ...section1Header,
+      headersSection1.join(';'),
+      ...rowsSection1,
+      ...section2Header,
+      headersSection2.join(';'),
+      ...rowsSection2,
+      ...summaryRows
+    ].join('\r\n');
+
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     const branchCode = currentBranch.id.toUpperCase();
     const dateStr = new Date().toISOString().slice(0, 10);
     link.setAttribute('href', url);
-    link.setAttribute('download', `MercadoPago_Transacciones_Sesion_${branchCode}_${dateStr}.csv`);
+    link.setAttribute('download', `MercadoPago_y_AlertasStock_Sesion_${branchCode}_${dateStr}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1781,20 +1862,37 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                       </p>
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
-                        <Mail className="w-3.5 h-3.5 text-amber-600" />
-                        Email de Notificación:
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="ejemplo@correo.com"
-                        value={alertEmailInput}
-                        onChange={(e) => setAlertEmailInput(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500"
-                        id="input-alert-email"
-                      />
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="col-span-2 space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                          <Mail className="w-3.5 h-3.5 text-amber-600" />
+                          Email de Notificación:
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          placeholder="ejemplo@correo.com"
+                          value={alertEmailInput}
+                          onChange={(e) => setAlertEmailInput(e.target.value)}
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500"
+                          id="input-alert-email"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                          Cant. u.:
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={999}
+                          value={alertQtyInput}
+                          onChange={(e) => setAlertQtyInput(Math.max(1, parseInt(e.target.value) || 1))}
+                          className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2 py-2 text-xs font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 font-mono text-center"
+                          id="input-alert-qty"
+                        />
+                      </div>
                     </div>
 
                     <button
