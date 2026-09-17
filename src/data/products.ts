@@ -115,6 +115,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesaleMinPack: 10,
     isBestSeller: true,
     isManufacturer: true,
+    image: 'https://images.unsplash.com/photo-1597484661643-2f5fef640dd1?auto=format&fit=crop&w=600&q=80',
     tags: ['bolsas', 'polietileno', 'camiseta', 'comercio', 'fabrica'],
   },
   {
@@ -130,6 +131,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesaleMinPack: 5,
     isBestSeller: true,
     isManufacturer: true,
+    image: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=600&q=80',
     tags: ['consorcio', 'basura', 'residuos', 'negra', 'reforzada'],
   },
   {
@@ -146,6 +148,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     isBestSeller: true,
     isManufacturer: true,
     isNew: true,
+    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80',
     tags: ['big bag', 'escombros', 'aridos', 'construccion', 'industria', 'granel'],
   },
   {
@@ -161,6 +164,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesaleMinPack: 6,
     isBestSeller: true,
     isManufacturer: true,
+    image: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=600&q=80',
     tags: ['film stretch', 'paletizado', 'embalaje', 'rollo', 'cristal'],
   },
   {
@@ -175,6 +179,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 13800,
     wholesaleMinPack: 6,
     isManufacturer: true,
+    image: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=600&q=80',
     tags: ['film stretch', 'negro', 'opaco', 'embalaje', 'pallet'],
   },
   {
@@ -189,6 +194,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 42500,
     wholesaleMinPack: 3,
     isManufacturer: true,
+    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=600&q=80',
     tags: ['bobina', 'tubular', 'polietileno', 'manguera', 'fabrica'],
   },
   {
@@ -202,6 +208,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1750,
     wholesaleMinPack: 36,
+    image: 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80',
     tags: ['cinta', 'embalaje', 'cajas', 'transparente', 'pegamento'],
   },
 
@@ -218,6 +225,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 3200,
     wholesaleMinPack: 20,
     isBestSeller: true,
+    image: 'https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?auto=format&fit=crop&w=600&q=80',
     tags: ['vasos', 'descartables', 'fiesta', 'bebidas', 'plástico'],
   },
   {
@@ -231,6 +239,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 50,
     wholesalePrice: 3600,
     wholesaleMinPack: 10,
+    image: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=600&q=80',
     tags: ['vasos térmicos', 'café', 'telgopor', 'caliente', 'oficina'],
   },
   {
@@ -245,6 +254,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 8500,
     wholesaleMinPack: 10,
     isBestSeller: true,
+    image: 'https://images.unsplash.com/photo-1615865417236-d67f57a3e6c0?auto=format&fit=crop&w=600&q=80',
     tags: ['aluminio', 'viandas', 'rotiseria', 'bandejas', 'horno'],
   },
   {
@@ -258,6 +268,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 25,
     wholesalePrice: 6800,
     wholesaleMinPack: 8,
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80',
     tags: ['helado', 'potes', 'termico', 'postre', 'delivery'],
   },
   {
@@ -271,6 +282,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 50,
     wholesalePrice: 2400,
     wholesaleMinPack: 20,
+    image: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=600&q=80',
     tags: ['tenedores', 'cuchillos', 'cubiertos', 'comida', 'evento'],
   },
   {
@@ -284,6 +296,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 100,
     wholesalePrice: 1500,
     wholesaleMinPack: 30,
+    image: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=600&q=80',
     tags: ['servilletas', 'papel', 'mesa', 'gastronomia'],
   },
 
@@ -300,6 +313,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 4200,
     wholesaleMinPack: 10,
     isBestSeller: true,
+    image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=600&q=80',
     tags: ['globos', 'cumpleaños', 'latex', 'decoracion', 'fiesta'],
   },
   {
@@ -314,6 +328,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 2150,
     wholesaleMinPack: 12,
     isBestSeller: true,
+    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=600&q=80',
     tags: ['cortina', 'metalizada', 'fotos', 'decoracion', 'cumple'],
   },
   {
@@ -327,6 +342,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2400,
     wholesaleMinPack: 10,
+    image: 'https://images.unsplash.com/photo-1574015974293-817f0ebebb74?auto=format&fit=crop&w=600&q=80',
     tags: ['globos', 'numeros', 'dorado', 'helio', 'gigante'],
   },
   {
@@ -340,6 +356,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 4,
     wholesalePrice: 2900,
     wholesaleMinPack: 10,
+    image: 'https://images.unsplash.com/photo-1565035010268-a3816f98589a?auto=format&fit=crop&w=600&q=80',
     tags: ['bengala', 'fuego frio', 'torta', 'velas', 'fiesta'],
   },
   {
@@ -353,6 +370,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2700,
     wholesaleMinPack: 12,
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80',
     tags: ['nieve', 'espuma', 'egresados', 'carnaval', 'festejo'],
   },
 
@@ -369,6 +387,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 3300,
     wholesaleMinPack: 10,
     isBestSeller: true,
+    image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80',
     tags: ['mangas', 'pasteleria', 'reposteria', 'dulce de leche', 'decoracion'],
   },
   {
@@ -382,6 +401,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 5900,
     wholesaleMinPack: 5,
+    image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80',
     tags: ['picos', 'acero inoxidable', 'decorar', 'tortas', 'cupcakes'],
   },
   {
@@ -395,6 +415,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3800,
     wholesaleMinPack: 6,
+    image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=600&q=80',
     tags: ['molde', 'silicona', 'muffins', 'cupcakes', 'horno'],
   },
   {
@@ -408,6 +429,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 5,
     wholesalePrice: 4600,
     wholesaleMinPack: 10,
+    image: 'https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=600&q=80',
     tags: ['bases', 'torta', 'dorado', 'pasteleria', 'laminado'],
   },
   {
@@ -421,6 +443,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3500,
     wholesaleMinPack: 8,
+    image: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=600&q=80',
     tags: ['perlas', 'comestible', 'azucar', 'dorado', 'decoracion'],
   },
 
@@ -437,6 +460,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 5500,
     wholesaleMinPack: 10,
     isBestSeller: true,
+    image: 'https://images.unsplash.com/photo-1608248597260-2624d6d62d2d?auto=format&fit=crop&w=600&q=80',
     tags: ['pet', 'frascos', 'miel', 'envases', 'tapa'],
   },
   {
@@ -450,6 +474,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1500,
     wholesaleMinPack: 24,
+    image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=600&q=80',
     tags: ['pulverizador', 'gatillo', 'alcohol', 'limpieza', 'spray'],
   },
   {
@@ -463,6 +488,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1150,
     wholesaleMinPack: 30,
+    image: 'https://images.unsplash.com/photo-1608248597260-2624d6d62d2d?auto=format&fit=crop&w=600&q=80',
     tags: ['dosificador', 'jabon', 'crema', 'pet', 'bomba'],
   },
   {
@@ -476,6 +502,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1950,
     wholesaleMinPack: 20,
+    image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80',
     tags: ['bidon', '5litros', 'quimicos', 'limpieza', 'pead'],
   },
 
@@ -492,6 +519,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 6900,
     wholesaleMinPack: 5,
     isBestSeller: true,
+    image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80',
     tags: ['resma', 'a4', 'papel', 'impresion', 'oficina'],
   },
   {
@@ -505,6 +533,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3000,
     wholesaleMinPack: 10,
+    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80',
     tags: ['cuaderno', 'espiral', 'a4', 'escolar', 'estudio'],
   },
   {
@@ -518,6 +547,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1550,
     wholesaleMinPack: 24,
+    image: 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80',
     tags: ['cinta', 'pintor', 'masking', 'papel', 'libreria'],
   },
   {
@@ -531,6 +561,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 12,
     wholesalePrice: 5900,
     wholesaleMinPack: 5,
+    image: 'https://images.unsplash.com/photo-1585336261026-8f5786372969?auto=format&fit=crop&w=600&q=80',
     tags: ['marcadores', 'permanente', 'fibra', 'indeleble', 'libreria'],
   },
 
@@ -546,6 +577,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2600,
     wholesaleMinPack: 12,
+    image: 'https://images.unsplash.com/photo-1590856029826-c7a73142bbf1?auto=format&fit=crop&w=600&q=80',
     tags: ['jarra', 'medidor', 'bazar', 'cocina', 'plastico'],
   },
   {
@@ -559,6 +591,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 4900,
     wholesaleMinPack: 6,
+    image: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=600&q=80',
     tags: ['hermeticos', 'taper', 'organizadores', 'bazar', 'bpa free'],
   },
 ];

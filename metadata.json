@@ -1,6 +1,6 @@
 {
-  "name": "Remix Remix Koala Lo Tiene",
-  "description": "Sitio oficial y catálogo de descartables, polietileno, cotillón, repostería, envases plásticos y librería en General Roca y Neuquén.",
+  "name": "Koala Lo Tiene - E-Commerce y Fidelidad Club Koala",
+  "description": "E-commerce oficial, catálogo de descartables, polietileno, cotillón, repostería y programa de puntos Club Koala para General Roca y Neuquén.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

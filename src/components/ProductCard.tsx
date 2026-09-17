@@ -41,37 +41,64 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     ? product.wholesalePrice 
     : product.price;
 
+  const [imgError, setImgError] = React.useState(false);
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-orange-300 transition-all flex flex-col justify-between overflow-hidden group">
       {/* Top Card Body */}
       <div className="p-5 space-y-3">
         {/* Badges Bar */}
-        <div className="flex flex-wrap items-center gap-1.5 min-h-[26px]">
-          {product.isManufacturer && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-100 text-orange-800 text-[11px] font-extrabold">
-              <Factory className="w-3 h-3 text-orange-600" />
-              Fabricación Koala
-            </span>
-          )}
+        <div className="flex flex-wrap items-center justify-between gap-1.5 min-h-[26px]">
+          <div className="flex flex-wrap items-center gap-1.5">
+            {product.isManufacturer && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-100 text-orange-800 text-[11px] font-extrabold">
+                <Factory className="w-3 h-3 text-orange-600" />
+                Fabricación Koala
+              </span>
+            )}
 
-          {product.isBestSeller && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[11px] font-bold">
-              <Sparkles className="w-3 h-3 text-amber-600" />
-              Más Vendido
-            </span>
-          )}
+            {product.isBestSeller && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[11px] font-bold">
+                <Sparkles className="w-3 h-3 text-amber-600" />
+                Más Vendido
+              </span>
+            )}
 
-          {product.wholesalePrice && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[11px] font-bold">
-              <Tag className="w-3 h-3 text-emerald-600" />
-              Opción Mayorista
-            </span>
-          )}
+            {product.wholesalePrice && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[11px] font-bold">
+                <Tag className="w-3 h-3 text-emerald-600" />
+                Opción Mayorista
+              </span>
+            )}
 
-          {product.isNew && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[11px] font-bold">
-              Nuevo
-            </span>
+            {product.isNew && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[11px] font-bold">
+                Nuevo
+              </span>
+            )}
+          </div>
+
+          <span className="text-[10px] text-slate-400 font-semibold bg-slate-100 px-1.5 py-0.5 rounded flex items-center gap-1" title="Foto oficial catálogo e-commerce fondo blanco">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            Fondo Blanco MeLi
+          </span>
+        </div>
+
+        {/* Product Image Container (Fondo Blanco MercadoLibre) */}
+        <div className="w-full h-44 bg-white rounded-xl border border-slate-100 flex items-center justify-center p-3 relative overflow-hidden group-hover:scale-[1.02] transition-transform">
+          {product.image && !imgError ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              referrerPolicy="no-referrer"
+              onError={() => setImgError(true)}
+              className="max-h-full max-w-full object-contain filter drop-shadow-sm transition-opacity duration-300"
+            />
+          ) : (
+            <div className="w-full h-full bg-slate-50 rounded-lg flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+              <Package className="w-10 h-10 stroke-[1.5] mb-1 text-slate-300" />
+              <span className="text-[11px] font-medium text-slate-500">Foto Catálogo E-Commerce</span>
+            </div>
           )}
         </div>
 

@@ -38,7 +38,8 @@ import {
   Layers,
   Percent,
   SlidersHorizontal,
-  ChevronRight
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react';
 import { 
   EmployeeUser, 
@@ -123,7 +124,27 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<
     'enterprise_demo' | 'sync_health' | 'dashboard' | 'quotes' | 'inventory' | 'transfers' | 'invoices' | 'prices_import' | 'csv_cron' | 'staff' | 'erp_config' | 'api_tester'
-  >('enterprise_demo');
+  >(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam) return tabParam as any;
+      const hash = window.location.hash.toLowerCase();
+      if (hash.includes('demo')) return 'enterprise_demo';
+      if (hash.includes('health') || hash.includes('sync')) return 'sync_health';
+      if (hash.includes('inventory') || hash.includes('stock')) return 'inventory';
+    }
+    return 'erp_config';
+  });
+
+  const tabsNavRef = React.useRef<HTMLDivElement>(null);
+
+  const handleScrollTabs = (direction: 'left' | 'right') => {
+    if (tabsNavRef.current) {
+      const scrollAmount = direction === 'left' ? -250 : 250;
+      tabsNavRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
   
   // Stock Movements (Kardex) state
   const [stockMovements, setStockMovements] = useState<StockMovementRecord[]>(INITIAL_STOCK_MOVEMENTS);
@@ -587,173 +608,193 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         )}
 
         {/* Main Tabs Navigation */}
-        <div className="flex items-center gap-1 px-3 sm:px-6 pt-2.5 border-b border-slate-200 dark:border-slate-800 overflow-x-auto bg-slate-50 dark:bg-slate-900/60">
+        <div className="relative flex items-center border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
           <button
-            onClick={() => setActiveTab('enterprise_demo')}
-            className={`px-4 py-2.5 text-xs font-black flex items-center gap-2 border-b-2 transition-all whitespace-nowrap rounded-t-xl ${
-              activeTab === 'enterprise_demo'
-                ? 'border-orange-500 text-white bg-gradient-to-r from-orange-600 to-amber-600 shadow-md shadow-orange-600/30'
-                : 'border-transparent text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 font-bold'
-            }`}
+            type="button"
+            onClick={() => handleScrollTabs('left')}
+            className="p-2.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer bg-slate-100/80 dark:bg-slate-800/80 border-r border-slate-200 dark:border-slate-700 shrink-0 z-10"
+            title="Desplazar pestañas a la izquierda"
           >
-            <Zap className="w-4 h-4 text-amber-300 fill-amber-300" />
-            <span>🚀 DEMO EN VIVO (Flujo 5 Departamentos & ISO)</span>
+            <ChevronLeft className="w-4 h-4" />
           </button>
 
-          {canAccess('sync_health') && (
+          <div ref={tabsNavRef} className="flex items-center gap-1 px-3 pt-2.5 overflow-x-auto scrollbar-none flex-1">
             <button
-              onClick={() => setActiveTab('sync_health')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
-                activeTab === 'sync_health'
-                  ? 'border-emerald-600 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              onClick={() => setActiveTab('enterprise_demo')}
+              className={`px-4 py-2.5 text-xs font-black flex items-center gap-2 border-b-2 transition-all whitespace-nowrap rounded-t-xl ${
+                activeTab === 'enterprise_demo'
+                  ? 'border-orange-500 text-white bg-gradient-to-r from-orange-600 to-amber-600 shadow-md shadow-orange-600/30'
+                  : 'border-transparent text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 font-bold'
               }`}
             >
-              <Activity className="w-4 h-4 text-emerald-500" />
-              <span>Salud del Sistema & Sync ERP</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <Zap className="w-4 h-4 text-amber-300 fill-amber-300" />
+              <span>🚀 DEMO EN VIVO (Flujo 5 Departamentos & ISO)</span>
             </button>
-          )}
 
-          {canAccess('dashboard') && (
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'dashboard'
-                  ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Activity className="w-4 h-4" />
-              <span>Dashboard ERP</span>
-            </button>
-          )}
+            {canAccess('sync_health') && (
+              <button
+                onClick={() => setActiveTab('sync_health')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
+                  activeTab === 'sync_health'
+                    ? 'border-emerald-600 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Activity className="w-4 h-4 text-emerald-500" />
+                <span>Salud del Sistema & Sync ERP</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              </button>
+            )}
 
-          {canAccess('quotes') && (
-            <button
-              onClick={() => setActiveTab('quotes')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
-                activeTab === 'quotes'
-                  ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <FileText className="w-4 h-4" />
-              <span>Cotizaciones ({quotes.length})</span>
-            </button>
-          )}
+            {canAccess('dashboard') && (
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === 'dashboard'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Activity className="w-4 h-4" />
+                <span>Dashboard ERP</span>
+              </button>
+            )}
 
-          {canAccess('inventory') && (
-            <button
-              onClick={() => setActiveTab('inventory')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'inventory'
-                  ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <PackageCheck className="w-4 h-4" />
-              <span>Hub de Stock & ERP Multi-Sucursal</span>
-            </button>
-          )}
+            {canAccess('quotes') && (
+              <button
+                onClick={() => setActiveTab('quotes')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
+                  activeTab === 'quotes'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <FileText className="w-4 h-4" />
+                <span>Cotizaciones ({quotes.length})</span>
+              </button>
+            )}
 
-          {canAccess('transfers') && (
-            <button
-              onClick={() => setActiveTab('transfers')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'transfers'
-                  ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <ArrowRightLeft className="w-4 h-4" />
-              <span>Remitos Inter-Sucursales ({transfers.length})</span>
-            </button>
-          )}
+            {canAccess('inventory') && (
+              <button
+                onClick={() => setActiveTab('inventory')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === 'inventory'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <PackageCheck className="w-4 h-4" />
+                <span>Hub de Stock & ERP Multi-Sucursal</span>
+              </button>
+            )}
 
-          {canAccess('invoices') && (
-            <button
-              onClick={() => setActiveTab('invoices')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'invoices'
-                  ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Receipt className="w-4 h-4" />
-              <span>Facturación AFIP ({invoices.length})</span>
-            </button>
-          )}
+            {canAccess('transfers') && (
+              <button
+                onClick={() => setActiveTab('transfers')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === 'transfers'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <ArrowRightLeft className="w-4 h-4" />
+                <span>Remitos Inter-Sucursales ({transfers.length})</span>
+              </button>
+            )}
 
-          {canAccess('prices_import') && (
-            <button
-              onClick={() => setActiveTab('prices_import')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'prices_import'
-                  ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Percent className="w-4 h-4" />
-              <span>Ajustes & Precios</span>
-            </button>
-          )}
+            {canAccess('invoices') && (
+              <button
+                onClick={() => setActiveTab('invoices')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === 'invoices'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Receipt className="w-4 h-4" />
+                <span>Facturación AFIP ({invoices.length})</span>
+              </button>
+            )}
 
-          {canAccess('csv_cron') && (
-            <button
-              onClick={() => setActiveTab('csv_cron')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'csv_cron'
-                  ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Clock className="w-4 h-4 text-orange-500" />
-              <span>Automatización & CSV Cron ({cronTasks.filter((t) => t.active).length})</span>
-            </button>
-          )}
+            {canAccess('prices_import') && (
+              <button
+                onClick={() => setActiveTab('prices_import')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === 'prices_import'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Percent className="w-4 h-4" />
+                <span>Ajustes & Precios</span>
+              </button>
+            )}
 
-          {canAccess('erp_config') && (
-            <button
-              onClick={() => setActiveTab('erp_config')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'erp_config'
-                  ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Sliders className="w-4 h-4" />
-              <span>Configuración ERP</span>
-            </button>
-          )}
+            {canAccess('csv_cron') && (
+              <button
+                onClick={() => setActiveTab('csv_cron')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === 'csv_cron'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Clock className="w-4 h-4 text-orange-500" />
+                <span>Automatización & CSV Cron ({cronTasks.filter((t) => t.active).length})</span>
+              </button>
+            )}
 
-          {canAccess('api_tester') && (
-            <button
-              onClick={() => setActiveTab('api_tester')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'api_tester'
-                  ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Terminal className="w-4 h-4" />
-              <span>Tester API REST</span>
-            </button>
-          )}
+            {canAccess('erp_config') && (
+              <button
+                onClick={() => setActiveTab('erp_config')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === 'erp_config'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <SlidersHorizontal className="w-4 h-4 text-orange-500" />
+                <span>Configuración ERP</span>
+              </button>
+            )}
 
-          {canAccess('staff') && (
-            <button
-              onClick={() => setActiveTab('staff')}
-              className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                activeTab === 'staff'
-                  ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                  : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              <span>Personal ({employees.length})</span>
-            </button>
-          )}
+            {canAccess('api_tester') && (
+              <button
+                onClick={() => setActiveTab('api_tester')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === 'api_tester'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Terminal className="w-4 h-4" />
+                <span>Tester API REST</span>
+              </button>
+            )}
+
+            {canAccess('staff') && (
+              <button
+                onClick={() => setActiveTab('staff')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                  activeTab === 'staff'
+                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                <span>Personal ({employees.length})</span>
+              </button>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => handleScrollTabs('right')}
+            className="p-2.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer bg-slate-100/80 dark:bg-slate-800/80 border-l border-slate-200 dark:border-slate-700 shrink-0 z-10"
+            title="Desplazar pestañas a la derecha"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Tab Content Body */}

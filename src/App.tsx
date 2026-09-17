@@ -10,8 +10,10 @@ import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { OfflineStatusBanner } from './components/OfflineStatusBanner';
+import { LoyaltyProgramModal } from './components/LoyaltyProgramModal';
 
 import { STORES_DATA, CATEGORIES, PRODUCTS_CATALOG } from './data/products';
+import { DEFAULT_DEMO_LOYALTY_PROFILE } from './data/loyaltyData';
 import { 
   INITIAL_EMPLOYEES, 
   INITIAL_ERP_STATUS, 
@@ -36,7 +38,10 @@ import {
   ErpInvoice,
   StockTransferOrder,
   CsvCronTask,
-  CsvCronExecutionLog
+  CsvCronExecutionLog,
+  LoyaltyProfile,
+  LoyaltyReward,
+  LoyaltyPointTransaction
 } from './types';
 
 export default function App() {
@@ -128,11 +133,28 @@ export default function App() {
     localStorage.setItem('koala_cart_items', JSON.stringify(cartItems));
   }, [cartItems]);
 
+  // Customer Loyalty Program State
+  const [loyaltyProfile, setLoyaltyProfile] = React.useState<LoyaltyProfile>(() => {
+    try {
+      const saved = localStorage.getItem('koala_loyalty_profile');
+      return saved ? JSON.parse(saved) : DEFAULT_DEMO_LOYALTY_PROFILE;
+    } catch {
+      return DEFAULT_DEMO_LOYALTY_PROFILE;
+    }
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('koala_loyalty_profile', JSON.stringify(loyaltyProfile));
+  }, [loyaltyProfile]);
+
+  const [appliedReward, setAppliedReward] = React.useState<LoyaltyReward | null>(null);
+
   // Modals state
   const [cartOpen, setCartOpen] = React.useState(false);
   const [aiOpen, setAiOpen] = React.useState(false);
   const [adminOpen, setAdminOpen] = React.useState(false);
   const [loginOpen, setLoginOpen] = React.useState(false);
+  const [loyaltyOpen, setLoyaltyOpen] = React.useState(false);
 
   // Authenticated Employee State
   const [currentUser, setCurrentUser] = React.useState<EmployeeUser | null>(() => {
@@ -162,6 +184,68 @@ export default function App() {
   const [transfers, setTransfers] = React.useState<StockTransferOrder[]>(INITIAL_TRANSFERS);
   const [cronTasks, setCronTasks] = React.useState<CsvCronTask[]>(INITIAL_CSV_CRON_TASKS);
   const [cronLogs, setCronLogs] = React.useState<CsvCronExecutionLog[]>(INITIAL_CSV_CRON_LOGS);
+
+  // Loyalty Program Handlers
+  const handleUpdateLoyaltyProfile = (updatedProfile: LoyaltyProfile) => {
+    setLoyaltyProfile(updatedProfile);
+  };
+
+  const handleRedeemReward = (reward: LoyaltyReward) => {
+    if (loyaltyProfile.pointsBalance < reward.pointsRequired) {
+      alert(`Necesitás ${reward.pointsRequired} puntos para canjear ${reward.name}. Actual: ${loyaltyProfile.pointsBalance}`);
+      return;
+    }
+
+    const nowStr = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const newTx: LoyaltyPointTransaction = {
+      id: `tx-redeem-${Date.now()}`,
+      date: nowStr,
+      description: `Canje de cupón: ${reward.name}`,
+      pointsDelta: -reward.pointsRequired,
+      type: 'redeemed',
+    };
+
+    setLoyaltyProfile((prev) => ({
+      ...prev,
+      pointsBalance: prev.pointsBalance - reward.pointsRequired,
+      activeRewards: [reward, ...(prev.activeRewards || [])],
+      pointsHistory: [newTx, ...(prev.pointsHistory || [])],
+    }));
+
+    setAppliedReward(reward);
+    setLoyaltyOpen(false);
+    setCartOpen(true);
+  };
+
+  const handleCompletePurchaseLoyaltyUpdate = (pointsEarned: number, earnsStamp: boolean) => {
+    const nowStr = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const newTx: LoyaltyPointTransaction = {
+      id: `tx-earn-${Date.now()}`,
+      date: nowStr,
+      description: `Puntos sumados por compra online E-Commerce`,
+      pointsDelta: pointsEarned,
+      type: 'earned',
+    };
+
+    setLoyaltyProfile((prev) => {
+      let newStamps = prev.punchCardStamps + (earnsStamp ? 1 : 0);
+      let newTotalCards = prev.punchCardsCompleted;
+      if (newStamps >= 6) {
+        newStamps = 0;
+        newTotalCards += 1;
+      }
+
+      return {
+        ...prev,
+        pointsBalance: prev.pointsBalance + pointsEarned,
+        punchCardStamps: newStamps,
+        punchCardsCompleted: newTotalCards,
+        pointsHistory: [newTx, ...(prev.pointsHistory || [])],
+      };
+    });
+
+    setAppliedReward(null);
+  };
 
   // Login handler
   const handleLoginSuccess = (user: EmployeeUser) => {
@@ -442,6 +526,8 @@ export default function App() {
           }
         }}
         onOpenLogin={() => setLoginOpen(true)}
+        onOpenLoyaltyModal={() => setLoyaltyOpen(true)}
+        loyaltyProfile={loyaltyProfile}
         onScrollToSection={scrollToSection}
       />
 
@@ -478,10 +564,10 @@ export default function App() {
       <Footer
         branches={STORES_DATA}
         onScrollToSection={scrollToSection}
-        onOpenAdmin={() => navigateTo('/admin')}
+        onOpenLoyaltyModal={() => setLoyaltyOpen(true)}
       />
 
-      {/* Interactive Presupuestador & WhatsApp Cart Drawer */}
+      {/* Interactive E-Commerce & Loyalty Checkout Modal */}
       <PresupuestadorModal
         isOpen={cartOpen}
         onClose={() => setCartOpen(false)}
@@ -491,6 +577,23 @@ export default function App() {
         onRemoveItem={handleRemoveItem}
         onClearCart={handleClearCart}
         currentBranch={currentBranch}
+        loyaltyProfile={loyaltyProfile}
+        onOpenLoyaltyModal={() => {
+          setCartOpen(false);
+          setLoyaltyOpen(true);
+        }}
+        onCompletePurchaseLoyaltyUpdate={handleCompletePurchaseLoyaltyUpdate}
+        appliedReward={appliedReward}
+        onRemoveAppliedReward={() => setAppliedReward(null)}
+      />
+
+      {/* Customer Loyalty Program Modal */}
+      <LoyaltyProgramModal
+        isOpen={loyaltyOpen}
+        onClose={() => setLoyaltyOpen(false)}
+        profile={loyaltyProfile}
+        onUpdateProfile={handleUpdateLoyaltyProfile}
+        onRedeemReward={handleRedeemReward}
       />
 
       {/* Gemini AI Commercial Assistant Drawer */}
@@ -502,7 +605,7 @@ export default function App() {
         products={PRODUCTS_CATALOG}
       />
 
-      {/* Floating Quick Access WhatsApp Widget with Preventive Inventory Stock Check */}
+      {/* Floating Quick Access WhatsApp Widget */}
       <FloatingWhatsApp 
         currentBranch={currentBranch}
         inventory={inventory}

@@ -28,7 +28,9 @@ import {
   RefreshCw,
   Truck,
   Layers,
-  Warehouse
+  Warehouse,
+  Mail,
+  Bell
 } from 'lucide-react';
 import { BranchInfo, ProductInventoryRecord } from '../types';
 import { formatCurrency } from '../utils/helpers';
@@ -85,6 +87,26 @@ interface OutOfStockBlockData {
   sku: string;
 }
 
+interface StockTransferLogisticsRecord {
+  id: string;
+  sku: string;
+  productName: string;
+  fromBranchCity: string;
+  toBranchCity: string;
+  step: 1 | 2 | 3 | 4;
+  statusText: string;
+  etaMinutes: number;
+  createdAt: string;
+}
+
+interface StockAlertRegistration {
+  id: string;
+  sku: string;
+  productName: string;
+  email: string;
+  createdAt: string;
+}
+
 export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({ 
   currentBranch,
   inventory = [],
@@ -106,6 +128,15 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
   const [stockOverrides, setStockOverrides] = React.useState<Record<string, { roca?: number; neuquen?: number }>>({});
   const [stockCheckSuccess, setStockCheckSuccess] = React.useState<{ sku: string; units: number } | null>(null);
   const [transferRequested, setTransferRequested] = React.useState<string | null>(null);
+
+  // Inter-Branch Logistics Active Transfers State
+  const [activeTransfers, setActiveTransfers] = React.useState<StockTransferLogisticsRecord[]>([]);
+
+  // Email Notifications for Out of Stock Items State
+  const [stockAlerts, setStockAlerts] = React.useState<StockAlertRegistration[]>([]);
+  const [alertModalItem, setAlertModalItem] = React.useState<{ sku: string; productName: string } | null>(null);
+  const [alertEmailInput, setAlertEmailInput] = React.useState('');
+  const [alertSuccessEmail, setAlertSuccessEmail] = React.useState<string | null>(null);
 
   // Dynamically confirmed Mercado Pago payments by inquiry id
   const [confirmedPayments, setConfirmedPayments] = React.useState<Record<string, ConfirmedPaymentRecord>>(() => ({
@@ -455,11 +486,80 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
     setBlockedOutOfStock(null);
   };
 
-  const handleRequestStockTransfer = (sku: string, productName: string) => {
+  const handleRequestStockTransfer = (sku: string, productName: string, fromCity?: string, toCity?: string) => {
     setTransferRequested(sku);
+    const fromBranchCity = fromCity || (currentBranch.id === 'roca' ? 'Neuquén Capital' : 'General Roca');
+    const toBranchCity = toCity || currentBranch.city;
+
+    const newTransferId = `transfer-${Date.now()}`;
+    const newTransfer: StockTransferLogisticsRecord = {
+      id: newTransferId,
+      sku,
+      productName,
+      fromBranchCity,
+      toBranchCity,
+      step: 1,
+      statusText: `Solicitud registrada en depósito ${fromBranchCity}`,
+      etaMinutes: 45,
+      createdAt: new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setActiveTransfers(prev => [newTransfer, ...prev.filter(t => t.sku !== sku)]);
+
+    // Simulate automatic progress steps
     setTimeout(() => {
-      setTransferRequested(null);
-    }, 5000);
+      setActiveTransfers(prev => prev.map(t => t.id === newTransferId ? {
+        ...t, step: 2, statusText: `Despachado en unidad de carga desde ${fromBranchCity}`, etaMinutes: 30
+      } : t));
+    }, 4500);
+
+    setTimeout(() => {
+      setActiveTransfers(prev => prev.map(t => t.id === newTransferId ? {
+        ...t, step: 3, statusText: `En tránsito por Ruta 22 (${fromBranchCity} ➔ ${toBranchCity})`, etaMinutes: 15
+      } : t));
+    }, 9500);
+
+    setTimeout(() => {
+      setActiveTransfers(prev => prev.map(t => t.id === newTransferId ? {
+        ...t, step: 4, statusText: `Arribado a ${toBranchCity} - Stock disponible para retiro`, etaMinutes: 0
+      } : t));
+    }, 15000);
+  };
+
+  const handleAdvanceTransferStep = (transferId: string) => {
+    setActiveTransfers(prev => prev.map(t => {
+      if (t.id !== transferId) return t;
+      if (t.step === 1) {
+        return { ...t, step: 2, statusText: `Despachado en unidad de carga desde ${t.fromBranchCity}`, etaMinutes: 30 };
+      } else if (t.step === 2) {
+        return { ...t, step: 3, statusText: `En tránsito por Ruta 22 (${t.fromBranchCity} ➔ ${t.toBranchCity})`, etaMinutes: 15 };
+      } else if (t.step === 3) {
+        return { ...t, step: 4, statusText: `Arribado a ${t.toBranchCity} - Stock disponible para retiro`, etaMinutes: 0 };
+      }
+      return t;
+    }));
+  };
+
+  const handleRegisterStockAlert = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!alertModalItem || !alertEmailInput.trim()) return;
+
+    const cleanEmail = alertEmailInput.trim();
+    const newAlert: StockAlertRegistration = {
+      id: `alert-${Date.now()}`,
+      sku: alertModalItem.sku,
+      productName: alertModalItem.productName,
+      email: cleanEmail,
+      createdAt: new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setStockAlerts(prev => [newAlert, ...prev.filter(a => !(a.sku === alertModalItem.sku && a.email === cleanEmail))]);
+    setAlertSuccessEmail(cleanEmail);
+    setTimeout(() => {
+      setAlertSuccessEmail(null);
+      setAlertModalItem(null);
+      setAlertEmailInput('');
+    }, 2200);
   };
 
   const handleSimulateMpWebhook = (item: InquiryMpItem, e: React.MouseEvent) => {
@@ -672,9 +772,86 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
 
                 {/* Scrollable recent-messages container */}
                 <div 
-                  className="recent-messages max-h-52 overflow-y-auto pr-1 space-y-2.5 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 relative"
+                  className="recent-messages max-h-56 overflow-y-auto pr-1 space-y-2.5 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 relative"
                   id="recent-branch-messages"
                 >
+                  {/* Active Inter-Branch Logistics Tracker Progress Bar Card */}
+                  <AnimatePresence>
+                    {activeTransfers.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                        id="active-interbranch-logistics-tracker"
+                        className="p-3 rounded-2xl bg-gradient-to-r from-sky-900 via-indigo-950 to-slate-900 text-white shadow-md border border-sky-400/40 space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 font-bold text-[11px] text-sky-200">
+                            <Truck className="w-3.5 h-3.5 text-sky-400 animate-bounce" />
+                            <span className="font-fredoka tracking-wide">Traspaso Inter-Sucursales</span>
+                          </div>
+                          <span className="text-[8px] bg-sky-500/30 text-sky-200 px-2 py-0.5 rounded-full font-mono font-extrabold border border-sky-400/30">
+                            {activeTransfers[0].etaMinutes > 0 ? `ETA: ~${activeTransfers[0].etaMinutes} min` : '¡Arribado!'}
+                          </span>
+                        </div>
+
+                        <div className="text-[10px] space-y-0.5 bg-black/30 p-2 rounded-xl border border-sky-500/20">
+                          <div className="font-bold text-white truncate">{activeTransfers[0].productName}</div>
+                          <div className="flex justify-between text-[9px] text-sky-300">
+                            <span>Origen: <strong>{activeTransfers[0].fromBranchCity}</strong> ➔ <strong>{activeTransfers[0].toBranchCity}</strong></span>
+                            <span className="font-mono text-[8px] opacity-80">SKU: {activeTransfers[0].sku}</span>
+                          </div>
+                        </div>
+
+                        {/* Interactive Visual Progress Bar (25% -> 50% -> 75% -> 100%) */}
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[8px] font-semibold text-sky-200">
+                            <span className="truncate max-w-[190px]">{activeTransfers[0].statusText}</span>
+                            <span className="font-mono font-bold">{activeTransfers[0].step * 25}%</span>
+                          </div>
+
+                          <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-sky-600/50">
+                            <motion.div
+                              initial={{ width: '0%' }}
+                              animate={{ width: `${activeTransfers[0].step * 25}%` }}
+                              transition={{ duration: 0.4 }}
+                              className="h-full bg-gradient-to-r from-sky-400 via-teal-300 to-emerald-400 rounded-full shadow-xs"
+                            />
+                          </div>
+
+                          {/* 4 Step Nodes Tracker */}
+                          <div className="grid grid-cols-4 gap-1 text-[7px] text-center pt-0.5 font-medium">
+                            <div className={`p-0.5 rounded ${activeTransfers[0].step >= 1 ? 'bg-sky-500/40 text-sky-100 font-bold border border-sky-400/60' : 'text-slate-400 opacity-50'}`}>
+                              1. Solicitado
+                            </div>
+                            <div className={`p-0.5 rounded ${activeTransfers[0].step >= 2 ? 'bg-sky-500/40 text-sky-100 font-bold border border-sky-400/60' : 'text-slate-400 opacity-50'}`}>
+                              2. Despacho
+                            </div>
+                            <div className={`p-0.5 rounded ${activeTransfers[0].step >= 3 ? 'bg-sky-500/40 text-sky-100 font-bold border border-sky-400/60' : 'text-slate-400 opacity-50'}`}>
+                              3. Tránsito
+                            </div>
+                            <div className={`p-0.5 rounded ${activeTransfers[0].step >= 4 ? 'bg-emerald-500/50 text-emerald-100 font-bold border border-emerald-400/80' : 'text-slate-400 opacity-50'}`}>
+                              4. Arribado
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Step Advance Control Button */}
+                        {activeTransfers[0].step < 4 && (
+                          <button
+                            type="button"
+                            onClick={() => handleAdvanceTransferStep(activeTransfers[0].id)}
+                            className="w-full py-1 px-2 rounded-lg bg-sky-500 hover:bg-sky-400 active:bg-sky-600 text-white font-bold text-[8px] flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                            title="Simular avance del transporte inter-sucursales"
+                          >
+                            <span>Avanzar Paso Logístico ({activeTransfers[0].step}/4)</span>
+                            <ArrowRight className="w-2.5 h-2.5" />
+                          </button>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   {/* Dynamic Toast Notifications Floating Stack */}
                   <AnimatePresence>
                     {paymentToasts.map((toast) => (
@@ -772,6 +949,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                     const isPaid = !!confirmedPayments[item.id];
                     const paymentInfo = confirmedPayments[item.id];
                     const stockInfo = getStockDetails(item);
+                    const isAlertRegistered = stockAlerts.some(a => a.sku === item.sku);
 
                     return (
                       <div
@@ -799,12 +977,37 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                           </div>
                         )}
 
+                        {/* Customer & Product Header with Real-Time Stock Status Indicator Dots */}
                         <div className="flex items-center justify-between font-bold">
-                          <span className="text-slate-900 dark:text-slate-100 truncate flex items-center gap-1">
-                            <span className={`w-1.5 h-1.5 rounded-full ${isPaid ? 'bg-emerald-500 ring-2 ring-emerald-300' : stockInfo.isOutOfStock ? 'bg-rose-500' : 'bg-slate-400'}`} />
-                            {item.author}
+                          <span className="text-slate-900 dark:text-slate-100 truncate flex items-center gap-1.5">
+                            {/* Real-Time Availability Green / Red Dot Indicator */}
+                            {stockInfo.isOutOfStock ? (
+                              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-rose-300 dark:ring-rose-950 shrink-0" title="Sin Stock (0 u.)" />
+                            ) : stockInfo.isLowStock ? (
+                              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-amber-300 dark:ring-amber-950 shrink-0" title={`Bajo Stock (${stockInfo.branchStock} u.)`} />
+                            ) : (
+                              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-300 dark:ring-emerald-950 animate-pulse shrink-0" title={`Stock Disponible (${stockInfo.branchStock} u.)`} />
+                            )}
+                            <span className="truncate">{item.author}</span>
                           </span>
                           <span className="text-slate-400 dark:text-slate-500 text-[9px] font-mono shrink-0 ml-1">{item.time}</span>
+                        </div>
+
+                        {/* Product Name with Availability Label Dot */}
+                        <div className="flex items-center justify-between gap-1 text-[10px] font-semibold text-slate-800 dark:text-slate-200 pt-0.5 border-t border-slate-200/40 dark:border-slate-700/30">
+                          <span className="truncate font-fredoka text-slate-900 dark:text-white" title={item.productName}>
+                            {item.productName}
+                          </span>
+                          <span className={`px-1.5 py-0.2 rounded-full font-bold text-[8px] shrink-0 flex items-center gap-1 ${
+                            stockInfo.isOutOfStock
+                              ? 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300'
+                              : stockInfo.isLowStock
+                              ? 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300'
+                              : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300'
+                          }`}>
+                            <span className={`w-1 h-1 rounded-full ${stockInfo.isOutOfStock ? 'bg-rose-500' : stockInfo.isLowStock ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                            {stockInfo.isOutOfStock ? 'Sin Stock' : stockInfo.isLowStock ? 'Bajo Stock' : 'Disponible'}
+                          </span>
                         </div>
 
                         <p className="text-slate-600 dark:text-slate-300 leading-snug line-clamp-2 italic">
@@ -856,6 +1059,35 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                             {stockInfo.isOutOfStock ? 'Probar +Stock' : 'Probar Stock 0'}
                           </button>
                         </div>
+
+                        {/* 'Alert me when available' Feature Button for Out of Stock Items */}
+                        {stockInfo.isOutOfStock && !isPaid && (
+                          <div className="pt-0.5">
+                            {isAlertRegistered ? (
+                              <div className="flex items-center justify-between p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-[9px] font-bold">
+                                <span className="flex items-center gap-1">
+                                  <Check className="w-3 h-3 text-emerald-600" />
+                                  Alerta de stock activa para tu email
+                                </span>
+                                <span className="text-[8px] font-mono text-emerald-700 dark:text-emerald-400">Registrada</span>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                id={`btn-register-stock-alert-${item.id}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setAlertModalItem({ sku: item.sku, productName: item.productName });
+                                }}
+                                className="w-full py-1.5 px-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold text-[9px] flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                                title="Registrar tu email para recibir notificación automatizada de reingreso de stock"
+                              >
+                                <Bell className="w-3 h-3 text-white animate-bounce" />
+                                <span>Avisarme cuando haya stock</span>
+                              </button>
+                            )}
+                          </div>
+                        )}
 
                         {/* Item Estimated Price & Fast Checkout / Verified Action */}
                         <div className={`rounded-lg p-1.5 border flex items-center justify-between gap-2 ${
@@ -1452,6 +1684,22 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                     </span>
                   </button>
 
+                  {/* Alert me when available button in modal */}
+                  <button
+                    type="button"
+                    id="btn-alert-stock-from-modal"
+                    onClick={() => {
+                      const targetSku = blockedOutOfStock.sku;
+                      const targetName = blockedOutOfStock.item.productName;
+                      setBlockedOutOfStock(null);
+                      setAlertModalItem({ sku: targetSku, productName: targetName });
+                    }}
+                    className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
+                  >
+                    <Bell className="w-4 h-4 text-white" />
+                    <span>Avisarme por email cuando haya stock</span>
+                  </button>
+
                   {/* Restock simulation shortcut for instant testing */}
                   <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
                     <button
@@ -1473,6 +1721,92 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                     </button>
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Stock Alert Email Registration Modal */}
+      <AnimatePresence>
+        {alertModalItem && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700/80 rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden text-slate-900 dark:text-white"
+              id="stock-alert-registration-modal"
+            >
+              {/* Modal Header */}
+              <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white p-4 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center font-bold">
+                    <Bell className="w-4 h-4 text-white animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold font-fredoka">Alerta de Disponibilidad</h3>
+                    <p className="text-[10px] text-amber-100">Koala Lo Tiene • Avisos de Stock</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setAlertModalItem(null)}
+                  className="p-1.5 rounded-xl bg-white/10 hover:bg-white/25 text-white transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Modal Form */}
+              <div className="p-4 space-y-3">
+                {alertSuccessEmail ? (
+                  <div className="py-4 text-center space-y-2">
+                    <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
+                      <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white font-fredoka">
+                      ¡Alerta Registrada con Éxito!
+                    </h4>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300">
+                      Te notificaremos a <strong className="text-amber-600 dark:text-amber-400">{alertSuccessEmail}</strong> tan pronto ingrese stock de este producto.
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleRegisterStockAlert} className="space-y-3">
+                    <div className="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 space-y-1">
+                      <div className="text-[10px] font-mono text-amber-700 dark:text-amber-400">SKU: {alertModalItem.sku}</div>
+                      <div className="text-xs font-bold font-fredoka">{alertModalItem.productName}</div>
+                      <p className="text-[10px] text-amber-800 dark:text-amber-300 pt-0.5">
+                        Ingresa tu email para recibir un aviso instantáneo en tu bandeja de entrada cuando repongamos unidades en la sucursal.
+                      </p>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                        <Mail className="w-3.5 h-3.5 text-amber-600" />
+                        Email de Notificación:
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="ejemplo@correo.com"
+                        value={alertEmailInput}
+                        onChange={(e) => setAlertEmailInput(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500"
+                        id="input-alert-email"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      id="btn-submit-stock-alert"
+                      className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
+                    >
+                      <Bell className="w-4 h-4" />
+                      <span>Registrar Alerta de Stock</span>
+                    </button>
+                  </form>
+                )}
               </div>
             </motion.div>
           </div>

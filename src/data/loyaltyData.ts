@@ -1,0 +1,120 @@
+import { LoyaltyReward, LoyaltyProfile } from '../types';
+
+export const AVAILABLE_LOYALTY_REWARDS: LoyaltyReward[] = [
+  {
+    id: 'reward-500',
+    name: '$500 de Descuento',
+    description: 'Válido para cualquier pedido superior a $3.000 en el catálogo Koala.',
+    pointsRequired: 100,
+    discountAmount: 500,
+    type: 'points_discount',
+    code: 'KOALA500PTS',
+    minOrderAmount: 3000,
+  },
+  {
+    id: 'reward-1500',
+    name: '$1.500 de Descuento',
+    description: 'Cupón aplicable en compras al por menor o mayorista > $8.000.',
+    pointsRequired: 250,
+    discountAmount: 1500,
+    type: 'points_discount',
+    code: 'KOALA1500PTS',
+    minOrderAmount: 8000,
+  },
+  {
+    id: 'reward-free-bags',
+    name: 'Pack Gratis: Bolsas Camiseta 40x50',
+    description: '1 Paquete de 50 unidades de bolsas camiseta de polietileno fabricación propia.',
+    pointsRequired: 350,
+    discountAmount: 2400,
+    freeProductSku: 'POLI-CAM-4050',
+    type: 'free_product',
+    code: 'KOALABAGSFREE',
+    minOrderAmount: 5000,
+  },
+  {
+    id: 'reward-4000',
+    name: '$4.000 de Descuento Especial',
+    description: 'Descuento exclusivo de socio Plata u Oro en compras > $20.000.',
+    pointsRequired: 600,
+    discountAmount: 4000,
+    type: 'points_discount',
+    code: 'KOALA4000VIP',
+    minOrderAmount: 20000,
+  },
+  {
+    id: 'reward-10000',
+    name: '$10.000 de Descuento Gran Mayorista',
+    description: 'Descuento premium directo en tu pedido de bultos cerrados > $50.000.',
+    pointsRequired: 1200,
+    discountAmount: 10000,
+    type: 'points_discount',
+    code: 'KOALA10KVIP',
+    minOrderAmount: 50000,
+  },
+  {
+    id: 'reward-punchcard-20pct',
+    name: '20% OFF Recompensa Tarjeta de Sellos',
+    description: 'Descuento completo al completar 6 compras en tu tarjeta digital.',
+    pointsRequired: 0,
+    discountPercentage: 20,
+    type: 'punch_card_reward',
+    code: 'KOALASELLO6PERK',
+  },
+];
+
+export const DEFAULT_DEMO_LOYALTY_PROFILE: LoyaltyProfile = {
+  id: 'loyalty-user-884',
+  name: 'Cliente Club Koala',
+  email: 'cliente.roca@gmail.com',
+  phone: '298 4567890',
+  cuitOrDni: '20-35891234-9',
+  pointsBalance: 450,
+  totalSpent: 45000,
+  tier: 'Plata',
+  punchCardStamps: 4, // 4 stamps out of 6
+  punchCardsCompleted: 1,
+  joinedDate: '15/01/2026',
+  activeRewards: [
+    {
+      id: 'reward-1500',
+      name: '$1.500 de Descuento',
+      description: 'Cupón canjeado del Club Koala listo para usar.',
+      pointsRequired: 250,
+      discountAmount: 1500,
+      type: 'points_discount',
+      code: 'KOALA1500PTS',
+      minOrderAmount: 8000,
+    }
+  ],
+  pointsHistory: [
+    {
+      id: 'tx-1',
+      date: '15/01/2026',
+      description: 'Bono de Bienvenida al Club Koala Lo Tiene',
+      pointsDelta: 200,
+      type: 'bonus',
+    },
+    {
+      id: 'tx-2',
+      date: '02/02/2026',
+      description: 'Compra Pedido #KOALA-8912 (Gral. Roca)',
+      pointsDelta: 500,
+      type: 'earned',
+    },
+    {
+      id: 'tx-3',
+      date: '10/02/2026',
+      description: 'Canje de Cupón $1.500 OFF',
+      pointsDelta: -250,
+      type: 'redeemed',
+    },
+    {
+      id: 'tx-4',
+      date: '28/02/2026',
+      description: 'Sello #4 Agregado en Tarjeta Digital (Compra > $5.000)',
+      pointsDelta: 0,
+      type: 'punch_stamp',
+    }
+  ],
+};

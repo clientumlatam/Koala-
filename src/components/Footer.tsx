@@ -4,21 +4,19 @@ import {
   Phone, 
   MessageCircle, 
   Mail, 
-  Instagram, 
-  Facebook, 
   ChevronRight,
-  ShieldCheck,
-  Factory
+  Factory,
+  Gift
 } from 'lucide-react';
 import { BranchInfo } from '../types';
 
 interface FooterProps {
   branches: BranchInfo[];
   onScrollToSection: (sectionId: string) => void;
-  onOpenAdmin?: () => void;
+  onOpenLoyaltyModal?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ branches, onScrollToSection, onOpenAdmin }) => {
+export const Footer: React.FC<FooterProps> = ({ branches, onScrollToSection, onOpenLoyaltyModal }) => {
   return (
     <footer className="bg-slate-950 text-slate-400 text-xs border-t border-slate-900 pt-12 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
@@ -102,9 +100,20 @@ export const Footer: React.FC<FooterProps> = ({ branches, onScrollToSection, onO
           {/* Col 4: Quick Links */}
           <div className="space-y-3">
             <h4 className="font-bold text-white text-sm font-fredoka uppercase tracking-wider">
-              Categorías Principales
+              Categorías & Fidelidad
             </h4>
             <ul className="space-y-2">
+              {onOpenLoyaltyModal && (
+                <li>
+                  <button 
+                    onClick={onOpenLoyaltyModal}
+                    className="hover:text-amber-400 text-amber-300 font-bold transition-colors flex items-center gap-1"
+                  >
+                    <Gift className="w-3.5 h-3.5 text-amber-400" />
+                    Club Koala (Puntos y Sellos)
+                  </button>
+                </li>
+              )}
               <li>
                 <button 
                   onClick={() => onScrollToSection('catalog')} 
@@ -121,15 +130,6 @@ export const Footer: React.FC<FooterProps> = ({ branches, onScrollToSection, onO
                 >
                   <ChevronRight className="w-3 h-3 text-orange-500" />
                   Descartables para Gastronomía
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => onScrollToSection('catalog')} 
-                  className="hover:text-orange-400 transition-colors flex items-center gap-1"
-                >
-                  <ChevronRight className="w-3 h-3 text-orange-500" />
-                  Big Bags 1 Tonelada
                 </button>
               </li>
               <li>
@@ -164,19 +164,7 @@ export const Footer: React.FC<FooterProps> = ({ branches, onScrollToSection, onO
           <div className="flex items-center gap-4">
             <span className="hover:text-slate-400 transition-colors">koalalotiene.com.ar</span>
             <span>•</span>
-            <span className="hover:text-slate-400 transition-colors">Venta en local y envíos</span>
-            {onOpenAdmin && (
-              <>
-                <span>•</span>
-                <button
-                  onClick={onOpenAdmin}
-                  className="text-orange-400 hover:text-orange-300 font-semibold transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Panel ERP (/admin)</span>
-                </button>
-              </>
-            )}
+            <span className="hover:text-slate-400 transition-colors">Venta en local y envíos a domicilio</span>
           </div>
         </div>
 

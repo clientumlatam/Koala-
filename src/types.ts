@@ -238,10 +238,79 @@ export interface ErpSyncEvent {
 export interface OrderQuote {
   clientName: string;
   clientPhone: string;
+  clientEmail?: string;
+  clientCuitOrDni?: string;
+  invoiceType?: 'Factura B (Consumidor Final)' | 'Factura A (Responsable Inscripto)';
   branchId: BranchId;
   deliveryType: 'retiro' | 'envio';
   deliveryAddress?: string;
-  paymentMethod: 'efectivo' | 'transferencia' | 'tarjeta';
+  deliveryCity?: string;
+  deliveryFee?: number;
+  paymentMethod: 'efectivo' | 'transferencia' | 'mercadopago' | 'tarjeta' | 'whatsapp';
+  appliedLoyaltyDiscount?: number;
+  appliedRewardCode?: string;
+  appliedRewardName?: string;
+  pointsToEarn?: number;
   notes?: string;
+}
+
+export interface LoyaltyReward {
+  id: string;
+  name: string;
+  description: string;
+  pointsRequired: number;
+  discountAmount?: number;
+  discountPercentage?: number;
+  freeProductSku?: string;
+  type: 'points_discount' | 'free_product' | 'punch_card_reward';
+  code: string;
+  minOrderAmount?: number;
+}
+
+export interface LoyaltyPointTransaction {
+  id: string;
+  date: string;
+  description: string;
+  pointsDelta: number;
+  type: 'earned' | 'redeemed' | 'bonus' | 'punch_stamp';
+  orderId?: string;
+}
+
+export interface LoyaltyProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  cuitOrDni?: string;
+  pointsBalance: number;
+  totalSpent: number;
+  tier: 'Bronce' | 'Plata' | 'Oro' | 'VIP Koala';
+  punchCardStamps: number; // 0 to 6 stamps
+  punchCardsCompleted: number;
+  joinedDate: string;
+  activeRewards: LoyaltyReward[];
+  pointsHistory: LoyaltyPointTransaction[];
+}
+
+export interface CompletedOrderReceipt {
+  orderId: string;
+  date: string;
+  clientName: string;
+  clientPhone: string;
+  clientEmail: string;
+  deliveryType: 'retiro' | 'envio';
+  deliveryAddress?: string;
+  branchName: string;
+  paymentMethod: string;
+  invoiceType: string;
+  items: CartItem[];
+  subtotal: number;
+  deliveryFee: number;
+  loyaltyDiscount: number;
+  paymentMethodDiscount: number;
+  total: number;
+  pointsEarned: number;
+  stampsEarned: number;
+  status: 'confirmado' | 'en_preparacion' | 'listo_retiro' | 'en_camino';
 }
 
