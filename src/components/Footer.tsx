@@ -102,14 +102,16 @@ export const Footer: React.FC<FooterProps> = ({
                 </button>
               )}
 
-              <button
-                onClick={() => onScrollToSection('instagram-feed')}
+              <a
+                href="https://www.instagram.com/koalalotiene/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-orange-500/20 via-rose-500/20 to-purple-500/20 text-rose-300 hover:text-white text-[11px] font-bold border border-rose-500/30 hover:border-rose-400 transition-colors cursor-pointer"
-                title="Ver Feed Oficial de Instagram @koalalotiene"
+                title="Visitar Instagram Oficial @koalalotiene"
               >
                 <Instagram className="w-3.5 h-3.5 text-rose-400" />
                 <span>@koalalotiene</span>
-              </button>
+              </a>
             </div>
           </div>
 

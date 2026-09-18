@@ -15,7 +15,6 @@ import { KoalaLogo } from './components/KoalaLogo';
 import { MobileCartBar } from './components/MobileCartBar';
 import { CartToast, CartToastItem } from './components/CartToast';
 import { InstitutionalPageModal, InstitutionalPageType } from './components/InstitutionalPageModal';
-import { InstagramFeedSection } from './components/InstagramFeedSection';
 
 import { STORES_DATA, CATEGORIES, PRODUCTS_CATALOG } from './data/products';
 import { DEFAULT_DEMO_LOYALTY_PROFILE } from './data/loyaltyData';
@@ -780,14 +779,6 @@ export default function App() {
           cartItemsMap={cartItemsMap}
           onOpenAi={() => setIsChatOpen(true)}
           currentBranch={currentBranch}
-        />
-
-        {/* Official Instagram Feed (@koalalotiene) & Social Commerce Hub */}
-        <InstagramFeedSection
-          inventory={inventory}
-          currentBranch={currentBranch}
-          onScrollToCatalog={() => scrollToSection('catalog')}
-          onAddToCart={handleAddToCart}
         />
 
         {/* Store Locations & Maps Section */}
