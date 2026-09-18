@@ -21,7 +21,7 @@ const getGeminiClient = () => {
 };
 
 // Store Information Endpoint
-app.get("/api/stores", (_req, res) => {
+app.get(["/api/stores", "/stores"], (_req, res) => {
   res.json({
     brand: "Koala Lo Tiene",
     slogan: "Fabricantes de Polietileno, Descartables, Cotillón, Repostería, Envases Plásticos, Librería y Bazar",
@@ -66,7 +66,7 @@ app.get("/api/stores", (_req, res) => {
   });
 });
 
-app.get("/api/health", (_req, res) => {
+app.get(["/api/health", "/health"], (_req, res) => {
   res.json({
     status: "ok",
     app: "Koala Lo Tiene",
@@ -76,7 +76,7 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-app.get("/api/erp/inventory-status", (_req, res) => {
+app.get(["/api/erp/inventory-status", "/erp/inventory-status"], (_req, res) => {
   res.json({
     status: "connected",
     lastSync: new Date().toISOString(),
@@ -88,8 +88,8 @@ app.get("/api/erp/inventory-status", (_req, res) => {
   });
 });
 
-app.post("/api/erp/inventory-sync", (req, res) => {
-  const { items, sourceSystem, timestamp } = req.body;
+app.post(["/api/erp/inventory-sync", "/erp/inventory-sync"], (req, res) => {
+  const { items } = req.body;
   if (!items || !Array.isArray(items)) {
     res.status(400).json({ error: "Formato inválido. 'items' debe ser un array de artículos." });
     return;
@@ -102,8 +102,8 @@ app.post("/api/erp/inventory-sync", (req, res) => {
   });
 });
 
-app.post("/api/erp/orders", (req, res) => {
-  const { orderId, branch, customer, total } = req.body;
+app.post(["/api/erp/orders", "/erp/orders"], (req, res) => {
+  const { orderId } = req.body;
   res.json({
     success: true,
     orderId: orderId || `COT-${Date.now().toString().slice(-6)}`,
@@ -112,7 +112,7 @@ app.post("/api/erp/orders", (req, res) => {
   });
 });
 
-app.post("/api/ai/assistant", async (req, res) => {
+app.post(["/api/ai/assistant", "/ai/assistant"], async (req, res) => {
   try {
     const { message, branch, context } = req.body;
     if (!message || typeof message !== "string") {
@@ -124,12 +124,12 @@ app.post("/api/ai/assistant", async (req, res) => {
       res.json({
         reply: `¡Hola! Soy el asistente virtual de Koala Lo Tiene. ${
           branch === "neuquen" ? "En Sucursal Neuquén (Mitre 678)" : "En Casa Central General Roca (Av. Roca 1350)"
-        } contamos con stock completo.`,
+        } contamos con stock completo de polietileno directo de fábrica, descartables gastronómicos, cotillón, repostería, envases PET y librería.`,
         suggestedProducts: [],
       });
       return;
     }
-    const systemInstruction = `Sos el asesor experto de ventas de "Koala Lo Tiene"...`;
+    const systemInstruction = `Sos el asesor experto de ventas de "Koala Lo Tiene", la tienda líder en General Roca (Av. Roca 1350) y Neuquén (Mitre 678) especializada en fabricación de polietileno, descartables y cotillón. Respondé cordial y claramente en español rioplatense.`;
     const promptText = context ? `Contexto: ${JSON.stringify(context)}\nConsulta: ${message}` : message;
     
     const response = await ai.models.generateContent({
