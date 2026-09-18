@@ -65,34 +65,34 @@ export const INITIAL_EMPLOYEES: EmployeeUser[] = [
 ];
 
 export const INITIAL_ERP_CONFIG: ErpConnectionConfig = {
-  systemType: 'Tango Gestión ERP',
-  serverUrl: 'https://erp.koalalotiene.com.ar/api/v2/gateway',
-  apiBearerToken: 'koa_live_erp_992148123992019481_sec',
-  companyId: 'KOALA_LP_SRL_01',
-  pointOfSaleRoca: 'PV-0001 (Av. Roca 1350)',
-  pointOfSaleNeuquen: 'PV-0002 (Mitre 678)',
+  systemType: 'ICXN ERP (https://icxn.com.ar/)',
+  serverUrl: 'https://api.icxn.com.ar/v1/koala/gateway',
+  apiBearerToken: 'icxn_live_koala_30714589213_sec_key',
+  companyId: '30-71458921-3 (Koala Lo Tiene SRL)',
+  pointOfSaleRoca: 'DEP-01 (Av. Roca 1350 - Casa Central)',
+  pointOfSaleNeuquen: 'DEP-02 (Mitre 678 - Salón Neuquén)',
   autoSyncOrders: true,
   autoSyncStock: true,
-  syncIntervalMinutes: 15,
-  webhookSecret: 'whsec_tango_9f83a847b2c912e',
-  lastSuccessfulPing: 'Hoy, 16:30:12 hs (24ms)',
+  syncIntervalMinutes: 1,
+  webhookSecret: 'whsec_icxn_9f83a847b2c912e',
+  lastSuccessfulPing: 'Hoy, 16:30:12 hs (18ms)',
   environment: 'production',
 };
 
 export const INITIAL_ERP_STATUS: ErpSyncStatus = {
   isConnected: true,
-  systemName: 'Tango Gestión ERP v24.2 / API REST Koala',
+  systemName: 'ICXN ERP (Conexión Global - icxn.com.ar)',
   lastSyncTime: 'Hoy, 16:30 hs',
   autoSyncEnabled: true,
-  syncIntervalMinutes: 15,
-  pendingRecordsCount: 2,
+  syncIntervalMinutes: 1,
+  pendingRecordsCount: 0,
   lastSyncLogs: [
     {
       id: 'log-101',
       timestamp: 'Hoy 16:30 hs',
       type: 'success',
-      message: 'Sincronización de lista de precios mayoristas completada desde Tango ERP.',
-      itemCount: 38,
+      message: 'Sincronización en tiempo real de stock y precios mayoristas completada con ICXN ERP (icxn.com.ar).',
+      itemCount: 4820,
     },
     {
       id: 'log-102',

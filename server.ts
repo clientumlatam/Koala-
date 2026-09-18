@@ -85,11 +85,45 @@ app.get("/api/erp/inventory-status", (_req, res) => {
   res.json({
     status: "connected",
     lastSync: new Date().toISOString(),
-    system: "ERP Gateway Hybrid (Tango / Flexxus / Web)",
+    system: "ICXN ERP Engine (Conexión Global - https://icxn.com.ar/)",
+    gatewayUrl: "https://api.icxn.com.ar/v1",
+    cuit: "30-71458921-3",
+    syncIntervalSec: 15,
     branches: [
-      { id: "roca", code: "DEP-01", name: "General Roca (Av. Roca 1350)", status: "online" },
-      { id: "neuquen", code: "DEP-02", name: "Neuquén Capital (Mitre 678)", status: "online" }
+      { id: "roca", code: "DEP-01", name: "General Roca (Av. Roca 1350)", status: "online", latencyMs: 18 },
+      { id: "neuquen", code: "DEP-02", name: "Neuquén Capital (Mitre 678)", status: "online", latencyMs: 22 }
     ]
+  });
+});
+
+// Dedicated ICXN ERP Endpoints
+app.get("/api/erp/icxn/status", (_req, res) => {
+  res.json({
+    success: true,
+    erpName: "ICXN ERP (Conexión Global)",
+    erpWebsite: "https://icxn.com.ar/",
+    connectionState: "ESTABLISHED",
+    apiGateway: "https://api.icxn.com.ar/v1/koala",
+    cuit: "30-71458921-3",
+    depots: {
+      roca: { code: "DEP-01", status: "SYNCED", stockItems: 4820 },
+      neuquen: { code: "DEP-02", status: "SYNCED", stockItems: 3950 }
+    },
+    syncMode: "REALTIME_SOCKET_PLUS_POLLING",
+    lastPulse: new Date().toISOString()
+  });
+});
+
+app.post("/api/erp/icxn/sync", (req, res) => {
+  const { items, sourceSystem, timestamp } = req.body;
+  console.log(`[ICXN ERP Sync] Sincronización ejecutada con ICXN (https://icxn.com.ar/) - Origen: ${sourceSystem || 'ICXN Gateway'}`);
+
+  res.json({
+    success: true,
+    erp: "ICXN ERP",
+    processedCount: Array.isArray(items) ? items.length : 1420,
+    timestamp: new Date().toISOString(),
+    message: "Sincronización completa con ICXN ERP (General Roca y Neuquén)."
   });
 });
 
@@ -100,24 +134,26 @@ app.post("/api/erp/inventory-sync", (req, res) => {
     return;
   }
 
-  console.log(`[ERP Sync] Recibidos ${items.length} artículos desde ${sourceSystem || 'Sistema Externo'} - ${timestamp || new Date().toISOString()}`);
+  console.log(`[ERP Sync - ICXN] Recibidos ${items.length} artículos desde ${sourceSystem || 'ICXN ERP'} - ${timestamp || new Date().toISOString()}`);
 
   res.json({
     success: true,
+    erp: "ICXN ERP",
     processedCount: items.length,
     timestamp: new Date().toISOString(),
-    message: `Sincronización procesada correctamente: ${items.length} artículos actualizados en sucursales Roca y Neuquén.`
+    message: `Sincronización procesada correctamente con ICXN ERP: ${items.length} artículos actualizados en sucursales Roca y Neuquén.`
   });
 });
 
 app.post("/api/erp/orders", (req, res) => {
   const { orderId, branch, customer, items, total } = req.body;
-  console.log(`[ERP Pedido Recibido] #${orderId} en ${branch} - Total: $${total} - Cliente: ${customer?.name || 'Consumidor Final'}`);
+  console.log(`[ICXN ERP Pedido Recibido] #${orderId} en ${branch} - Total: $${total} - Cliente: ${customer?.name || 'Consumidor Final'}`);
 
   res.json({
     success: true,
     orderId: orderId || `COT-${Date.now().toString().slice(-6)}`,
-    erpStatus: "INGRESADO_COMO_PRESUPUESTO",
+    erpStatus: "INGRESADO_ICXN_PRESUPUESTO",
+    erpSystem: "ICXN ERP (https://icxn.com.ar/)",
     timestamp: new Date().toISOString()
   });
 });
@@ -154,7 +190,7 @@ app.post("/api/ai/assistant", async (req, res) => {
 CONOCIMIENTO TÉCNICO Y COMERCIAL DEL PROYECTO (CLIENTUM × KOALA):
 - Si el usuario o directivo consulta sobre el proyecto digital, las etapas de implementación o la integración técnica:
   * Etapa 1 (~15–17 días): E-Commerce completo, catálogo íntegro con fotos profesionales, medios de pago en cuotas y posicionamiento SEO orgánico en Google (General Roca y Neuquén).
-  * Etapa 2: Integración bidireccional con el ERP (Tango, Dolibarr o nuevo ERP de planta). Destacá la "Reserva Atómica en Checkout" que bloquea el stock por 15 minutos evitando sobreventas simultáneas entre el mostrador físico y la tienda web.
+  * Etapa 2: Integración bidireccional nativa con el ERP actual de la empresa: ICXN ERP (Conexión Global - https://icxn.com.ar/). Destacá la "Reserva Atómica en Checkout ICXN" que sincroniza el stock físico de fábrica en General Roca y salón en Neuquén, bloqueando unidades en tiempo real para evitar sobreventas simultáneas.
   * Etapa 3: Bots de atención 24/7 en Web y WhatsApp asistidos por servidor MCP (Model Context Protocol) para consultar precios y stock verídicos sin alucinaciones.
 - Sucursales oficiales:
   * General Roca (Casa Central y Fábrica): Av. Roca 1350, Tel: (0298) 443-6639 / WhatsApp 298 453-6376.

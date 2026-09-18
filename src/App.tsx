@@ -15,6 +15,7 @@ import { DocumentationViewer } from './components/DocumentationViewer';
 import { KoalaLogo } from './components/KoalaLogo';
 import { MobileCartBar } from './components/MobileCartBar';
 import { CartToast, CartToastItem } from './components/CartToast';
+import { InstitutionalPageModal, InstitutionalPageType } from './components/InstitutionalPageModal';
 
 import { STORES_DATA, CATEGORIES, PRODUCTS_CATALOG } from './data/products';
 import { DEFAULT_DEMO_LOYALTY_PROFILE } from './data/loyaltyData';
@@ -174,7 +175,14 @@ export default function App() {
   const [adminOpen, setAdminOpen] = React.useState(false);
   const [loginOpen, setLoginOpen] = React.useState(false);
   const [loyaltyOpen, setLoyaltyOpen] = React.useState(false);
+  const [institutionalOpen, setInstitutionalOpen] = React.useState(false);
+  const [institutionalPage, setInstitutionalPage] = React.useState<InstitutionalPageType>('contacto');
   const [cartToast, setCartToast] = React.useState<CartToastItem | null>(null);
+
+  const handleOpenInstitutional = (page: InstitutionalPageType) => {
+    setInstitutionalPage(page);
+    setInstitutionalOpen(true);
+  };
 
   // Auto dismiss toast after 3.5 seconds
   React.useEffect(() => {
@@ -338,6 +346,22 @@ export default function App() {
         return item;
       })
     );
+  };
+
+  // Update or Create Full Product Record
+  const handleUpdateFullProduct = (updatedProduct: ProductInventoryRecord) => {
+    setInventory((prev) => {
+      const exists = prev.some((p) => p.id === updatedProduct.id);
+      if (exists) {
+        return prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p));
+      }
+      return [updatedProduct, ...prev];
+    });
+  };
+
+  // Delete Product Record
+  const handleDeleteProduct = (productId: string) => {
+    setInventory((prev) => prev.filter((p) => p.id !== productId));
   };
 
   // Update Single Product Branch Stock from Sales or Transfers
@@ -589,6 +613,8 @@ export default function App() {
           cronLogs={cronLogs}
           onAddCronLog={handleAddCronLog}
           onUpdateInventoryPrices={handleUpdateInventoryPrices}
+          onUpdateFullProduct={handleUpdateFullProduct}
+          onDeleteProduct={handleDeleteProduct}
         />
       );
     }
@@ -633,6 +659,7 @@ export default function App() {
         loyaltyProfile={loyaltyProfile}
         onScrollToSection={scrollToSection}
         onOpenDossier={() => navigateTo('/dossier')}
+        onOpenInstitutional={handleOpenInstitutional}
       />
 
       {/* Main Page Content */}
@@ -643,12 +670,14 @@ export default function App() {
           onScrollToCatalog={() => scrollToSection('catalog')}
           onScrollToLocations={() => scrollToSection('locations')}
           onOpenAi={() => setAiOpen(true)}
+          onSelectCategory={setSelectedCategory}
+          onOpenInstitutional={handleOpenInstitutional}
         />
 
         {/* Product Catalog with Search & Filter Tabs */}
         <ProductCatalog
           categories={CATEGORIES}
-          products={PRODUCTS_CATALOG}
+          products={inventory}
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
           onAddToCart={handleAddToCart}
@@ -676,6 +705,7 @@ export default function App() {
             setLoginOpen(true);
           }
         }}
+        onOpenInstitutional={handleOpenInstitutional}
       />
 
       {/* Interactive E-Commerce & Loyalty Checkout Modal */}
@@ -713,7 +743,8 @@ export default function App() {
         onClose={() => setAiOpen(false)}
         currentBranch={currentBranch}
         onAddToCart={handleAddToCart}
-        products={PRODUCTS_CATALOG}
+        products={inventory}
+        loyaltyProfile={loyaltyProfile}
       />
 
       {/* Mobile Sticky Cart Bar */}
@@ -739,6 +770,9 @@ export default function App() {
         onUpdateStock={handleUpdateBranchStock}
         onSelectBranch={handleSelectBranch}
         hasCartItems={cartItems.length > 0}
+        products={inventory}
+        loyaltyProfile={loyaltyProfile}
+        onAddToCart={handleAddToCart}
       />
 
       {/* Staff & Admin Login Modal */}
@@ -783,8 +817,23 @@ export default function App() {
           cronLogs={cronLogs}
           onAddCronLog={handleAddCronLog}
           onUpdateInventoryPrices={handleUpdateInventoryPrices}
+          onUpdateFullProduct={handleUpdateFullProduct}
+          onDeleteProduct={handleDeleteProduct}
         />
       )}
+
+      {/* Institutional Pages & Legal Modals */}
+      <InstitutionalPageModal
+        isOpen={institutionalOpen}
+        onClose={() => setInstitutionalOpen(false)}
+        page={institutionalPage}
+        currentBranch={currentBranch}
+        onNavigatePage={(p) => setInstitutionalPage(p)}
+        onGoToCatalogOffers={() => {
+          setSelectedCategory('all');
+          scrollToSection('catalog');
+        }}
+      />
     </div>
   );
 }

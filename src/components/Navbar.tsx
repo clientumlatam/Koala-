@@ -19,6 +19,7 @@ import {
 import { BranchId, BranchInfo, EmployeeUser, LoyaltyProfile } from '../types';
 import { checkStoreStatus } from '../utils/helpers';
 import { KoalaLogo } from './KoalaLogo';
+import { InstitutionalPageType } from './InstitutionalPageModal';
 
 interface NavbarProps {
   currentBranch: BranchInfo;
@@ -34,6 +35,7 @@ interface NavbarProps {
   loyaltyProfile?: LoyaltyProfile | null;
   onScrollToSection: (sectionId: string) => void;
   onOpenDossier?: () => void;
+  onOpenInstitutional?: (page: InstitutionalPageType) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -50,6 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   loyaltyProfile,
   onScrollToSection,
   onOpenDossier,
+  onOpenInstitutional,
 }) => {
   const [showBranchMenu, setShowBranchMenu] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -142,7 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-semibold text-slate-700">
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-sm font-semibold text-slate-700">
             <button 
               onClick={() => onScrollToSection('catalog')} 
               className="hover:text-orange-600 transition-colors cursor-pointer whitespace-nowrap"
@@ -150,13 +153,23 @@ export const Navbar: React.FC<NavbarProps> = ({
               Catálogo
             </button>
             <button 
-              onClick={() => onScrollToSection('wholesale')} 
+              onClick={() => {
+                if (onOpenInstitutional) onOpenInstitutional('ofertas');
+              }} 
               className="hover:text-orange-600 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
             >
-              <span>Mayorista</span>
-              <span className="px-1.5 py-0.5 rounded-md bg-orange-100 text-orange-700 text-[10px] font-extrabold uppercase tracking-wide">
+              <span>Ofertas</span>
+              <span className="px-1.5 py-0.5 rounded-md bg-rose-100 text-rose-700 text-[10px] font-extrabold uppercase tracking-wide">
                 Bulto
               </span>
+            </button>
+            <button 
+              onClick={() => {
+                if (onOpenInstitutional) onOpenInstitutional('servicio-tecnico');
+              }} 
+              className="hover:text-orange-600 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              Fábrica & Medida
             </button>
             <button 
               onClick={() => onScrollToSection('locations')} 
@@ -166,25 +179,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span>Sucursales</span>
             </button>
             <button 
+              onClick={() => {
+                if (onOpenInstitutional) onOpenInstitutional('faq');
+              }} 
+              className="hover:text-orange-600 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              FAQ / Ayuda
+            </button>
+            <button 
               onClick={onOpenLoyaltyModal} 
               className="hover:text-orange-600 transition-colors flex items-center gap-1 text-orange-600 font-bold cursor-pointer whitespace-nowrap"
             >
               <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
               <span>Club Koala</span>
-            </button>
-            <button
-              onClick={() => {
-                if (onOpenDossier) {
-                  onOpenDossier();
-                } else {
-                  window.history.pushState({}, '', '/dossier');
-                  window.dispatchEvent(new PopStateEvent('popstate'));
-                }
-              }}
-              className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-orange-50 text-slate-700 hover:text-orange-600 border border-slate-200/80 text-xs font-bold transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap"
-              title="Ver Dossier Oficial y Propuesta 2026"
-            >
-              <span>📄 Dossier</span>
             </button>
           </nav>
 
@@ -343,33 +350,43 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-3">
+        <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-2.5">
           <button
             onClick={() => {
               onScrollToSection('catalog');
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left py-2 font-bold text-slate-800 hover:text-orange-600"
+            className="w-full text-left py-1.5 font-bold text-slate-800 hover:text-orange-600 flex items-center justify-between"
           >
-            📦 Catálogo de Productos
+            <span>📦 Catálogo de Productos</span>
           </button>
           <button
             onClick={() => {
-              onScrollToSection('wholesale');
+              if (onOpenInstitutional) onOpenInstitutional('ofertas');
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left py-2 font-bold text-slate-800 hover:text-orange-600"
+            className="w-full text-left py-1.5 font-bold text-rose-600 hover:text-rose-700 flex items-center justify-between"
           >
-            🏭 Fabricación y Venta Mayorista
+            <span>🔥 Ofertas y Bulto Cerrado</span>
+            <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 text-[10px] font-extrabold uppercase">Descuentos</span>
+          </button>
+          <button
+            onClick={() => {
+              if (onOpenInstitutional) onOpenInstitutional('servicio-tecnico');
+              setMobileMenuOpen(false);
+            }}
+            className="w-full text-left py-1.5 font-bold text-slate-800 hover:text-orange-600"
+          >
+            🏭 Fábrica & Medidas Especiales
           </button>
           <button
             onClick={() => {
               onOpenLoyaltyModal();
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left py-2 font-bold text-orange-600 hover:text-orange-700 flex items-center gap-2"
+            className="w-full text-left py-1.5 font-bold text-amber-700 hover:text-amber-800 flex items-center gap-2"
           >
-            <Gift className="w-4 h-4 text-orange-500" />
+            <Gift className="w-4 h-4 text-amber-500" />
             <span>🎁 Club Koala (Puntos y Tarjeta Digital)</span>
           </button>
           <button
@@ -377,33 +394,47 @@ export const Navbar: React.FC<NavbarProps> = ({
               onScrollToSection('locations');
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left py-2 font-bold text-slate-800 hover:text-orange-600"
+            className="w-full text-left py-1.5 font-bold text-slate-800 hover:text-orange-600"
           >
             📍 Sucursales (Roca / Neuquén)
           </button>
-          <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
-            <button
-              onClick={() => {
-                if (onOpenDossier) {
-                  onOpenDossier();
-                } else {
-                  window.history.pushState({}, '', '/dossier');
-                  window.dispatchEvent(new PopStateEvent('popstate'));
-                }
-                setMobileMenuOpen(false);
-              }}
-              className="flex-1 py-2 px-3 rounded-lg bg-slate-100 text-slate-800 font-bold text-xs text-center"
-            >
-              📄 Dossier / Propuesta
-            </button>
+          <button
+            onClick={() => {
+              if (onOpenInstitutional) onOpenInstitutional('faq');
+              setMobileMenuOpen(false);
+            }}
+            className="w-full text-left py-1.5 font-bold text-slate-800 hover:text-orange-600"
+          >
+            ❓ Preguntas Frecuentes (FAQ)
+          </button>
+          <button
+            onClick={() => {
+              if (onOpenInstitutional) onOpenInstitutional('contacto');
+              setMobileMenuOpen(false);
+            }}
+            className="w-full text-left py-1.5 font-bold text-slate-800 hover:text-orange-600"
+          >
+            📞 Contacto & Consultas
+          </button>
+          <button
+            onClick={() => {
+              if (onOpenInstitutional) onOpenInstitutional('arrepentimiento');
+              setMobileMenuOpen(false);
+            }}
+            className="w-full text-left py-1.5 font-bold text-rose-600 hover:text-rose-700 text-xs flex items-center gap-1.5"
+          >
+            <span>↩️ Botón de Arrepentimiento (Ley 24.240)</span>
+          </button>
+
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
             <button
               onClick={() => {
                 onOpenAdmin();
                 setMobileMenuOpen(false);
               }}
-              className="flex-1 py-2 px-3 rounded-lg bg-slate-900 text-white font-bold text-xs text-center"
+              className="w-full py-2 px-3 rounded-lg bg-slate-900 text-white font-bold text-xs text-center cursor-pointer"
             >
-              🔒 Panel Admin & ERP
+              🔒 Panel Admin
             </button>
           </div>
         </div>

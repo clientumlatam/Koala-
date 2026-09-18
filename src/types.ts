@@ -64,7 +64,7 @@ export interface CartItem {
 
 export type EmployeeRole = 'admin' | 'ventas' | 'deposito' | 'facturacion';
 
-export type ErpSystemType = 'Tango Gestión ERP' | 'Bejerman ERP' | 'SAP Business One' | 'Dragonfish' | 'API REST Koala Directa';
+export type ErpSystemType = 'ICXN ERP (https://icxn.com.ar/)' | 'Tango Gestión ERP' | 'Bejerman ERP' | 'SAP Business One' | 'Dragonfish' | 'API REST Koala Directa' | (string & {});
 
 export interface EmployeeUser {
   id: string;

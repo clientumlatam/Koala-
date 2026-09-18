@@ -6,163 +6,238 @@ import {
   Mail, 
   ChevronRight,
   Factory,
-  Gift
+  Gift,
+  RotateCcw,
+  ShieldCheck,
+  FileText,
+  HelpCircle,
+  Briefcase,
+  ExternalLink,
+  Percent
 } from 'lucide-react';
 import { BranchInfo } from '../types';
 import { KoalaLogo } from './KoalaLogo';
+import { InstitutionalPageType } from './InstitutionalPageModal';
 
 interface FooterProps {
   branches: BranchInfo[];
   onScrollToSection: (sectionId: string) => void;
   onOpenLoyaltyModal?: () => void;
   onOpenAdmin?: () => void;
+  onOpenInstitutional?: (page: InstitutionalPageType) => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ branches, onScrollToSection, onOpenLoyaltyModal, onOpenAdmin }) => {
+export const Footer: React.FC<FooterProps> = ({ 
+  branches, 
+  onScrollToSection, 
+  onOpenLoyaltyModal, 
+  onOpenAdmin,
+  onOpenInstitutional 
+}) => {
+  const handlePageClick = (page: InstitutionalPageType) => {
+    if (onOpenInstitutional) {
+      onOpenInstitutional(page);
+    } else {
+      window.history.pushState({}, '', `/${page}`);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+  };
+
   return (
     <footer className="bg-slate-950 text-slate-400 text-xs border-t border-slate-900 pt-12 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
+        {/* Banner Legal Obligatorio: Botón de Arrepentimiento (Resolución 424/2020) */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+              <RotateCcw className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-white font-bold text-xs sm:text-sm">
+                Botón de Arrepentimiento · Ley de Defensa del Consumidor
+              </h4>
+              <p className="text-[11px] text-slate-400">
+                Podés revocar tu compra online dentro de los 10 días corridos de recibido el pedido (Res. 424/2020 Secretaría de Comercio).
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => handlePageClick('arrepentimiento')}
+            className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition-colors shrink-0 flex items-center gap-2 cursor-pointer shadow-sm shadow-rose-600/20"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Solicitar Arrepentimiento</span>
+          </button>
+        </div>
+
         {/* Main Columns Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           
           {/* Col 1: Brand Info */}
-          <div className="space-y-4">
+          <div className="space-y-4 lg:col-span-2">
             <div className="bg-white p-2.5 rounded-2xl inline-block shadow-sm">
               <KoalaLogo size="md" />
             </div>
 
-            <p className="text-slate-400 leading-relaxed text-xs">
-              Fabricación de polietileno de alta y baja densidad. Distribución integral de descartables gastronómicos, cotillón, repostería, envases PET y bolsas comerciales en el Alto Valle.
+            <p className="text-slate-400 leading-relaxed text-xs max-w-sm">
+              Fabricación de polietileno de alta y baja densidad. Distribución integral de descartables gastronómicos, cotillón, repostería, envases PET y bolsas comerciales en el Alto Valle de Río Negro y Neuquén.
             </p>
 
-            <div className="pt-1 flex items-center gap-2">
+            <div className="pt-1 flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 text-slate-300 text-[11px] font-medium border border-slate-800/80">
                 <Factory className="w-3.5 h-3.5 text-orange-500" />
                 <span>Venta Mayorista y Minorista</span>
               </span>
+
+              {onOpenLoyaltyModal && (
+                <button
+                  onClick={onOpenLoyaltyModal}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 text-[11px] font-medium border border-amber-500/20 hover:bg-amber-500/20 transition-colors cursor-pointer"
+                >
+                  <Gift className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Club Koala Puntos</span>
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Col 2: General Roca */}
+          {/* Col 2: Sucursales y Contacto */}
           <div className="space-y-3">
             <h4 className="font-bold text-white text-sm font-fredoka uppercase tracking-wider text-orange-400">
-              General Roca (Casa Central)
+              Nuestros Locales
             </h4>
-            <div className="space-y-2.5 text-slate-300">
-              <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
-                <span>Av. Roca 1350, (8332) General Roca, Río Negro</span>
+            <div className="space-y-2 text-slate-300">
+              <div>
+                <strong className="block text-white text-xs">General Roca (Casa Central)</strong>
+                <span className="text-[11px] text-slate-400">Av. Roca 1350 · Tel (0298) 443-6639</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-slate-500 shrink-0" />
-                <a href="tel:02984436639" className="hover:text-white transition-colors">
-                  Tel: (0298) 443-6639
-                </a>
+              <div>
+                <strong className="block text-white text-xs">Neuquén Capital (Salón)</strong>
+                <span className="text-[11px] text-slate-400">Mitre 678 · Tel (0299) 443-3960</span>
               </div>
-              <div className="flex items-center gap-2 text-emerald-400 font-semibold">
-                <MessageCircle className="w-4 h-4 shrink-0" />
-                <a 
-                  href="https://wa.me/5492984536376" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:text-emerald-300 transition-colors"
-                >
-                  WhatsApp: 298 453-6376
-                </a>
-              </div>
-              <div className="flex items-center gap-2 text-slate-400">
-                <Mail className="w-4 h-4 shrink-0" />
-                <span>lpsrlmilton@lpsrl.com.ar</span>
-              </div>
+            </div>
+
+            <div className="pt-2 space-y-1.5">
+              <button
+                onClick={() => handlePageClick('sucursales')}
+                className="hover:text-orange-400 transition-colors flex items-center gap-1 text-xs cursor-pointer"
+              >
+                <ChevronRight className="w-3 h-3 text-orange-500" />
+                <span>Ver Mapa y Horarios de Atención</span>
+              </button>
+              <button
+                onClick={() => handlePageClick('contacto')}
+                className="hover:text-orange-400 transition-colors flex items-center gap-1 text-xs cursor-pointer"
+              >
+                <ChevronRight className="w-3 h-3 text-orange-500" />
+                <span>Formulario de Contacto</span>
+              </button>
+              <button
+                onClick={() => handlePageClick('trabaja')}
+                className="hover:text-purple-400 transition-colors flex items-center gap-1 text-xs cursor-pointer"
+              >
+                <ChevronRight className="w-3 h-3 text-purple-500" />
+                <span>Trabajá con Nosotros (RRHH)</span>
+              </button>
             </div>
           </div>
 
-          {/* Col 3: Neuquén */}
+          {/* Col 3: Servicios y Producción */}
           <div className="space-y-3">
             <h4 className="font-bold text-white text-sm font-fredoka uppercase tracking-wider text-orange-400">
-              Neuquén Capital (Sucursal)
-            </h4>
-            <div className="space-y-2.5 text-slate-300">
-              <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
-                <span>Mitre 678, (8300) Neuquén Capital</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-slate-500 shrink-0" />
-                <a href="tel:02994433960" className="hover:text-white transition-colors">
-                  Tel: (0299) 443-3960
-                </a>
-              </div>
-              <div className="flex items-center gap-2 text-emerald-400 font-semibold">
-                <MessageCircle className="w-4 h-4 shrink-0" />
-                <a 
-                  href="https://wa.me/5492995093911" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:text-emerald-300 transition-colors"
-                >
-                  WhatsApp: 299 509-3911
-                </a>
-              </div>
-              <div className="flex items-center gap-2 text-slate-400">
-                <Mail className="w-4 h-4 shrink-0" />
-                <span>nqn@koalalotiene.com.ar</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Col 4: Quick Links */}
-          <div className="space-y-3">
-            <h4 className="font-bold text-white text-sm font-fredoka uppercase tracking-wider">
-              Categorías & Fidelidad
+              Fábrica & Servicios
             </h4>
             <ul className="space-y-2">
-              {onOpenLoyaltyModal && (
-                <li>
-                  <button 
-                    onClick={onOpenLoyaltyModal}
-                    className="hover:text-amber-400 text-amber-300 font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Gift className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Club Koala (Puntos y Sellos)</span>
-                  </button>
-                </li>
-              )}
               <li>
                 <button 
-                  onClick={() => onScrollToSection('catalog')} 
+                  onClick={() => handlePageClick('servicio-tecnico')} 
                   className="hover:text-orange-400 transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   <ChevronRight className="w-3 h-3 text-orange-500" />
-                  <span>Bolsas & Film Stretch Polietileno</span>
+                  <span>Producción de Polietileno a Medida</span>
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => onScrollToSection('catalog')} 
+                  onClick={() => handlePageClick('servicio-tecnico')} 
                   className="hover:text-orange-400 transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   <ChevronRight className="w-3 h-3 text-orange-500" />
-                  <span>Descartables para Gastronomía</span>
+                  <span>Bolsas Impresas con Logo</span>
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => onScrollToSection('catalog')} 
-                  className="hover:text-orange-400 transition-colors flex items-center gap-1 cursor-pointer"
+                  onClick={() => handlePageClick('ofertas')} 
+                  className="hover:text-orange-400 transition-colors flex items-center gap-1 cursor-pointer text-amber-300 font-semibold"
                 >
-                  <ChevronRight className="w-3 h-3 text-orange-500" />
-                  <span>Cotillón & Repostería</span>
+                  <ChevronRight className="w-3 h-3 text-amber-400" />
+                  <span>Ofertas & Precios por Bulto</span>
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => onScrollToSection('catalog')} 
+                  onClick={() => handlePageClick('faq')} 
                   className="hover:text-orange-400 transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   <ChevronRight className="w-3 h-3 text-orange-500" />
-                  <span>Envases Plásticos PET</span>
+                  <span>Preguntas Frecuentes (FAQ)</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 4: Legales y Políticas */}
+          <div className="space-y-3">
+            <h4 className="font-bold text-white text-sm font-fredoka uppercase tracking-wider text-orange-400">
+              Políticas y Legales
+            </h4>
+            <ul className="space-y-2">
+              <li>
+                <button 
+                  onClick={() => handlePageClick('politicas-devolucion')} 
+                  className="hover:text-orange-400 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <ChevronRight className="w-3 h-3 text-orange-500" />
+                  <span>Políticas de Devolución</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handlePageClick('terminos')} 
+                  className="hover:text-orange-400 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <ChevronRight className="w-3 h-3 text-orange-500" />
+                  <span>Términos y Condiciones</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handlePageClick('privacidad')} 
+                  className="hover:text-orange-400 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <ChevronRight className="w-3 h-3 text-orange-500" />
+                  <span>Políticas de Privacidad</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handlePageClick('derechos-datos')} 
+                  className="hover:text-indigo-400 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <ChevronRight className="w-3 h-3 text-indigo-400" />
+                  <span>Datos Personales (Ley 25.326)</span>
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => handlePageClick('arrepentimiento')} 
+                  className="hover:text-rose-400 transition-colors flex items-center gap-1 cursor-pointer text-rose-400 font-semibold"
+                >
+                  <ChevronRight className="w-3 h-3 text-rose-400" />
+                  <span>Botón de Arrepentimiento</span>
                 </button>
               </li>
             </ul>
@@ -182,18 +257,6 @@ export const Footer: React.FC<FooterProps> = ({ branches, onScrollToSection, onO
           </div>
 
           <div className="flex items-center gap-3 flex-wrap justify-center md:justify-end">
-            <a 
-              href="/dossier" 
-              onClick={(e) => {
-                e.preventDefault();
-                window.history.pushState({}, '', '/dossier');
-                window.dispatchEvent(new PopStateEvent('popstate'));
-              }}
-              className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-orange-600/90 text-slate-300 hover:text-white font-semibold transition-all border border-slate-800 hover:border-orange-500/50 flex items-center gap-1.5 shadow-2xs cursor-pointer"
-              title="Abrir Dossier Comercial & Propuesta 2026"
-            >
-              <span>📄 Dossier Oficial</span>
-            </a>
             <button
               type="button"
               onClick={() => {
@@ -205,9 +268,9 @@ export const Footer: React.FC<FooterProps> = ({ branches, onScrollToSection, onO
                 }
               }}
               className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white font-semibold transition-all border border-slate-800 hover:border-slate-700 flex items-center gap-1.5 cursor-pointer shadow-2xs"
-              title="Acceso al Panel de Administración & ERP"
+              title="Acceso al Panel de Administración & ERP (ICXN)"
             >
-              <span>🔒 Panel Admin & ERP</span>
+              <span>🔒 Panel Admin & ERP (ICXN)</span>
             </button>
             <span className="text-slate-700 hidden sm:inline">|</span>
             <span className="text-slate-500 font-medium">koalalotiene.com.ar</span>

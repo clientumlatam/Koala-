@@ -91,6 +91,8 @@ interface AdminPanelModalProps {
   cronLogs: CsvCronExecutionLog[];
   onAddCronLog: (log: CsvCronExecutionLog) => void;
   onUpdateInventoryPrices: (updatedItems: { sku: string; price?: number; wholesalePrice?: number; stockRoca?: number; stockNeuquen?: number }[]) => void;
+  onUpdateFullProduct?: (product: ProductInventoryRecord) => void;
+  onDeleteProduct?: (productId: string) => void;
   isStandalonePage?: boolean;
   onNavigateToStore?: () => void;
   onNavigateToDedicatedRoute?: () => void;
@@ -121,6 +123,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   cronLogs,
   onAddCronLog,
   onUpdateInventoryPrices,
+  onUpdateFullProduct,
+  onDeleteProduct,
   isStandalonePage = false,
   onNavigateToStore,
   onNavigateToDedicatedRoute,
@@ -1190,6 +1194,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               onOpenTransferModal={() => setShowNewTransfer(true)}
               onTriggerErpSync={handleManualSync}
               onCreateTransfer={onCreateTransfer}
+              onUpdateFullProduct={onUpdateFullProduct}
+              onDeleteProduct={onDeleteProduct}
             />
           )}
 
