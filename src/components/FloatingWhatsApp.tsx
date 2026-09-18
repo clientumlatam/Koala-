@@ -28,7 +28,11 @@ import {
   Award,
   User,
   RefreshCw,
-  Check
+  Check,
+  Shirt,
+  Utensils,
+  Cake,
+  Building2
 } from 'lucide-react';
 import { BranchInfo, ProductInventoryRecord, Product, LoyaltyProfile, CartItem } from '../types';
 import { KoalaLogo } from './KoalaLogo';
@@ -47,42 +51,72 @@ interface FloatingWhatsAppProps {
   products?: Product[];
   loyaltyProfile?: LoyaltyProfile | null;
   onAddToCart?: (product: Product, quantity: number, isWholesale: boolean) => void;
+  isOpen?: boolean;
+  onToggleOpen?: (open: boolean) => void;
 }
 
 const QUICK_PROMPTS = [
   {
+    id: 'cumple-30',
+    icon: PartyPopper,
+    label: '🎉 Cumpleaños 30 personas',
+    desc: 'Cálculo de vasos, platos, servilletas y globos',
+    text: 'Necesito insumos y cálculo de cantidades para un cumpleaños de 30 personas.'
+  },
+  {
+    id: 'bolsas-ropa',
+    icon: Shirt,
+    label: '👕 Bolsas para Local de Ropa',
+    desc: 'Micras, tipo camiseta y riñón para indumentaria',
+    text: '¿Qué bolsas de polietileno (camiseta o riñón) y qué micras me convienen para mi local de ropa?'
+  },
+  {
+    id: 'viandas',
+    icon: Utensils,
+    label: '🍱 Viandas & Descartables',
+    desc: 'Potes térmicos, bandejas y cubiertos para delivery',
+    text: 'Necesito envases, potes térmicos y cubiertos para viandas de rotisería.'
+  },
+  {
+    id: 'bigbags',
+    icon: Building2,
+    label: '🏗️ Big Bags 1 Tn & Film',
+    desc: 'Especificaciones técnicas de fábrica y pallets',
+    text: '¿Qué especificaciones tienen las Big Bags de 1 Tonelada y el film stretch para embalaje?'
+  },
+  {
+    id: 'reposteria',
+    icon: Cake,
+    label: '🎂 Repostería & Moldes',
+    desc: 'Moldes silicona, mangas y chocolate Mapsa',
+    text: '¿Qué moldes de repostería, mangas y coberturas tienen disponibles?'
+  },
+  {
     id: 'cart-suggestions',
     icon: Sparkles,
-    label: 'Analizar Mi Carrito',
+    label: '🛒 Analizar Mi Carrito',
     desc: 'Motor IA: Sugerencias complementarias para tu compra',
     text: 'Hola! Qué productos complementarios me sugieren para los artículos que ya tengo en mi carrito?'
   },
   {
     id: 'mayorista',
     icon: Package,
-    label: 'Cotización Mayorista',
-    desc: 'Bolsas de polietileno, film y descartables gastronómicos',
+    label: '📦 Cotización Mayorista',
+    desc: 'Bolsas de polietileno, film y bulto cerrado de fábrica',
     text: 'Hola Koala Lo Tiene! Quisiera consultar lista de precios mayorista y descuentos por bulto cerrado de polietileno y descartables.'
-  },
-  {
-    id: 'cotillon',
-    icon: PartyPopper,
-    label: 'Cotillón & Globos',
-    desc: 'Globos, velas, repostería y vajilla para eventos',
-    text: 'Hola! Quisiera ver globos, velas y articulos de cotillon para un cumple.'
   },
   {
     id: 'envios',
     icon: Truck,
-    label: 'Envíos y Fletes',
+    label: '🚚 Envíos y Fletes',
     desc: 'Entregas en General Roca, Neuquén y Alto Valle',
     text: 'Hola! Quisiera saber el costo y demora de envío para mi localidad en el Alto Valle.'
   },
   {
     id: 'asesor',
     icon: HelpCircle,
-    label: 'Hablar con un Asesor',
-    desc: 'Atención personalizada y dudas generales',
+    label: '💬 Hablar con un Asesor',
+    desc: 'Atención personalizada y dudas generales en WhatsApp',
     text: 'Hola! Me comunico desde la tienda online de Koala Lo Tiene y quisiera hacer una consulta comercial.'
   }
 ];
@@ -105,6 +139,39 @@ export interface ChatMessageItem {
   };
 }
 
+const renderFormattedMessage = (text: string) => {
+  return text.split('\n').map((line, idx) => {
+    const trimmed = line.trim();
+    if (!trimmed) return <div key={idx} className="h-1.5" />;
+    
+    const isBullet = trimmed.startsWith('•') || trimmed.startsWith('- ') || trimmed.startsWith('* ');
+    const content = isBullet ? trimmed.replace(/^[•\-\*]\s*/, '') : line;
+    
+    const parts = content.split(/(\*\*.*?\*\*)/g);
+    const renderedParts = parts.map((part, pIdx) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={pIdx} className="font-bold text-slate-900 dark:text-white">{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+
+    if (isBullet) {
+      return (
+        <div key={idx} className="flex items-start gap-1.5 my-1 pl-0.5">
+          <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0 leading-tight">•</span>
+          <span className="flex-1 leading-snug">{renderedParts}</span>
+        </div>
+      );
+    }
+
+    return (
+      <p key={idx} className="my-0.5 leading-snug">
+        {renderedParts}
+      </p>
+    );
+  });
+};
+
 export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({ 
   currentBranch,
   onSelectBranch,
@@ -113,8 +180,18 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
   products = PRODUCTS_CATALOG,
   loyaltyProfile = null,
   onAddToCart,
+  isOpen: controlledIsOpen,
+  onToggleOpen,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+  const setIsOpen = (val: boolean | ((prev: boolean) => boolean)) => {
+    const nextVal = typeof val === 'function' ? val(isOpen) : val;
+    if (onToggleOpen) {
+      onToggleOpen(nextVal);
+    }
+    setInternalIsOpen(nextVal);
+  };
   const [isExpertModalOpen, setIsExpertModalOpen] = useState(false);
   const [selectedBranchId, setSelectedBranchId] = useState<'roca' | 'neuquen'>(
     currentBranch.id === 'neuquen' ? 'neuquen' : 'roca'
@@ -245,23 +322,25 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
     const catalog = products.length > 0 ? products : PRODUCTS_CATALOG;
 
     const isCotillon = lower.includes('globo') || lower.includes('cotillon') || lower.includes('cumple') || lower.includes('festejo') || lower.includes('vela');
-    const isPolietileno = lower.includes('bolsa') || lower.includes('polietileno') || lower.includes('camiseta') || lower.includes('consorcio') || lower.includes('micras');
-    const isDescartables = lower.includes('descartable') || lower.includes('pote') || lower.includes('vaso') || lower.includes('plato') || lower.includes('vianda') || lower.includes('cubierto') || lower.includes('envase');
-    const isReposteria = lower.includes('reposteria') || lower.includes('molde') || lower.includes('manga') || lower.includes('torta') || lower.includes('cuber') || lower.includes('chocolate');
-    const isFilm = lower.includes('film') || lower.includes('stretch') || lower.includes('embalaje') || lower.includes('pallet');
+    const isPolietileno = lower.includes('bolsa') || lower.includes('polietileno') || lower.includes('camiseta') || lower.includes('consorcio') || lower.includes('micras') || lower.includes('ropa') || lower.includes('indumentaria');
+    const isDescartables = lower.includes('descartable') || lower.includes('pote') || lower.includes('vaso') || lower.includes('plato') || lower.includes('vianda') || lower.includes('cubierto') || lower.includes('envase') || lower.includes('servilleta') || lower.includes('rotiser');
+    const isReposteria = lower.includes('reposteria') || lower.includes('molde') || lower.includes('manga') || lower.includes('torta') || lower.includes('cuber') || lower.includes('chocolate') || lower.includes('mapsa');
+    const isFilm = lower.includes('film') || lower.includes('stretch') || lower.includes('embalaje') || lower.includes('pallet') || lower.includes('big bag') || lower.includes('tonelada') || lower.includes('bobina');
 
     let result: Product[] = [];
 
-    if (isCotillon) {
+    if (isCotillon && isDescartables) {
+      result = catalog.filter((p) => p.category === 'cotillon' || p.category === 'descartables');
+    } else if (isCotillon) {
       result = catalog.filter((p) => p.category === 'cotillon' || p.tags.some((t) => t.includes('globo') || t.includes('cotillon')));
     } else if (isPolietileno) {
-      result = catalog.filter((p) => p.category === 'polietileno' || p.tags.some((t) => t.includes('bolsa') || t.includes('polietileno')));
+      result = catalog.filter((p) => p.category === 'polietileno' || p.tags.some((t) => t.includes('bolsa') || t.includes('polietileno') || t.includes('camiseta') || t.includes('riñon')));
     } else if (isDescartables) {
       result = catalog.filter((p) => p.category === 'descartables' || p.category === 'envases' || p.tags.some((t) => t.includes('pote') || t.includes('vaso') || t.includes('descartable')));
     } else if (isReposteria) {
-      result = catalog.filter((p) => p.category === 'reposteria' || p.tags.some((t) => t.includes('reposteria') || t.includes('manga')));
+      result = catalog.filter((p) => p.category === 'reposteria' || p.tags.some((t) => t.includes('reposteria') || t.includes('manga') || t.includes('molde')));
     } else if (isFilm) {
-      result = catalog.filter((p) => p.tags.some((t) => t.includes('film') || t.includes('stretch')));
+      result = catalog.filter((p) => p.tags.some((t) => t.includes('film') || t.includes('stretch') || t.includes('pallet') || t.includes('big bag')) || p.category === 'polietileno');
     } else {
       // Búsqueda libre por término
       result = catalog.filter((p) => 
@@ -405,106 +484,14 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
     }
   };
 
-  // Manejo de clic en QUICK_PROMPTS con indicador de tipeo dinámico
+  // Manejo de clic en QUICK_PROMPTS con motor IA unificado
   const handleQuickPromptClick = (prompt: typeof QUICK_PROMPTS[number]) => {
-    setHasUserActed(true);
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-
-    // Mensaje del usuario agregado inmediatamente
-    const userItem: ChatMessageItem = {
-      id: `usr-${Date.now()}`,
-      sender: 'user',
-      text: prompt.text,
-      time: timeStr
-    };
-
-    setChatHistory((prev) => [...prev, userItem]);
-
-    // Activamos el indicador visual 'está escribiendo...'
-    setIsTyping(true);
-
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-
-    // Respuesta dinámica simulada del asesor luego de una breve pausa
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
-
-      let reply = '';
-      let matchedProds: Product[] = [];
-
-      switch (prompt.id) {
-        case 'cart-suggestions':
-          if (cartItems && cartItems.length > 0) {
-            const cartCategories = Array.from(new Set(cartItems.map(item => item.product.category)));
-            const cartSubcategories = Array.from(new Set(cartItems.map(item => item.product.subcategory)));
-            
-            // AI Suggestion Logic based on cart contents
-            reply = `¡Hola! Analizando tu carrito actual, notamos que llevás artículos de ${cartCategories.join(' y ')}. Para complementar tu compra, nuestro motor de IA te sugiere estos productos relacionados en ${activeBranchData.name}:`;
-            
-            const catalog = products.length > 0 ? products : PRODUCTS_CATALOG;
-            const suggestions = catalog.filter(p => {
-              // Complementary logic
-              if (cartCategories.includes('cotillon') && p.category === 'reposteria') return true;
-              if (cartCategories.includes('reposteria') && p.category === 'descartables') return true;
-              if (cartCategories.includes('polietileno') && p.category === 'envases') return true;
-              if (cartCategories.includes('envases') && p.category === 'polietileno') return true;
-              
-              // If none of the specific rules match, suggest from the same or related categories, but not items already in cart
-              return cartCategories.includes(p.category) && !cartItems.some(ci => ci.product.id === p.id);
-            });
-            
-            matchedProds = suggestions.slice(0, 5);
-            if (matchedProds.length === 0) {
-                // fallback
-                matchedProds = catalog.filter(p => !cartItems.some(ci => ci.product.id === p.id)).slice(0, 5);
-            }
-          } else {
-            reply = '¡Hola! Parece que tu carrito está vacío. Agregá algunos productos y te sugeriré los mejores complementos.';
-          }
-          break;
-        case 'mayorista':
-          reply = `¡Hola! Somos fabricantes de polietileno (LP SRL) con venta directa por bulto cerrado, bobinas y film stretch desde nuestra casa central en Av. Roca 1350. Contamos con precios mayoristas escalonados y despacho a todo el Alto Valle. ¿Qué medidas o volúmenes precisás cotizar?`;
-          matchedProds = matchCategoryAndProducts(prompt.text);
-          break;
-        case 'cotillon':
-          reply = `¡Hola! Tenemos surtido completo de cotillón temático, globos R12, repostería Mapsa Cuber y vajilla descartable en nuestras sucursales de General Roca y Neuquén Capital (Mitre 678). Mirá las opciones del catálogo disponibles en la tarjeta desplegable:`;
-          matchedProds = matchCategoryAndProducts(prompt.text);
-          break;
-        case 'envios':
-          reply = `¡Hola! Realizamos entregas programadas en General Roca, Allen, Cipolletti, Neuquén y Plottier. También podés retirar sin costo en mostrador de Roca o Neuquén. ¿A qué localidad sería la entrega?`;
-          matchedProds = matchCategoryAndProducts(prompt.text);
-          break;
-        case 'asesor':
-        default:
-          reply = `¡Hola! Un asesor comercial de ${activeBranchData.name} recibió tu consulta y está en línea. Podés continuar por aquí o escribirnos directo al WhatsApp oficial (${activeBranchData.whatsappDisplay}) para atención prioritaria.`;
-          matchedProds = matchCategoryAndProducts(prompt.text);
-          break;
-      }
-
-      const replyNow = new Date();
-      const replyTimeStr = replyNow.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-
-      const agentItem: ChatMessageItem = {
-        id: `agt-${Date.now()}`,
-        sender: 'agent',
-        text: reply,
-        time: replyTimeStr,
-        actionUrl: `https://wa.me/${activeBranchData.whatsappNum}?text=${encodeURIComponent(prompt.text)}`,
-        actionLabel: `Chatear al WhatsApp de ${selectedBranchId === 'neuquen' ? 'Neuquén' : 'Roca'}`,
-        categoryCarousel: matchedProds.length > 0 ? matchedProds : undefined,
-        suggestedProducts: matchedProds.length > 0 ? matchedProds.slice(0, 3) : undefined,
-      };
-
-      setChatHistory((prev) => [...prev, agentItem]);
-    }, 1150);
+    handleSend(prompt.text);
   };
 
-  const handleSend = (textToSend?: string) => {
+  const handleSend = async (textToSend?: string) => {
     setHasUserActed(true);
-    const finalMsg = textToSend || message.trim();
+    const finalMsg = (textToSend || message).trim();
     if (!finalMsg) return;
 
     const now = new Date();
@@ -512,7 +499,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
 
     const lowerMsg = finalMsg.toLowerCase();
     const isStockQuery = lowerMsg.includes('stock') || lowerMsg.includes('disponib') || lowerMsg.includes('icxn') || lowerMsg.includes('deposito') || lowerMsg.includes('hay ') || lowerMsg.includes('quedan');
-    const isRecommendationQuery = lowerMsg.includes('sugerenc') || lowerMsg.includes('recomenda') || lowerMsg.includes('complement') || lowerMsg.includes('qué más') || lowerMsg.includes('que mas') || lowerMsg.includes('ia');
+    const isRecommendationQuery = lowerMsg.includes('sugerenc') || lowerMsg.includes('recomenda') || lowerMsg.includes('complement') || lowerMsg.includes('qué más') || lowerMsg.includes('que mas') || lowerMsg.includes('ia') || lowerMsg.includes('carrito');
 
     const userItem: ChatMessageItem = {
       id: `usr-${Date.now()}`,
@@ -532,56 +519,92 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
       clearTimeout(typingTimeoutRef.current);
     }
 
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
-      setIsErpChecking(false);
-      const replyNow = new Date();
-      const replyTimeStr = replyNow.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    let aiReplyText = '';
+    const clientFullName = loyaltyProfile?.name || (loyaltyProfile as any)?.fullName || 'Cliente';
+    const clientPoints = loyaltyProfile?.pointsBalance ?? (loyaltyProfile as any)?.points ?? 0;
 
-      let matchedProds = matchCategoryAndProducts(finalMsg);
-      let replyText = `¡Recibido! Un asesor de ${activeBranchData.name} está revisando tu mensaje. Para enviarnos audios, fotos o cerrar tu pedido al instante, también podés derivar la charla a nuestro WhatsApp oficial.`;
+    try {
+      const response = await fetch('/api/ai/assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: finalMsg,
+          branch: selectedBranchId,
+          context: {
+            user: clientFullName,
+            points: clientPoints,
+            cartItems: cartItems.map(c => ({ name: c.product.name, category: c.product.category, qty: c.quantity }))
+          }
+        }),
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.reply) {
+          aiReplyText = data.reply;
+        }
+      }
+    } catch (err) {
+      console.warn('AI endpoint fallback:', err);
+    }
+
+    // Respuesta inteligente de respaldo si el endpoint no responde o está offline
+    if (!aiReplyText) {
       if (isRecommendationQuery && cartItems && cartItems.length > 0) {
         const cartCategories = Array.from(new Set(cartItems.map(item => item.product.category)));
-        replyText = `¡Hola! Analizando tu carrito actual, notamos que llevás artículos de ${cartCategories.join(' y ')}. Para complementar tu compra, nuestro motor de IA te sugiere estos productos relacionados en ${activeBranchData.name}:`;
-        
-        const catalog = products.length > 0 ? products : PRODUCTS_CATALOG;
-        const suggestions = catalog.filter(p => {
-          if (cartCategories.includes('cotillon') && p.category === 'reposteria') return true;
-          if (cartCategories.includes('reposteria') && p.category === 'descartables') return true;
-          if (cartCategories.includes('polietileno') && p.category === 'envases') return true;
-          if (cartCategories.includes('envases') && p.category === 'polietileno') return true;
-          return cartCategories.includes(p.category) && !cartItems.some(ci => ci.product.id === p.id);
-        });
-        
-        matchedProds = suggestions.slice(0, 5);
-        if (matchedProds.length === 0) {
-            matchedProds = catalog.filter(p => !cartItems.some(ci => ci.product.id === p.id)).slice(0, 5);
-        }
-      } else if (matchedProds.length > 0) {
-        replyText = `¡Excelente! Encontramos opciones para tu consulta en el catálogo de ${activeBranchData.name}. Podés agregar productos al carrito directamente desde las tarjetas desplegables:`;
+        aiReplyText = `¡Hola ${clientFullName}! Analizando tu carrito actual, notamos que llevás artículos de ${cartCategories.join(' y ')}. Para complementar tu compra, nuestro motor de IA te sugiere estos productos relacionados en ${activeBranchData.name}:`;
+      } else if (lowerMsg.includes('cumple') || lowerMsg.includes('fiesta') || lowerMsg.includes('30 personas')) {
+        aiReplyText = `¡Excelente! Para un festejo o cumpleaños de 30 personas en ${activeBranchData.name}, te recomendamos:\n• 2 paquetes de vasos descartables (pack x 50)\n• 3 paquetes de platos descartables (pack x 10)\n• 2 paquetes de servilletas de papel (pack x 70)\n• 1 bolsa de globos R12 surtidos (pack x 50)\n• Velas número o bengala para la torta.\n\nPodés agregarlos directamente al carrito desde las tarjetas de abajo:`;
+      } else if (lowerMsg.includes('ropa') || lowerMsg.includes('local') || lowerMsg.includes('indumentaria')) {
+        aiReplyText = `Para locales de indumentaria y calzado en el Alto Valle te recomendamos bolsas de polietileno tipo Camiseta (40x50 cm en 30-35 micras para prendas livianas) o bolsas Riñón reforzadas (40x50 cm en 40-50 micras para mayor presencia de marca y resistencia). También producimos bolsas impresas personalizadas por fábrica LP SRL.`;
+      } else if (lowerMsg.includes('vianda') || lowerMsg.includes('rotiser') || lowerMsg.includes('gastronom') || lowerMsg.includes('delivery')) {
+        aiReplyText = `Para viandas y gastronomía disponemos de potes térmicos con tapa hermética para comidas calientes, bandejas descartables aptas microondas, film de PVC gastronómico y sets de cubiertos descartables. Disponibles con stock en ${activeBranchData.name}.`;
+      } else if (lowerMsg.includes('big bag') || lowerMsg.includes('pallet') || lowerMsg.includes('stretch') || lowerMsg.includes('tonelada')) {
+        aiReplyText = `En Koala Lo Tiene (LP SRL) fabricamos y distribuimos Big Bags de 1 Tonelada con 4 manijas reforzadas y válvula de descarga, ideales para áridos, cereales y minerales. Para protección de pallets ofrecemos film stretch virgen manual y automático con alta capacidad de estiramiento.`;
+      } else if (lowerMsg.includes('reposteria') || lowerMsg.includes('molde') || lowerMsg.includes('manga') || lowerMsg.includes('cuber') || lowerMsg.includes('chocolate')) {
+        aiReplyText = `En repostería contamos con moldes de silicona termo-resistentes, mangas descartables reforzadas, picos rusos y chocolate cobertura Mapsa Cuber semiamargo y con leche en ${activeBranchData.name}.`;
+      } else if (lowerMsg.includes('mayorista') || lowerMsg.includes('bulto')) {
+        aiReplyText = `Somos fabricantes de polietileno (LP SRL) con venta directa por bulto cerrado, bobinas y film stretch desde nuestra casa central en Av. Roca 1350. Contamos con precios mayoristas escalonados y despacho a todo el Alto Valle. ¿Qué medidas o volúmenes precisás cotizar?`;
+      } else if (lowerMsg.includes('envio') || lowerMsg.includes('flete')) {
+        aiReplyText = `Realizamos entregas programadas en General Roca, Allen, Cipolletti, Neuquén y Plottier. También podés retirar sin costo en mostrador de Roca (Av. Roca 1350) o Neuquén (Mitre 678). ¿A qué localidad sería la entrega?`;
+      } else if (lowerMsg.includes('asesor') || lowerMsg.includes('humano')) {
+        aiReplyText = `¡Hola! Un asesor comercial de ${activeBranchData.name} recibió tu consulta y está en línea. Podés continuar por aquí o escribirnos directo al WhatsApp oficial (${activeBranchData.whatsappDisplay}) para atención prioritaria.`;
+      } else {
+        aiReplyText = `¡Recibido! Tu consulta fue procesada por el Asesor Virtual de ${activeBranchData.name}. Encontramos sugerencias y productos disponibles en nuestro catálogo que podés añadir directamente al carrito. Para enviarnos fotos, audios o coordinar tu entrega, también podés continuar en nuestro WhatsApp oficial.`;
       }
+    }
 
-      const agentItem: ChatMessageItem = {
-        id: `agt-${Date.now()}`,
-        sender: 'agent',
-        text: replyText,
-        time: replyTimeStr,
-        actionUrl: `https://wa.me/${activeBranchData.whatsappNum}?text=${encodeURIComponent(finalMsg)}`,
-        actionLabel: 'Abrir en WhatsApp Oficial',
-        categoryCarousel: matchedProds.length > 0 ? matchedProds : undefined,
-        suggestedProducts: matchedProds.length > 0 ? matchedProds.slice(0, 3) : undefined,
-        erpLiveNotice: isStockQuery ? {
-          system: 'ICXN ERP (https://icxn.com.ar/)',
-          depotCode: selectedBranchId === 'neuquen' ? 'DEP-02' : 'DEP-01',
-          depotName: activeBranchData.name,
-          stockItemsCount: selectedBranchId === 'neuquen' ? 3950 : 4820,
-          latencyMs: 18,
-        } : undefined,
-      };
+    let matchedProds = matchCategoryAndProducts(finalMsg + ' ' + aiReplyText);
+    if (isRecommendationQuery && cartItems && cartItems.length > 0 && matchedProds.length === 0) {
+      const catalog = products.length > 0 ? products : PRODUCTS_CATALOG;
+      matchedProds = catalog.filter(p => !cartItems.some(ci => ci.product.id === p.id)).slice(0, 5);
+    }
 
-      setChatHistory((prev) => [...prev, agentItem]);
-    }, 1100);
+    setIsTyping(false);
+    setIsErpChecking(false);
+
+    const replyNow = new Date();
+    const replyTimeStr = replyNow.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+    const agentItem: ChatMessageItem = {
+      id: `agt-${Date.now()}`,
+      sender: 'agent',
+      text: aiReplyText,
+      time: replyTimeStr,
+      actionUrl: `https://wa.me/${activeBranchData.whatsappNum}?text=${encodeURIComponent(finalMsg)}`,
+      actionLabel: `Continuar en WhatsApp (${selectedBranchId === 'neuquen' ? 'Neuquén' : 'Roca'})`,
+      categoryCarousel: matchedProds.length > 0 ? matchedProds : undefined,
+      suggestedProducts: matchedProds.length > 0 ? matchedProds.slice(0, 3) : undefined,
+      erpLiveNotice: isStockQuery ? {
+        system: 'ICXN ERP (https://icxn.com.ar/)',
+        depotCode: selectedBranchId === 'neuquen' ? 'DEP-02' : 'DEP-01',
+        depotName: activeBranchData.name,
+        stockItemsCount: selectedBranchId === 'neuquen' ? 3950 : 4820,
+        latencyMs: 18,
+      } : undefined,
+    };
+
+    setChatHistory((prev) => [...prev, agentItem]);
   };
 
   return (
@@ -633,14 +656,13 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                       >
                         <h3 className="font-bold text-sm leading-tight flex items-center gap-1.5 truncate">
                           <span className="truncate">
-                            WhatsApp {selectedBranchId === 'neuquen' ? 'Neuquén' : 'General Roca'}
+                            Asesor Koala & WhatsApp
                           </span>
                           <span
-                            className={`text-[10px] px-1.5 py-0.2 rounded font-semibold text-white shrink-0 ${
-                              isBusinessHours ? 'bg-emerald-500/80' : 'bg-slate-600'
-                            }`}
+                            className="text-[9.5px] px-1.5 py-0.5 rounded font-extrabold text-white shrink-0 bg-emerald-500/90 border border-emerald-400/40 flex items-center gap-0.5"
                           >
-                            Oficial
+                            <Sparkles className="w-2.5 h-2.5 text-amber-300" />
+                            <span>IA Oficial</span>
                           </span>
                         </h3>
                       </motion.div>
@@ -660,7 +682,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                       {isHeaderCollapsed
                         ? `En línea • ${selectedBranchId === 'neuquen' ? 'Neuquén' : 'Roca'}`
                         : isBusinessHours
-                        ? `En línea • ${storeStatus.statusText}`
+                        ? `En línea • Asesor IA & WhatsApp • ${selectedBranchId === 'neuquen' ? 'Neuquén' : 'Roca'}`
                         : `Fuera de horario • ${storeStatus.nextChangeText}`}
                     </span>
                   </p>
@@ -945,7 +967,9 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                               : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-tl-xs shadow-xs'
                           }`}
                         >
-                          <p className="whitespace-pre-line">{item.text}</p>
+                          <div className="whitespace-pre-line space-y-1">
+                            {renderFormattedMessage(item.text)}
+                          </div>
 
                           {/* Botones directos 'Añadir al carrito' detectados dentro de la respuesta del agente */}
                           {item.sender === 'agent' && agentMatchedProducts.length > 0 && (
@@ -1194,12 +1218,20 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                 </div>
               ) : (
                 <>
-                  <div className="bg-white dark:bg-slate-800 p-3 rounded-xl shadow-xs border border-slate-200/80 dark:border-slate-700/80 text-xs text-slate-700 dark:text-slate-200">
-                    <p className="font-semibold text-slate-900 dark:text-white mb-1">
-                      👋 ¡Hola! Te contactás con <strong className="text-emerald-600">{activeBranchData.name}</strong>.
+                  <div className="bg-white dark:bg-slate-800 p-3.5 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-700/80 text-xs text-slate-700 dark:text-slate-200 space-y-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 dark:text-emerald-300 shrink-0">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      </div>
+                      <p className="font-bold text-slate-900 dark:text-white leading-tight">
+                        👋 ¡Hola{loyaltyProfile?.name ? ' ' + loyaltyProfile.name.split(' ')[0] : ''}! Soy el Asesor Virtual de Koala.
+                      </p>
+                    </div>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+                      Estoy potenciado con IA y conectado con el equipo comercial de WhatsApp de <strong className="text-emerald-600">{activeBranchData.name}</strong>.
                     </p>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                      ¿Cómo podemos ayudarte hoy? Seleccioná una opción rápida o escribinos tu consulta:
+                      Consultá sobre stock, cotizaciones para tu comercio, cálculo de cantidades para cumpleaños o seleccioná una opción rápida:
                     </p>
                   </div>
 
@@ -1271,7 +1303,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
               <div className="flex items-center gap-2 mb-2">
                 <input
                   type="text"
-                  placeholder="Escribí tu mensaje aquí..."
+                  placeholder="Consultá al Asesor IA o escribí tu mensaje..."
                   value={message}
                   onChange={(e) => {
                     setMessage(e.target.value);
@@ -1282,17 +1314,31 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleSend();
                   }}
-                  className="flex-1 text-xs px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="flex-1 text-xs px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder:text-slate-400"
                 />
                 <button
                   type="button"
                   onClick={() => handleSend()}
                   className="p-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-colors cursor-pointer shrink-0"
-                  title="Enviar por WhatsApp"
+                  title="Enviar consulta al Asesor IA"
                 >
                   <Send className="w-4 h-4" />
                 </button>
               </div>
+
+              {/* Botón directo de derivación a WhatsApp oficial */}
+              <a
+                href={`https://wa.me/${activeBranchData.whatsappNum}?text=${encodeURIComponent(
+                  message.trim() || 'Hola Koala Lo Tiene! Quisiera hacer una consulta con un asesor comercial de ' + activeBranchData.name
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full mb-2 py-1.5 px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300 font-bold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-600 fill-emerald-600 shrink-0" />
+                <span className="truncate">Continuar en WhatsApp Oficial ({selectedBranchId === 'neuquen' ? 'Neuquén' : 'Roca'})</span>
+                <ExternalLink className="w-3 h-3 opacity-70 shrink-0" />
+              </a>
 
               <div className="flex items-center justify-between text-[10px] text-slate-400 px-1 gap-1">
                 <span className="flex items-center gap-1 truncate" title={activeBranchData.hours}>
@@ -1307,13 +1353,13 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Floating Trigger Button */}
+      {/* Floating Trigger Button - Botón único unificado abajo a la derecha */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         className="w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/40 flex items-center justify-center relative cursor-pointer group transition-colors"
-        aria-label="Abrir WhatsApp oficial de Koala Lo Tiene"
+        aria-label="Abrir Asesor Inteligente y WhatsApp Oficial de Koala Lo Tiene"
       >
         {/* Pulsing rings */}
         <span className="absolute -inset-1 rounded-full bg-emerald-500 opacity-30 group-hover:opacity-60 animate-ping pointer-events-none" />
@@ -1321,7 +1367,10 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
         {isOpen ? (
           <X className="w-6 h-6 relative z-10" />
         ) : (
-          <MessageCircle className="w-7 h-7 relative z-10 fill-white" />
+          <div className="relative z-10 flex items-center justify-center">
+            <MessageCircle className="w-7 h-7 fill-white" />
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 absolute -top-1 -right-1" />
+          </div>
         )}
 
         {/* Small badge */}

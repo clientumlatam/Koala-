@@ -3,7 +3,6 @@ import { Navbar } from './components/Navbar';
 import { HeroBanner } from './components/HeroBanner';
 import { ProductCatalog } from './components/ProductCatalog';
 import { PresupuestadorModal } from './components/PresupuestadorModal';
-import { AiAssistantDrawer } from './components/AiAssistantDrawer';
 import { StoreLocationsSection } from './components/StoreLocationsSection';
 import { Footer } from './components/Footer';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
@@ -16,6 +15,7 @@ import { KoalaLogo } from './components/KoalaLogo';
 import { MobileCartBar } from './components/MobileCartBar';
 import { CartToast, CartToastItem } from './components/CartToast';
 import { InstitutionalPageModal, InstitutionalPageType } from './components/InstitutionalPageModal';
+import { InstagramFeedSection } from './components/InstagramFeedSection';
 
 import { STORES_DATA, CATEGORIES, PRODUCTS_CATALOG } from './data/products';
 import { DEFAULT_DEMO_LOYALTY_PROFILE } from './data/loyaltyData';
@@ -173,13 +173,13 @@ export default function App() {
 
   // Modals state
   const [cartOpen, setCartOpen] = React.useState(false);
-  const [aiOpen, setAiOpen] = React.useState(false);
   const [adminOpen, setAdminOpen] = React.useState(false);
   const [loginOpen, setLoginOpen] = React.useState(false);
   const [loyaltyOpen, setLoyaltyOpen] = React.useState(false);
   const [institutionalOpen, setInstitutionalOpen] = React.useState(false);
   const [institutionalPage, setInstitutionalPage] = React.useState<InstitutionalPageType>('contacto');
   const [cartToast, setCartToast] = React.useState<CartToastItem | null>(null);
+  const [isChatOpen, setIsChatOpen] = React.useState(false);
 
   const handleOpenInstitutional = (page: InstitutionalPageType) => {
     setInstitutionalPage(page);
@@ -224,7 +224,27 @@ export default function App() {
   }, [currentUser]);
 
   // Admin ERP & Employee Roles State
-  const [employees, setEmployees] = React.useState<EmployeeUser[]>(INITIAL_EMPLOYEES);
+  const [employees, setEmployees] = React.useState<EmployeeUser[]>(() => {
+    try {
+      const saved = localStorage.getItem('koala_employees_list');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          const hasSoporte = parsed.some(e => e.email.toLowerCase() === 'soporte@clientum.com.ar');
+          if (!hasSoporte) {
+            const soporteUser = INITIAL_EMPLOYEES.find(e => e.email === 'soporte@clientum.com.ar');
+            if (soporteUser) return [...parsed, soporteUser];
+          }
+          return parsed;
+        }
+      }
+    } catch {}
+    return INITIAL_EMPLOYEES;
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('koala_employees_list', JSON.stringify(employees));
+  }, [employees]);
   const [erpConfig, setErpConfig] = React.useState<ErpConnectionConfig>(INITIAL_ERP_CONFIG);
   const [erpStatus, setErpStatus] = React.useState<ErpSyncStatus>(INITIAL_ERP_STATUS);
   const [quotes, setQuotes] = React.useState<QuoteRecord[]>(INITIAL_QUOTES);
@@ -584,11 +604,31 @@ export default function App() {
   }, [cartItems]);
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
+    const targetId = sectionId === 'instagram' ? 'instagram-feed' : sectionId;
+    const element = document.getElementById(targetId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.toLowerCase();
+      const path = window.location.pathname.toLowerCase();
+      if (
+        hash === '#instagram' ||
+        hash === '#feed' ||
+        hash === '#instagram-feed' ||
+        path === '/instagram' ||
+        path === '/feed'
+      ) {
+        const timer = setTimeout(() => {
+          scrollToSection('instagram-feed');
+        }, 350);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [currentPath]);
 
   // Dedicated /docs and /propuesta route for direct client / stakeholder sharing
   if (currentPath === '/docs' || currentPath === '/propuesta') {
@@ -628,7 +668,7 @@ export default function App() {
         </header>
 
         <div className="flex-1 p-3 sm:p-6 max-w-7xl w-full mx-auto">
-          <DocumentationViewer />
+          <DocumentationViewer currentUser={currentUser} />
         </div>
       </div>
     );
@@ -670,6 +710,8 @@ export default function App() {
           webhookEvents={webhookEvents}
           onRetryWebhookEvent={handleRetryWebhookEvent}
           onSimulateWebhookEvent={handleSimulateWebhookEvent}
+          currentBranch={currentBranch}
+          onAddToCart={handleAddToCart}
         />
       );
     }
@@ -701,7 +743,6 @@ export default function App() {
         cartCount={cartCount}
         currentUser={currentUser}
         onOpenCart={() => setCartOpen(true)}
-        onOpenAi={() => setAiOpen(true)}
         onOpenAdmin={() => {
           if (currentUser) {
             navigateTo('/admin');
@@ -724,7 +765,7 @@ export default function App() {
           currentBranch={currentBranch}
           onScrollToCatalog={() => scrollToSection('catalog')}
           onScrollToLocations={() => scrollToSection('locations')}
-          onOpenAi={() => setAiOpen(true)}
+          onOpenAi={() => setIsChatOpen(true)}
           onSelectCategory={setSelectedCategory}
           onOpenInstitutional={handleOpenInstitutional}
         />
@@ -737,8 +778,16 @@ export default function App() {
           onSelectCategory={setSelectedCategory}
           onAddToCart={handleAddToCart}
           cartItemsMap={cartItemsMap}
-          onOpenAi={() => setAiOpen(true)}
+          onOpenAi={() => setIsChatOpen(true)}
           currentBranch={currentBranch}
+        />
+
+        {/* Official Instagram Feed (@koalalotiene) & Social Commerce Hub */}
+        <InstagramFeedSection
+          inventory={inventory}
+          currentBranch={currentBranch}
+          onScrollToCatalog={() => scrollToSection('catalog')}
+          onAddToCart={handleAddToCart}
         />
 
         {/* Store Locations & Maps Section */}
@@ -793,16 +842,6 @@ export default function App() {
         onRedeemReward={handleRedeemReward}
       />
 
-      {/* Gemini AI Commercial Assistant Drawer */}
-      <AiAssistantDrawer
-        isOpen={aiOpen}
-        onClose={() => setAiOpen(false)}
-        currentBranch={currentBranch}
-        onAddToCart={handleAddToCart}
-        products={inventory}
-        loyaltyProfile={loyaltyProfile}
-      />
-
       {/* Mobile Sticky Cart Bar */}
       <MobileCartBar
         cartCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
@@ -830,6 +869,8 @@ export default function App() {
         products={inventory}
         loyaltyProfile={loyaltyProfile}
         onAddToCart={handleAddToCart}
+        isOpen={isChatOpen}
+        onToggleOpen={setIsChatOpen}
       />
 
       {/* Staff & Admin Login Modal */}
@@ -879,6 +920,8 @@ export default function App() {
           webhookEvents={webhookEvents}
           onRetryWebhookEvent={handleRetryWebhookEvent}
           onSimulateWebhookEvent={handleSimulateWebhookEvent}
+          currentBranch={currentBranch}
+          onAddToCart={handleAddToCart}
         />
       )}
 

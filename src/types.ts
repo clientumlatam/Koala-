@@ -395,4 +395,33 @@ export interface McpToolCallLog {
   status: 'success' | 'error';
 }
 
+export interface InstagramCarouselSlide {
+  title: string;
+  subtitle?: string;
+  badge?: string;
+  bgColor?: string;
+  imageUrl?: string;
+  bulletPoints?: string[];
+  priceBadge?: string;
+  highlightOffer?: string;
+}
+
+export interface InstagramPost {
+  id: string;
+  type: 'image' | 'carousel' | 'reel';
+  title?: string;
+  caption: string;
+  category: 'todos' | 'ofertas' | 'polietileno' | 'cotillon' | 'reposteria' | 'descartables' | 'locales';
+  date: string;
+  likes: number;
+  commentsCount: number;
+  mediaUrl: string;
+  carouselSlides?: InstagramCarouselSlide[];
+  taggedProductSkus?: string[];
+  suggestedKeyword?: string;
+  permalink?: string;
+  isPinned?: boolean;
+}
+
+
 

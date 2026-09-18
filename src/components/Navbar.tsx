@@ -28,7 +28,7 @@ interface NavbarProps {
   cartCount: number;
   currentUser?: EmployeeUser | null;
   onOpenCart: () => void;
-  onOpenAi: () => void;
+  onOpenAi?: () => void;
   onOpenAdmin: () => void;
   onOpenLogin: () => void;
   onOpenLoyaltyModal: () => void;
@@ -365,16 +365,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
-            {/* AI Assistant Button */}
-            <button
-              onClick={onOpenAi}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold shadow-xs shadow-orange-500/20 transition-all cursor-pointer whitespace-nowrap"
-              title="Abrir Asesor de Compras Inteligente"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-200 shrink-0" />
-              <span className="whitespace-nowrap">Asesor AI</span>
-            </button>
-
             {/* Cart Button */}
             <motion.button
               onClick={onOpenCart}
@@ -432,17 +422,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </AnimatePresence>
             </motion.button>
-
-            {/* Staff user active pill if logged in */}
-            {currentUser && (
-              <button
-                onClick={onOpenAdmin}
-                className="hidden xl:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800 text-slate-200 text-[11px] font-bold border border-slate-700 cursor-pointer whitespace-nowrap"
-                title="Panel de Administración Staff"
-              >
-                <span>🔒 Staff</span>
-              </button>
-            )}
 
             {/* Mobile Hamburger Toggle */}
             <button

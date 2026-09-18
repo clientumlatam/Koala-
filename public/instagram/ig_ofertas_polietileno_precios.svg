@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="600" height="750">
+  <defs>
+    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fffaf5"/>
+    </linearGradient>
+    <filter id="shadow2" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="600" height="750" fill="url(#bgGrad2)" rx="24"/>
+  
+  <!-- Top Header Title -->
+  <g transform="translate(300, 75)" text-anchor="middle">
+    <text font-family="'Fredoka', system-ui, -apple-system, sans-serif" font-weight="900" font-size="34" fill="#0f172a">
+      OFERTAS EN
+    </text>
+    <text y="48" font-family="'Fredoka', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="#f97316" stroke="#0f172a" stroke-width="3" paint-order="stroke fill">
+      POLIETILENO
+    </text>
+    <text y="92" font-family="'Fredoka', system-ui, -apple-system, sans-serif" font-weight="900" font-size="40" fill="#0f172a">
+      Y EMBALAJE
+    </text>
+  </g>
+
+  <!-- Product 1: Bolsas Camiseta (Top Left) -->
+  <g transform="translate(130, 240)">
+    <!-- Bag Shape -->
+    <path d="M -45 0 C -45 -10 -35 -20 -25 -20 C -15 -20 -15 -5 -15 0 L 15 0 C 15 -5 15 -20 25 -20 C 35 -20 45 -10 45 0 L 50 80 C 50 88 42 95 35 95 L -35 95 C -42 95 -50 88 -50 80 Z" fill="#ffffff" stroke="#0f172a" stroke-width="3" filter="url(#shadow2)"/>
+    <path d="M -15 0 C -15 15 15 15 15 0" fill="none" stroke="#0f172a" stroke-width="3"/>
+    
+    <!-- Discount Badge -->
+    <g transform="translate(45, 10)">
+      <circle cx="0" cy="0" r="32" fill="#ea580c" stroke="#9a3412" stroke-width="2"/>
+      <text y="-4" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="12" fill="#ffffff" text-anchor="middle">AHORRO</text>
+      <text y="14" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="17" fill="#ffffff" text-anchor="middle">$3400</text>
+    </g>
+
+    <!-- Label & Price -->
+    <text y="125" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="18" fill="#0f172a" text-anchor="middle">Bolsas Camiseta</text>
+    <text y="145" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="18" fill="#0f172a" text-anchor="middle">Minorista</text>
+    
+    <!-- Price Pill -->
+    <g transform="translate(0, 175)">
+      <rect x="-95" y="-18" width="190" height="36" rx="18" fill="#ea580c"/>
+      <text y="6" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="20" fill="#ffffff" text-anchor="middle">$3400 / $2900</text>
+    </g>
+  </g>
+
+  <!-- Product 2: Big Bag (Top Right) -->
+  <g transform="translate(440, 245)">
+    <!-- Big Bag Body -->
+    <path d="M -55 -15 L 55 -15 L 50 65 L -50 65 Z" fill="#ffffff" stroke="#0f172a" stroke-width="3" filter="url(#shadow2)"/>
+    <!-- Handles -->
+    <path d="M -45 -15 C -45 -40 -30 -40 -30 -15" fill="none" stroke="#0f172a" stroke-width="4"/>
+    <path d="M 30 -15 C 30 -40 45 -40 45 -15" fill="none" stroke="#0f172a" stroke-width="4"/>
+    <!-- Big Bag Print -->
+    <text y="20" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="22" fill="#0f172a" text-anchor="middle">Big</text>
+    <text y="42" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="22" fill="#0f172a" text-anchor="middle">Bag</text>
+    
+    <text x="-80" y="10" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="16" fill="#0f172a">H</text>
+    <text x="-80" y="28" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="16" fill="#0f172a">Film</text>
+  </g>
+
+  <!-- Product 3: Film Stretch Manual (Bottom Right) -->
+  <g transform="translate(430, 480)">
+    <!-- Stretch Roll Perspective -->
+    <g transform="rotate(-20)">
+      <rect x="-65" y="-18" width="130" height="36" rx="8" fill="#f1f5f9" stroke="#0f172a" stroke-width="3" filter="url(#shadow2)"/>
+      <ellipse cx="-65" cy="0" rx="10" ry="18" fill="#cbd5e1" stroke="#0f172a" stroke-width="2"/>
+      <circle cx="-65" cy="0" r="5" fill="#78350f"/>
+    </g>
+
+    <!-- Discount Badge -->
+    <g transform="translate(45, -20)">
+      <circle cx="0" cy="0" r="32" fill="#ea580c" stroke="#9a3412" stroke-width="2"/>
+      <text y="-4" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="12" fill="#ffffff" text-anchor="middle">AHORRO</text>
+      <text y="14" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="17" fill="#ffffff" text-anchor="middle">$1900</text>
+    </g>
+
+    <!-- Label & Price -->
+    <text y="65" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="18" fill="#0f172a" text-anchor="middle">Film Stretch Manual</text>
+    
+    <!-- Price Pill -->
+    <g transform="translate(0, 95)">
+      <rect x="-105" y="-18" width="210" height="36" rx="18" fill="#ea580c"/>
+      <text y="6" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="20" fill="#ffffff" text-anchor="middle">$14800 / $12900</text>
+    </g>
+  </g>
+
+  <!-- Bottom Left: Smiling Mascot with Big Bag -->
+  <g transform="translate(110, 520)">
+    <!-- Koala Mascot -->
+    <g transform="scale(0.85)">
+      <circle cx="-45" cy="-30" r="26" fill="#94a3b8"/>
+      <circle cx="-45" cy="-30" r="16" fill="#fbcfe8"/>
+      <circle cx="45" cy="-30" r="26" fill="#94a3b8"/>
+      <circle cx="45" cy="-30" r="16" fill="#fbcfe8"/>
+      <ellipse cx="0" cy="0" rx="45" ry="38" fill="#cbd5e1"/>
+      <circle cx="-25" cy="10" r="8" fill="#f472b6" opacity="0.6"/>
+      <circle cx="25" cy="10" r="8" fill="#f472b6" opacity="0.6"/>
+      <ellipse cx="-16" cy="-5" rx="6" ry="8" fill="#0f172a"/>
+      <circle cx="-14" cy="-8" r="2.5" fill="#ffffff"/>
+      <ellipse cx="16" cy="-5" rx="6" ry="8" fill="#0f172a"/>
+      <circle cx="18" cy="-8" r="2.5" fill="#ffffff"/>
+      <ellipse cx="0" cy="2" rx="14" ry="18" fill="#475569"/>
+      <path d="M -8 18 Q 0 26 8 18" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+      <path d="M -20 35 C -30 50 -25 80 0 80 C 25 80 30 50 20 35" fill="#94a3b8"/>
+      <ellipse cx="0" cy="55" rx="16" ry="14" fill="#ffffff"/>
+      <!-- Arm pointing right -->
+      <path d="M 20 40 Q 55 35 65 30" fill="none" stroke="#94a3b8" stroke-width="12" stroke-linecap="round"/>
+    </g>
+
+    <!-- Mini Big Bag in hand -->
+    <g transform="translate(85, 30)">
+      <rect x="-25" y="-10" width="50" height="65" rx="6" fill="#ffffff" stroke="#0f172a" stroke-width="2"/>
+      <path d="M -12 -10 C -12 -22 12 -22 12 -10" fill="none" stroke="#78350f" stroke-width="3"/>
+      <text y="20" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="14" fill="#0f172a" text-anchor="middle">Big</text>
+      <text y="36" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="14" fill="#0f172a" text-anchor="middle">Bag</text>
+    </g>
+  </g>
+
+  <!-- Bottom Orange Footer Bar -->
+  <rect x="0" y="715" width="600" height="35" fill="#ea580c"/>
+</svg>

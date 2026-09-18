@@ -53,6 +53,8 @@ import {
   QuoteRecord, 
   ProductInventoryRecord, 
   BranchId,
+  BranchInfo,
+  Product,
   ErpConnectionConfig,
   ErpInvoice,
   StockTransferOrder,
@@ -72,6 +74,7 @@ import { SocialCommerceHub } from './SocialCommerceHub';
 import { McpIntegrationConsole } from './McpIntegrationConsole';
 import { KoalaLogo } from './KoalaLogo';
 import { INITIAL_STOCK_MOVEMENTS } from '../data/adminData';
+import { STORES_DATA } from '../data/products';
 
 
 interface AdminPanelModalProps {
@@ -107,6 +110,8 @@ interface AdminPanelModalProps {
   webhookEvents?: ErpWebhookEventRecord[];
   onRetryWebhookEvent?: (eventId: string) => void;
   onSimulateWebhookEvent?: () => void;
+  currentBranch?: BranchInfo;
+  onAddToCart?: (product: Product, quantity: number, isWholesale: boolean) => void;
 }
 
 export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
@@ -142,6 +147,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   webhookEvents,
   onRetryWebhookEvent,
   onSimulateWebhookEvent,
+  currentBranch,
+  onAddToCart,
 }) => {
   const [activeTab, setActiveTab] = useState<
     'enterprise_demo' | 'sync_health' | 'docs' | 'social_commerce' | 'mcp_protocol' | 'dashboard' | 'quotes' | 'inventory' | 'transfers' | 'invoices' | 'prices_import' | 'csv_cron' | 'staff' | 'erp_config' | 'api_tester'
@@ -436,16 +443,29 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       return ['dashboard', 'quotes', 'invoices', 'prices_import'].includes(tab);
     }
     if (currentUser.role === 'backend') {
-      return ['dashboard', 'sync_health', 'erp_config', 'api_tester', 'csv_cron', 'mcp_protocol'].includes(tab);
+      return [
+        'enterprise_demo',
+        'sync_health',
+        'mcp_protocol',
+        'dashboard',
+        'inventory',
+        'transfers',
+        'prices_import',
+        'csv_cron',
+        'staff',
+        'erp_config',
+        'api_tester',
+        'social_commerce',
+        'docs'
+      ].includes(tab);
     }
     return false;
   };
 
-
   const filteredQuotes = quotes.filter((q) => {
     if (quoteFilterStatus !== 'todas' && q.status !== quoteFilterStatus) return false;
     if (quoteFilterBranch !== 'todas' && q.branchId !== quoteFilterBranch) return false;
-    if (currentUser.role !== 'admin' && currentUser.branchId !== 'todas' && q.branchId !== currentUser.branchId) {
+    if (currentUser.role !== 'admin' && currentUser.role !== 'backend' && currentUser.branchId !== 'todas' && q.branchId !== currentUser.branchId) {
       return false;
     }
     return true;
@@ -467,7 +487,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     ventas: { title: 'Ejecutivo de Ventas', color: 'bg-orange-100 text-orange-900 border-orange-300 dark:bg-orange-950/80 dark:text-orange-200 dark:border-orange-800', badge: '💼 Ventas' },
     deposito: { title: 'Logística y Depósito', color: 'bg-blue-100 text-blue-900 border-blue-300 dark:bg-blue-950/80 dark:text-blue-200 dark:border-blue-800', badge: '📦 Depósito' },
     facturacion: { title: 'Administración y ERP', color: 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-200 dark:border-emerald-800', badge: '🧾 Facturación' },
-    backend: { title: 'Backend & Integraciones ERP', color: 'bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-800', badge: '⚙️ Backend' },
+    backend: { title: 'Backend & Integraciones ERP', color: 'bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-800', badge: '⚙️ Backend & Integraciones' },
   };
 
   const statusLabels: Record<QuoteRecord['status'], { label: string; color: string }> = {
@@ -640,250 +660,301 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           </div>
         )}
 
-        {/* Main Tabs Navigation */}
-        <div className="relative flex items-center border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
-          <button
-            type="button"
-            onClick={() => handleScrollTabs('left')}
-            className="p-2.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer bg-slate-100/80 dark:bg-slate-800/80 border-r border-slate-200 dark:border-slate-700 shrink-0 z-10"
-            title="Desplazar pestañas a la izquierda"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
+        
+        {/* Split Layout Container */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Sidebar Navigation */}
+          <div className="w-64 lg:w-72 shrink-0 bg-slate-50/80 dark:bg-slate-900/40 border-r border-slate-200 dark:border-slate-800 overflow-y-auto hidden md:block select-none">
+            <div className="p-4 space-y-6">
+              {/* Group 1: Demo & System */}
+              <div>
+                <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-3">Sistema & Demo</h3>
+                <div className="space-y-0.5">
+                  <button
+                    onClick={() => setActiveTab('enterprise_demo')}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center justify-between transition-all ${
+                      activeTab === 'enterprise_demo'
+                        ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-600/30'
+                        : 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Zap className={`w-4 h-4 ${activeTab === 'enterprise_demo' ? 'text-amber-200' : ''}`} />
+                      <span className="truncate">DEMO EN VIVO</span>
+                    </div>
+                  </button>
+                  {canAccess('sync_health') && (
+                    <button
+                      onClick={() => setActiveTab('sync_health')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center justify-between transition-all ${
+                        activeTab === 'sync_health'
+                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Activity className={`w-4 h-4 ${activeTab === 'sync_health' ? 'text-emerald-500' : 'text-emerald-500/70'}`} />
+                        <span className="truncate">Salud & Sync ERP</span>
+                      </div>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    </button>
+                  )}
+                  {canAccess('mcp_protocol') && (
+                    <button
+                      onClick={() => setActiveTab('mcp_protocol')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center justify-between transition-all ${
+                        activeTab === 'mcp_protocol'
+                          ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Cpu className={`w-4 h-4 ${activeTab === 'mcp_protocol' ? 'text-indigo-500' : 'text-indigo-500/70'}`} />
+                        <span className="truncate">MCP Protocol Server</span>
+                      </div>
+                      <span className="text-[9px] bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded font-mono font-black">v1.0</span>
+                    </button>
+                  )}
+                </div>
+              </div>
 
-          <div ref={tabsNavRef} className="flex items-center gap-1 px-3 pt-2.5 overflow-x-auto scrollbar-none flex-1">
-            <button
-              onClick={() => setActiveTab('enterprise_demo')}
-              className={`px-4 py-2.5 text-xs font-black flex items-center gap-2 border-b-2 transition-all whitespace-nowrap rounded-t-xl ${
-                activeTab === 'enterprise_demo'
-                  ? 'border-orange-500 text-white bg-gradient-to-r from-orange-600 to-amber-600 shadow-md shadow-orange-600/30'
-                  : 'border-transparent text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 font-bold'
-              }`}
-            >
-              <Zap className="w-4 h-4 text-amber-300 fill-amber-300" />
-              <span>🚀 DEMO EN VIVO (Flujo 5 Departamentos & ISO)</span>
-            </button>
+              {/* Group 2: Operations */}
+              <div>
+                <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-3">Operaciones ERP</h3>
+                <div className="space-y-0.5">
+                  {canAccess('dashboard') && (
+                    <button
+                      onClick={() => setActiveTab('dashboard')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center transition-all ${
+                        activeTab === 'dashboard'
+                          ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <Activity className="w-4 h-4 mr-2" />
+                      <span className="truncate">Dashboard Analytics</span>
+                    </button>
+                  )}
+                  {canAccess('inventory') && (
+                    <button
+                      onClick={() => setActiveTab('inventory')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center transition-all ${
+                        activeTab === 'inventory'
+                          ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <PackageCheck className="w-4 h-4 mr-2" />
+                      <span className="truncate">Control de Inventario</span>
+                    </button>
+                  )}
+                  {canAccess('transfers') && (
+                    <button
+                      onClick={() => setActiveTab('transfers')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center justify-between transition-all ${
+                        activeTab === 'transfers'
+                          ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <ArrowRightLeft className="w-4 h-4" />
+                        <span className="truncate">Traspasos</span>
+                      </div>
+                      <span className="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded font-black">{transfers.length}</span>
+                    </button>
+                  )}
+                  {canAccess('prices_import') && (
+                    <button
+                      onClick={() => setActiveTab('prices_import')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center transition-all ${
+                        activeTab === 'prices_import'
+                          ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <Percent className="w-4 h-4 mr-2" />
+                      <span className="truncate">Ajustes & Precios</span>
+                    </button>
+                  )}
+                </div>
+              </div>
 
-            {canAccess('sync_health') && (
-              <button
-                onClick={() => setActiveTab('sync_health')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
-                  activeTab === 'sync_health'
-                    ? 'border-emerald-600 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <Activity className="w-4 h-4 text-emerald-500" />
-                <span>Salud del Sistema & Sync ERP</span>
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              </button>
-            )}
+              {/* Group 3: Ventas & Facturación */}
+              <div>
+                <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-3">Ventas & Docs</h3>
+                <div className="space-y-0.5">
+                  {canAccess('quotes') && (
+                    <button
+                      onClick={() => setActiveTab('quotes')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center justify-between transition-all ${
+                        activeTab === 'quotes'
+                          ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4" />
+                        <span className="truncate">Cotizaciones</span>
+                      </div>
+                      <span className="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded font-black">{quotes.length}</span>
+                    </button>
+                  )}
+                  {canAccess('invoices') && (
+                    <button
+                      onClick={() => setActiveTab('invoices')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center justify-between transition-all ${
+                        activeTab === 'invoices'
+                          ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Receipt className="w-4 h-4" />
+                        <span className="truncate">Facturación AFIP</span>
+                      </div>
+                      <span className="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded font-black">{invoices.length}</span>
+                    </button>
+                  )}
+                </div>
+              </div>
 
-            {canAccess('docs') && (
-              <button
-                onClick={() => setActiveTab('docs')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
-                  activeTab === 'docs'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <BookOpen className="w-4 h-4 text-orange-500" />
-                <span>Dossier & Documentación</span>
-                <span className="text-[10px] bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 px-1.5 py-0.5 rounded font-extrabold border border-orange-200 dark:border-orange-800">
-                  6 docs
-                </span>
-              </button>
-            )}
+              {/* Group 4: Advanced */}
+              <div>
+                <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-3">Sistema & Admin</h3>
+                <div className="space-y-0.5">
+                  {canAccess('staff') && (
+                    <button
+                      onClick={() => setActiveTab('staff')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center transition-all ${
+                        activeTab === 'staff'
+                          ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      <span className="truncate">Gestión de Personal</span>
+                    </button>
+                  )}
+                  {canAccess('erp_config') && (
+                    <button
+                      onClick={() => setActiveTab('erp_config')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center transition-all ${
+                        activeTab === 'erp_config'
+                          ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <SlidersHorizontal className="w-4 h-4 mr-2" />
+                      <span className="truncate">Configuración ERP</span>
+                    </button>
+                  )}
+                  {canAccess('csv_cron') && (
+                    <button
+                      onClick={() => setActiveTab('csv_cron')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center transition-all ${
+                        activeTab === 'csv_cron'
+                          ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <Clock className="w-4 h-4 mr-2" />
+                      <span className="truncate">Automatización Cron</span>
+                    </button>
+                  )}
+                  {canAccess('api_tester') && (
+                    <button
+                      onClick={() => setActiveTab('api_tester')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center transition-all ${
+                        activeTab === 'api_tester'
+                          ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <Terminal className="w-4 h-4 mr-2" />
+                      <span className="truncate">Tester API REST</span>
+                    </button>
+                  )}
+                </div>
+              </div>
 
-            {canAccess('social_commerce') && (
-              <button
-                onClick={() => setActiveTab('social_commerce')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
-                  activeTab === 'social_commerce'
-                    ? 'border-purple-600 text-purple-600 dark:text-purple-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <Instagram className="w-4 h-4 text-pink-500" />
-                <span>Social Commerce & Instagram @koalalotiene</span>
-                <span className="text-[10px] bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded font-black border border-purple-200 dark:border-purple-800">
-                  Bot Live
-                </span>
-              </button>
-            )}
-
-            {canAccess('mcp_protocol') && (
-              <button
-                onClick={() => setActiveTab('mcp_protocol')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
-                  activeTab === 'mcp_protocol'
-                    ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <Cpu className="w-4 h-4 text-indigo-500" />
-                <span>MCP Protocol ERP Server</span>
-                <span className="text-[10px] bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-mono font-black border border-indigo-200 dark:border-indigo-800">
-                  v1.0
-                </span>
-              </button>
-            )}
-
-
-            {canAccess('dashboard') && (
-              <button
-                onClick={() => setActiveTab('dashboard')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'dashboard'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <Activity className="w-4 h-4" />
-                <span>Dashboard ERP</span>
-              </button>
-            )}
-
-            {canAccess('quotes') && (
-              <button
-                onClick={() => setActiveTab('quotes')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
-                  activeTab === 'quotes'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <FileText className="w-4 h-4" />
-                <span>Cotizaciones ({quotes.length})</span>
-              </button>
-            )}
-
-            {canAccess('inventory') && (
-              <button
-                onClick={() => setActiveTab('inventory')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'inventory'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <PackageCheck className="w-4 h-4" />
-                <span>Hub de Stock & ERP Multi-Sucursal</span>
-              </button>
-            )}
-
-            {canAccess('transfers') && (
-              <button
-                onClick={() => setActiveTab('transfers')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'transfers'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <ArrowRightLeft className="w-4 h-4" />
-                <span>Remitos Inter-Sucursales ({transfers.length})</span>
-              </button>
-            )}
-
-            {canAccess('invoices') && (
-              <button
-                onClick={() => setActiveTab('invoices')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'invoices'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <Receipt className="w-4 h-4" />
-                <span>Facturación AFIP ({invoices.length})</span>
-              </button>
-            )}
-
-            {canAccess('prices_import') && (
-              <button
-                onClick={() => setActiveTab('prices_import')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'prices_import'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <Percent className="w-4 h-4" />
-                <span>Ajustes & Precios</span>
-              </button>
-            )}
-
-            {canAccess('csv_cron') && (
-              <button
-                onClick={() => setActiveTab('csv_cron')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'csv_cron'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <Clock className="w-4 h-4 text-orange-500" />
-                <span>Automatización & CSV Cron ({cronTasks.filter((t) => t.active).length})</span>
-              </button>
-            )}
-
-            {canAccess('erp_config') && (
-              <button
-                onClick={() => setActiveTab('erp_config')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'erp_config'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <SlidersHorizontal className="w-4 h-4 text-orange-500" />
-                <span>Configuración ERP</span>
-              </button>
-            )}
-
-            {canAccess('api_tester') && (
-              <button
-                onClick={() => setActiveTab('api_tester')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'api_tester'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <Terminal className="w-4 h-4" />
-                <span>Tester API REST</span>
-              </button>
-            )}
-
-            {canAccess('staff') && (
-              <button
-                onClick={() => setActiveTab('staff')}
-                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'staff'
-                    ? 'border-orange-600 text-orange-600 dark:text-orange-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
-                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <Users className="w-4 h-4" />
-                <span>Personal ({employees.length})</span>
-              </button>
-            )}
+              {/* Group 5: Marketing & Social */}
+              <div>
+                <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 px-3">Marketing</h3>
+                <div className="space-y-0.5">
+                  {canAccess('social_commerce') && (
+                    <button
+                      onClick={() => setActiveTab('social_commerce')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center justify-between transition-all ${
+                        activeTab === 'social_commerce'
+                          ? 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Instagram className={`w-4 h-4 ${activeTab === 'social_commerce' ? 'text-purple-500' : 'text-purple-500/70'}`} />
+                        <span className="truncate">Social Commerce</span>
+                      </div>
+                    </button>
+                  )}
+                  {canAccess('docs') && (
+                    <button
+                      onClick={() => setActiveTab('docs')}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold flex items-center transition-all ${
+                        activeTab === 'docs'
+                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
+                      }`}
+                    >
+                      <BookOpen className={`w-4 h-4 mr-2 ${activeTab === 'docs' ? 'text-blue-500' : 'text-blue-500/70'}`} />
+                      <span className="truncate">Documentación</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => handleScrollTabs('right')}
-            className="p-2.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer bg-slate-100/80 dark:bg-slate-800/80 border-l border-slate-200 dark:border-slate-700 shrink-0 z-10"
-            title="Desplazar pestañas a la derecha"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-
         {/* Tab Content Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/60 dark:bg-slate-950/40">
+        <div className="flex-1 overflow-y-auto bg-slate-50/60 dark:bg-slate-950/40 flex flex-col relative">
+          
+          {/* Mobile Select - Only visible on small screens */}
+          <div className="md:hidden sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 p-3">
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value as any)}
+              className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-sm font-bold text-slate-800 dark:text-slate-200 py-3 px-4 outline-none focus:ring-2 focus:ring-orange-500/50 appearance-none shadow-xs"
+            >
+              <optgroup label="Sistema & Demo">
+                <option value="enterprise_demo">🚀 DEMO EN VIVO</option>
+                {canAccess('sync_health') && <option value="sync_health">Salud & Sync ERP</option>}
+                {canAccess('mcp_protocol') && <option value="mcp_protocol">MCP Protocol Server</option>}
+              </optgroup>
+              <optgroup label="Operaciones ERP">
+                {canAccess('dashboard') && <option value="dashboard">Dashboard Analytics</option>}
+                {canAccess('inventory') && <option value="inventory">Control de Inventario</option>}
+                {canAccess('transfers') && <option value="transfers">Traspasos entre Sucursales</option>}
+                {canAccess('prices_import') && <option value="prices_import">Ajustes & Precios</option>}
+              </optgroup>
+              <optgroup label="Ventas & Docs">
+                {canAccess('quotes') && <option value="quotes">Cotizaciones</option>}
+                {canAccess('invoices') && <option value="invoices">Facturación AFIP</option>}
+              </optgroup>
+              <optgroup label="Sistema & Admin">
+                {canAccess('staff') && <option value="staff">Gestión de Personal</option>}
+                {canAccess('erp_config') && <option value="erp_config">Configuración ERP</option>}
+                {canAccess('csv_cron') && <option value="csv_cron">Automatización Cron</option>}
+                {canAccess('api_tester') && <option value="api_tester">Tester API REST</option>}
+              </optgroup>
+              <optgroup label="Marketing">
+                {canAccess('social_commerce') && <option value="social_commerce">Social Commerce (IG)</option>}
+                {canAccess('docs') && <option value="docs">Documentación</option>}
+              </optgroup>
+            </select>
+          </div>
+          
+          <div className="flex-1 p-4 sm:p-6">
+
           
           {/* Failed Webhook Alert Banner */}
           {webhookEvents && webhookEvents.some(ev => ev.status === 'error') && (
@@ -925,7 +996,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           {/* TAB: DOSSIER & DOCUMENTACION */}
           {activeTab === 'docs' && (
             <div className="h-full">
-              <DocumentationViewer />
+              <DocumentationViewer currentUser={currentUser} />
             </div>
           )}
 
@@ -933,7 +1004,9 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           {activeTab === 'social_commerce' && (
             <SocialCommerceHub
               inventory={inventory}
+              currentBranch={currentBranch || STORES_DATA[0]}
               onNavigateToStore={onNavigateToStore}
+              onAddToCart={onAddToCart}
             />
           )}
 
@@ -2169,6 +2242,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         </div>
       )}
 
+        </div>
+      </div>
     </div>
   );
 };

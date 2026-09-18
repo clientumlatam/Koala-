@@ -1,6 +1,6 @@
 export interface DocItem {
   id: string;
-  category: 'comercial' | 'tecnico' | 'demo';
+  category: 'comercial' | 'tecnico' | 'demo' | 'pipeline' | 'backend';
   categoryLabel: string;
   title: string;
   subtitle: string;
@@ -11,6 +11,8 @@ export interface DocItem {
   content: string;
   copyableText?: string;
   isPrintableHtml?: boolean;
+  requiresClientumSupport?: boolean;
+  restrictedToRole?: string[];
 }
 
 export const DOCUMENTATION_DATA: DocItem[] = [
@@ -20,9 +22,11 @@ export const DOCUMENTATION_DATA: DocItem[] = [
     categoryLabel: '01. Comercial & Propuestas',
     title: 'Propuesta Comercial — Koala Cotillón & Descartables',
     subtitle: 'Plan de Transformación Digital Omnicanal en 3 Etapas (LP SRL)',
-    badge: 'Propuesta Oficial',
+    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '5 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
     summary: 'Documento integral oficial para Koala Cotillón, Descartables y Polietileno (LP SRL — Mikhail Murekian) en General Roca y Neuquén Capital, con desglose de inversión, condiciones y próximos pasos.',
     content: `
 # Propuesta Comercial — Clientum × KOALA
@@ -105,9 +109,11 @@ El principal dolor de Koala Cotillón es la baja visibilidad y conversión en ca
     categoryLabel: '01. Comercial & Propuestas',
     title: 'Plantilla de Email — Mikhail Murekian (LP SRL)',
     subtitle: 'Correo formal de presentación de la propuesta de 3 etapas',
-    badge: 'Listo para Enviar',
+    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '3 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
     summary: 'Email listo para enviar formalizando la propuesta tras la llamada, enfocado en el dolor de visibilidad y en la estructura modular de 3 etapas.',
     copyableText: `De: Clientum <info@clientum.com.ar>
 Para: Mikhail Murekian <mmurekian@lpsrl.com.ar>
@@ -159,9 +165,11 @@ Utilizá el botón superior para copiar el texto con formato directamente a tu c
     categoryLabel: '01. Comercial & Propuestas',
     title: 'Puntos de Dolor: Redes Sociales → E-Commerce → ERP',
     subtitle: 'Diagnóstico exhaustivo y cadena de valor priorizada',
-    badge: 'Estratégico',
+    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '5 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
     summary: 'Análisis detallado de la fuga de ventas en redes sociales, la ausencia de un destino transaccional ágil y el riesgo operativo de sobreventa mostrador vs. web.',
     content: `
 # Puntos de Dolor y Arquitectura de Conversión: Redes Sociales → E-Commerce → ERP
@@ -214,9 +222,11 @@ Utilizá el botón superior para copiar el texto con formato directamente a tu c
     categoryLabel: '01. Comercial & Propuestas',
     title: 'Resumen Ejecutivo — Transformación Omnicanal Koala',
     subtitle: 'Pilares estratégicos, 3 etapas y beneficios medibles para el negocio',
-    badge: 'Ejecutivo',
+    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '4 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
     summary: 'Síntesis ejecutiva de la visión general, las 3 etapas de implementación (E-Commerce+SEO, ERP y Bots) y los beneficios medibles para LP SRL.',
     content: `
 # Resumen Ejecutivo del Proyecto — Koala Lo Tiene & Clientum
@@ -336,9 +346,11 @@ Koala Lo Tiene es un referente indiscutido en la distribución de artículos de 
     categoryLabel: '02. Técnico & ERP',
     title: 'Respuestas Técnicas para Mikhail Murekian',
     subtitle: 'Argumentación para videollamada: Reserva atómica, Evolution API y MCP',
-    badge: 'Crítico para Cierre',
+    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '6 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
     summary: 'Respuestas paso a paso a las tres objeciones críticas de Mikhail: conflicto de sobreventa mostrador vs. web, riesgos de Evolution API y rol del servidor MCP.',
     copyableText: `Argumentos Clave para la Reunión con Mikhail:
 
@@ -381,9 +393,11 @@ MCP es el estándar que le da "ojos y herramientas en vivo" al modelo de IA. En 
     categoryLabel: '03. Guión Demo & Ventas',
     title: 'Guión de Demostración en Vivo para Google Meet',
     subtitle: 'Estructura cronometrada paso a paso (15–20 min) para cerrar la venta',
-    badge: 'Guión de Ventas',
+    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '5 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
     summary: 'Estructura de llamada de 15 a 20 minutos con diagnóstico inicial, recorrido por el e-commerce, demostración de stock multi-sucursal y manejo de objeciones.',
     content: `
 # Guía de Demostración para Google Meet — Koala Lo Tiene
@@ -419,6 +433,322 @@ MCP es el estándar que le da "ojos y herramientas en vivo" al modelo de IA. En 
   * **Respuesta táctica**: *"¡Excelente! Justamente por eso diseñamos la propuesta en etapas modulares. Lanzamos primero la **Etapa 1 (~15 a 17 días)** para que Koala empiece a facturar online, posicione en Google con SEO y capture clientes ya mismo. Durante ese mes, ustedes definen con tranquilidad si migran a Tango, Dolibarr o su ERP a medida, y cuando esté listo, conectamos la **Etapa 2** directo al software definitivo sin tener que reprogramar dos veces."*
 * **Si preguntan sobre este sitio**:
   * Explicar que este es el **Gemelo Digital Interactivo** desarrollado por Clientum para que el directorio pueda tocar, probar y auditar cada flujo (checkout, reserva atómica, bots y logística) antes de la puesta en marcha definitiva.
+    `
+  },
+  {
+    id: 'pipeline-omnicanal-unificado',
+    category: 'pipeline',
+    categoryLabel: '03. Pipeline Omnicanal',
+    title: 'Pipeline Omnicanal Unificado: Redes Sociales ➔ E-Commerce ➔ ERP',
+    subtitle: 'La Sincronización Definitiva del Ciclo Comercial Moderno (Captura, Conversión y ERP)',
+    badge: 'Arquitectura Estratégica',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '7 min',
+    summary: 'El concepto de un pipeline unificado que conecta redes sociales, comercio electrónico y sistema ERP. Detalle de sus 3 pilares, tabla de integración de datos, ventajas competitivas y automatización de marketing.',
+    copyableText: `EL CONCEPTO DEL PIPELINE OMNICANAL UNIFICADO:
+Redes Sociales ──(Leads/Consultas)──> E-commerce ──(Órdenes/Stock)──> Sistema ERP
+  (Atracción y Captura)                  (Conversión)                 (Operación y Finanzas)
+
+1. Captura (Redes Sociales): Instagram, TikTok, LinkedIn, Facebook.
+2. Conversión (E-commerce): Tienda online y Social Commerce en 3 clics.
+3. Procesamiento (ERP): Órdenes, reserva atómica de stock, facturación y despacho automático.
+
+Ventajas Clave:
+- Segmentación Inteligente de Campañas con historial de compra del ERP.
+- Cumplimiento y Logística en tiempo real (Fulfillment en segundos).
+- Visibilidad Financiera y Conciliación Inmediata de Flujo de Caja.
+- Marketing Automation: Targeted Lists -> Execute Campaign -> Measure Behaviour -> Segment & Score Leads -> Route to CRM -> Nurture Cycle -> Sales Analytics.`,
+    content: `
+# Pipeline Omnicanal Unificado: Redes Sociales ➔ E-commerce ➔ Sistema ERP
+**La sincronización definitiva del ciclo comercial moderno para Koala Lo Tiene y LP SRL**
+
+El concepto de un pipeline unificado que conecte redes sociales, comercio electrónico y un sistema ERP representa la sincronización definitiva del ciclo comercial moderno. Consiste en crear un flujo de datos automatizado donde cada interacción con un cliente se convierte en una venta y se procesa operativamente de inmediato. [1, 2, 3, 4]
+
+A continuación, se detalla cómo funciona la estructura de este pipeline y cómo interactúan sus tres pilares esenciales:
+
+---
+
+## ⛓️ La estructura del Pipeline Omnicanal
+
+Este ecosistema automatiza el recorrido del cliente dividiéndolo en tres etapas perfectamente conectadas:
+
+\`\`\`
+[ Redes Sociales ] ──(Leads/Consultas)──> [ E-commerce ] ──(Órdenes/Stock)──> [ Sistema ERP ]
+  (Atracción y Captura)                      (Conversión)                    (Operación y Finanzas)
+\`\`\`
+
+1. **Captura (Redes Sociales)**: El pipeline inicia atrayendo clientes en plataformas como Instagram, TikTok, LinkedIn o Facebook. Las consultas en comentarios, mensajes directos o clics en anuncios capturan el interés inicial. [1, 4, 5, 6]
+2. **Conversión (E-commerce)**: El tráfico se dirige de forma fluida a la tienda online (o mediante herramientas de Social Commerce como Instagram Shopping) para que el usuario concrete la compra. [5]
+3. **Procesamiento (ERP)**: En el momento en que se genera la orden, los datos viajan al ERP (Enterprise Resource Planning) sin intervención manual. El sistema actualiza el inventario global, emite la factura, gestiona la contabilidad y programa el envío. [3, 7]
+
+---
+
+## 🔄 Flujo de datos e Integración entre componentes
+
+| Conexión | ¿Qué datos se transmiten? | Beneficio Clave |
+| :--- | :--- | :--- |
+| **Social Media ➔ E-commerce** | Enlaces de productos, etiquetas de compra (shoppable tags), sincronización de catálogos y píxeles de seguimiento. | **Experiencia de compra fluida**: El cliente compra el producto que vio en su feed con un solo clic. |
+| **Social Media ➔ ERP / CRM** | Mensajes directos, datos de contacto de leads y registros de interacciones. | **Historial centralizado**: El equipo de soporte o ventas conoce todo el contexto y consultas previas del cliente antes de responder. |
+| **E-commerce ➔ ERP** | Órdenes de compra, pasarelas de pago, perfiles de clientes y datos fiscales. | **Automatización total**: Se elimina el error humano de digitar pedidos manualmente y se agiliza el despacho. |
+| **ERP ➔ E-commerce y Redes** | Niveles de stock en tiempo real, precios actualizados y estados de envío. | **Adiós al sobrestock**: Evita vender en la web o anunciar en redes productos que ya están agotados en el almacén físico. |
+
+---
+
+## 🚀 Ventajas estratégicas del pipeline
+
+* **Segmentación inteligente de campañas**: Al conectar el ERP con las redes sociales, puedes usar el historial real de compras de tus clientes (datos alojados en tu ERP) para diseñar anuncios hiperespecíficos en Facebook o LinkedIn Ads orientados a la recompra o al cross-selling. [1]
+* **Cumplimiento y logística eficientes**: Al estar integrado al ERP, el almacén recibe la orden de empaque segundos después de que el cliente pagó en el sitio web. [3]
+* **Visibilidad financiera absoluta**: Los ingresos de las ventas online se vinculan directamente con los módulos de contabilidad y flujo de caja del negocio de forma automática. [3]
+* **Trazabilidad del ciclo de vida del cliente**: Cada contacto queda indexado, permitiendo reactivar compradores dormidos y premiar la fidelidad de reposteros y comerciantes mayoristas.
+
+---
+
+## 🔁 Ciclo de Marketing Automation & Lead Nurturing
+
+Para maximizar el retorno de inversión de la atracción en redes sociales, el pipeline se conecta con un motor de automatización de marketing continuo de 7 etapas:
+
+1. **Construir Listas Segmentadas (Build Targeted Lists)**: Creación de audiencias basadas en perfil comercial (ej: Reposteros de General Roca, Gastronómicos de Neuquén, Comercios Mayoristas de Polietileno).
+2. **Ejecutar Campañas (Execute Campaign)**: Lanzamiento coordinado en Instagram Ads, mensajes directos ManyChat y WhatsApp Business API con ofertas de temporada.
+3. **Medir Comportamiento (Measure Behaviour)**: Detección en tiempo real de clics en productos, carritos abandonados e interacciones con el bot web.
+4. **Segmentar y Puntuar Prospectos (Segment & Score Leads)**: Asignación automática de puntaje (Lead Scoring). Por ejemplo: +20 pts por consultar lista mayorista, +30 pts por iniciar checkout.
+5. **Enrutar Prospectos Calificados al CRM / ERP (Route to CRM)**: Leads con alta intención de compra se asignan al vendedor de la sucursal más cercana para cierre consultivo.
+6. **Mover Prospectos Tibios a Ciclo de Nutrición (Move to Nurture Cycle)**: Prospectos que aún no deciden su compra reciben cadencias automatizadas de contenido educativo y testimonios.
+7. **Analizar Rendimiento Comercial (Analyse Sales Performance)**: El ERP consolida el retorno de inversión publicitaria (ROAS) y la tasa de recompra mensual.
+
+---
+
+## ⚡ Flujo Automatizado de Reactivación & Win-Back
+
+El sistema incluye una regla de reactivación desatendida para no perder ningún prospecto:
+
+* **Paso 1 (Captura)**: El cliente deja su contacto o consulta por DM en Instagram.
+* **Paso 2 (Tagging)**: Se asigna etiqueta según la categoría de interés (\`#reposteria\`, \`#descartables\`, \`#polietileno\`).
+* **Paso 3 (Disparo Inmediato)**: Envío automático de catálogo PDF interactivo y enlace a la tienda online.
+* **Paso 4 (Evaluación de Interacción - Espera de 48 hs)**:
+  - **Si hizo clic en el enlace**: Se asigna etiqueta \`#interes-activo\` y se envía cupón de envío bonificado para la sucursal correspondiente.
+  - **Si NO hizo clic**: Se dispara recordatorio con asunto alternativo. Si persiste la inactividad, pasa a la lista de **Campaña de Reconquista (Win-Back Campaign)** con ofertas especiales por bulto cerrado.
+    `
+  },
+  {
+    id: 'manual-modulos-backend',
+    category: 'backend',
+    categoryLabel: '04. Módulos Backend & ERP',
+    title: 'Manual de Uso de los 13 Módulos del Backend & ERP Koala',
+    subtitle: 'Guía Operativa Paso a Paso para Operadores, Logística, Facturación y Sistemas',
+    badge: 'Manual Oficial',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '12 min',
+    summary: 'Instrucciones operativas detalladas para utilizar cada módulo del backend Koala: Salud ERP, MCP Server v1.0, Analytics, Inventario, Traspasos Ruta 22, Precios, Cotizaciones, Facturación AFIP, Personal RBAC, Configuración, Cron, Tester y Social Commerce.',
+    content: `
+# Manual Operativo del Backend & ERP — Koala Lo Tiene (LP SRL)
+**Guía de Procedimientos para la Gestión Unificada de Operaciones, Inventario y Facturación**
+
+Este manual detalla el funcionamiento, los procedimientos operativos y las buenas prácticas para cada uno de los 13 módulos que integran el backend de Koala Lo Tiene.
+
+---
+
+## 1. 🟢 Módulo: Salud & Sincronización ERP (Sync Health)
+* **Objetivo**: Monitorear en tiempo real la conectividad con el Gateway ERP (ICXN / Tango), la latencia de respuesta y la recepción de eventos vía webhooks.
+* **Indicadores Principales**:
+  - **Estado del Gateway**: Muestra si el servidor central responde (\`OPERATIVO\` / \`DEGRADADO\` / \`OFFLINE\`).
+  - **Latencia**: Tiempo de respuesta de la API en milisegundos (objetivo: < 80 ms).
+  - **Webhooks Recibidos**: Contador de eventos de actualización transmitidos hoy.
+* **Procedimiento Operativo**:
+  1. Ingresar a la pestaña **Salud & Sync ERP**.
+  2. Verificar que los tres endpoints principales (\`/inventory\`, \`/orders\`, \`/prices\`) reporten estado verde (\`ONLINE\`).
+  3. En caso de fallas o demoras en la red, presionar el botón **Forzar Sincronización Inmediata** para sincronizar el stock de ambas sucursales.
+  4. Revisar la tabla de **Eventos de Webhooks Recientes** para auditar que las órdenes web hayan sido aceptadas por el ERP.
+
+---
+
+## 2. 🤖 Módulo: Servidor MCP Protocol v1.0 (Model Context Protocol)
+* **Objetivo**: Exponer las herramientas seguras del ERP a los modelos de inteligencia artificial (Asistente Web, Bot de WhatsApp y ManyChat) para responder sin alucinaciones.
+* **Herramientas Disponibles (Tools)**:
+  - \`check_stock\`: Consulta existencias reales en DEP-01 (Roca) y DEP-02 (Neuquén).
+  - \`query_price\`: Devuelve precio minorista y mayorista actualizado al instante.
+  - \`reserve_stock\`: Genera bloqueo atómico temporal de 15 minutos en checkout.
+  - \`branch_catalog\`: Filtra artículos disponibles por sucursal y categoría.
+* **Procedimiento Operativo**:
+  - El servidor opera de forma desatendida. Para verificar su salud, ingresar a la pestaña **MCP Protocol** y comprobar que el estado sea \`LISTENING (Port 3000 / RPC 2.0)\`.
+  - Si un operador necesita validar una consulta de IA, puede ejecutar una prueba de herramientas directamente desde el panel de inspección.
+
+---
+
+## 3. 📊 Módulo: Dashboard de Analíticas & KPIs Comerciales
+* **Objetivo**: Proveer métricas ejecutivas de ventas, demanda insatisfecha, rotación de artículos y comportamiento por sucursal.
+* **Procedimiento Operativo**:
+  - Monitorear el **Total Facturado Hoy**, el **Ticket Promedio** y las **Cotizaciones en Espera**.
+  - Comparar el rendimiento entre **Casa Central General Roca** y **Salón Neuquén Capital**.
+  - Identificar los 5 productos más vendidos del mes para coordinar pedidos de reposición con la fábrica de polietileno.
+
+---
+
+## 4. 📦 Módulo: Control de Inventario & Almacenes Multi-Sucursal
+* **Objetivo**: Controlar las existencias físicas y reservas temporales en **DEP-01 (General Roca)** y **DEP-02 (Neuquén Capital)**.
+* **Procedimiento Operativo**:
+  1. Utilizar la barra de búsqueda para filtrar por SKU, código ERP o descripción del artículo.
+  2. Observar las columnas de stock disponible y unidades bloqueadas por reserva web.
+  3. Para realizar un ajuste manual por conteo físico o merma, hacer clic en el botón **Ajustar Stock**, ingresar la nueva cantidad y seleccionar la sucursal de destino.
+  4. Si un artículo alcanza el umbral de stock crítico, el sistema emitirá una alerta visual automática para reabastecimiento.
+
+---
+
+## 5. 🚚 Módulo: Traspasos de Stock Inter-Sucursales (Ruta 22)
+* **Objetivo**: Gestionar el envío de mercadería entre la planta de General Roca y el salón comercial de Neuquén Capital a través de la Ruta Nacional 22.
+* **Estados del Traspaso**:
+  - \`preparando\`: Mercadería siendo embalada en el depósito de origen.
+  - \`en_transito\`: Despachada y en viaje en el furgón de logística.
+  - \`recibido\`: Mercadería recepcionada y cargada en el inventario de destino.
+* **Procedimiento Operativo**:
+  1. Hacer clic en **Nuevo Traspaso Inter-Sucursales**.
+  2. Seleccionar sucursal de origen (ej: Roca DEP-01), sucursal destino (Neuquén DEP-02), SKU y cantidad de unidades.
+  3. Ingresar las notas de despacho (ej: *"Chofer: Remito 0004-9821, furgón Renault Master"*).
+  4. Cuando el transporte arribe a destino, el operador de Neuquén debe cambiar el estado a **Recibido**; el sistema sumará automáticamente el stock al depósito local.
+
+---
+
+## 6. 🏷️ Módulo: Ajustes Masivos de Precios & Importador CSV
+* **Objetivo**: Aplicar variaciones de costos de polietileno y descartables en segundos, tanto en lista minorista como mayorista.
+* **Procedimiento Operativo**:
+  1. **Ajuste Porcentual Rápido**: Ingresar el porcentaje deseado (ej: \`+8.5%\`), seleccionar si aplica a Minorista, Mayorista o Ambas listas, y pulsar **Aplicar Incremento**.
+  2. **Exportación a CSV**: Hacer clic en **Descargar Catálogo CSV** para obtener la planilla compatible con Microsoft Excel y Tango Gestión.
+  3. **Importación Masiva**: Arrastrar un archivo CSV con las columnas \`sku, precio_minorista, precio_mayorista, stock_roca, stock_neuquen\` y confirmar la sincronización.
+
+---
+
+## 7. 📑 Módulo: Cotizaciones & Presupuestador Digital
+* **Objetivo**: Administrar presupuestos de clientes mayoristas, reposterías, eventos y entidades públicas generados desde la web o WhatsApp.
+* **Procedimiento Operativo**:
+  1. Revisar la bandeja de cotizaciones con estado \`pendiente\`.
+  2. Hacer clic en **Ver Detalle** para examinar los artículos solicitados y datos del cliente.
+  3. Aplicar descuentos comerciales o bonificaciones por volumen si corresponde.
+  4. Hacer clic en **Aprobar y Emitir Factura** para enviar la orden al módulo de facturación electrónica.
+
+---
+
+## 8. 🧾 Módulo: Facturación Electrónica AFIP & Comprobantes ERP
+* **Objetivo**: Emitir Facturas A, B y Remitos R oficiales autorizados por la AFIP con CAE (Código de Autorización Electrónico) en línea.
+* **Procedimiento Operativo**:
+  1. Seleccionar la orden aprobada o ingresar a **Emitir Comprobante Nuevo**.
+  2. Seleccionar tipo de comprobante: **Factura A** (para responsables inscriptos con CUIT), **Factura B** (consumidor final) o **Remito R** (traslado de mercadería).
+  3. Verificar discriminación del IVA (21%) y pulsar **Solicitar CAE a AFIP**.
+  4. Una vez autorizado, se genera el número de comprobante oficial con código QR y opción de impresión en formato ticket o PDF A4.
+
+---
+
+## 9. 👥 Módulo: Gestión de Personal & Permisos RBAC
+* **Objetivo**: Administrar las cuentas de empleados, contraseñas y niveles de acceso a las distintas áreas del sistema.
+* **Roles Definidos**:
+  - \`admin\` (Gerencia): Acceso total a finanzas, personal, ERP y configuraciones.
+  - \`ventas\` (Vendedores): Cotizaciones, inventario, facturación y social commerce.
+  - \`deposito\` (Logística): Control de stock, inventario y traspasos Ruta 22.
+  - \`facturacion\` (Administración): Facturación AFIP, listas de precios y cuentas corrientes.
+  - \`backend\` (Soporte Clientum): Monitor de sync, webhooks, cron, MCP, tester de APIs y parámetros ERP.
+* **Procedimiento Operativo**:
+  - Para dar de alta un usuario: Clic en **Registrar Nuevo Empleado**, completar nombre, correo (\`@koalalotiene.com.ar\` o \`@clientum.com.ar\`), contraseña inicial, rol asignado y sucursal.
+  - Para revocar acceso temporal: Pulsar el botón de alternancia en el estado de la cuenta (\`Activo\` / \`Inactivo\`).
+
+---
+
+## 10. ⚙️ Módulo: Configuración del Sistema ERP & Endpoints
+* **Objetivo**: Configurar las credenciales de enlace entre Koala Lo Tiene y el servidor de gestión empresarial.
+* **Procedimiento Operativo**:
+  1. Seleccionar el tipo de sistema conectado (ICXN ERP, Tango Software, Bejerman, SAP o Custom REST API).
+  2. Ingresar la URL base del Gateway y el Token Bearer de seguridad.
+  3. Configurar los identificadores de punto de venta (\`DEP-01 Roca\` y \`DEP-02 Neuquén\`).
+  4. Seleccionar el modo de operación: **Sandbox (Pruebas)** para verificar flujos sin impacto contable o **Producción** para operaciones reales.
+  5. Presionar **Guardar Configuración ERP**.
+
+---
+
+## 11. ⏱️ Módulo: Automatización Cron & Tareas Desatendidas
+* **Objetivo**: Programar la ejecución automática de sincronizaciones periódicas de stock y actualización de costos de resinas.
+* **Procedimiento Operativo**:
+  - Visualizar la lista de tareas programadas (ej: sincronización cada 15 minutos, depuración de carritos abandonados a la medianoche).
+  - Para forzar la ejecución de un cron específico fuera de hora, pulsar el icono **Ejecutar Ahora**.
+  - Consultar el **Registro Histórico de Ejecución (Cron Logs)** para auditar códigos de estado HTTP y tiempo total de ejecución.
+
+---
+
+## 12. 🔌 Módulo: Tester API REST Interactivo
+* **Objetivo**: Banco de pruebas para que el equipo de soporte de Clientum o los programadores del ERP testen llamadas HTTP en vivo.
+* **Procedimiento Operativo**:
+  1. Seleccionar método HTTP (\`GET\`, \`POST\`, \`PUT\`, \`PATCH\`) y endpoint a evaluar.
+  2. Editar el cuerpo de la petición (JSON Payload) si es necesario.
+  3. Hacer clic en **Enviar Petición (Send Request)**.
+  4. Evaluar la respuesta devuelta: código HTTP (200 OK, 201 Created), cabeceras y tiempo de respuesta en ms.
+
+---
+
+## 13. 📱 Módulo: Social Commerce Hub & Flujos ManyChat
+* **Objetivo**: Vincular el feed oficial de Instagram (@koalalotiene) con respuestas automáticas por palabras clave y links transaccionales.
+* **Procedimiento Operativo**:
+  1. Revisar las publicaciones activas del feed de Instagram sincronizado.
+  2. Asignar etiquetas de producto y palabras clave de activación (ej: si el usuario comenta *"PRECIO"*, el bot envía el enlace directo al producto en el e-commerce).
+  3. Monitorear los leads generados y verificar que el píxel registre el evento de conversión en la tienda online.
+    `
+  },
+  {
+    id: 'doc-modulo-salud-sync',
+    category: 'backend',
+    categoryLabel: '04. Módulos Backend & ERP',
+    title: 'Guía Rápida — Módulo 1: Salud & Sincronización ERP',
+    subtitle: 'Monitoreo de Gateway, Webhooks y Diagnóstico de Conectividad',
+    badge: 'Ficha Técnica',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '4 min',
+    summary: 'Instrucciones para operadores sobre cómo interpretar el monitor de latencia, auditar webhooks entrantes y resolver incidentes de conectividad con el sistema de gestión.',
+    content: `
+# Ficha Técnica: Salud & Sincronización ERP
+*Módulo de Monitoreo de Infraestructura y Enlace Transaccional*
+
+### 1. Indicadores de Salud del Gateway
+* **Verde (Latencia < 100 ms)**: Conexión óptima. Las reservas atómicas y las órdenes web se procesan en tiempo real sin retardo.
+* **Amarillo (Latencia 100 - 300 ms)**: Congestión temporal en el enlace o alto volumen de transacciones simultáneas.
+* **Rojo (Offline / Timeout)**: Sin comunicación con el servidor central del ERP. El e-commerce entra en modo preventivo usando el último inventario local cacheado.
+
+### 2. Acciones de Contingencia
+1. Si un vendedor en mostrador no ve reflejada una venta web reciente, presione **Forzar Sincronización Inmediata**.
+2. Verifique en la lista de webhooks si el evento correspondiente a la orden tiene código de respuesta \`200 OK\`.
+3. Si el webhook arroja error \`503 Service Unavailable\`, el sistema reintentará automáticamente a los 60 segundos con backoff exponencial.
+    `
+  },
+  {
+    id: 'doc-modulo-mcp-protocol',
+    category: 'backend',
+    categoryLabel: '04. Módulos Backend & ERP',
+    title: 'Guía Rápida — Módulo 2: Servidor MCP Protocol v1.0',
+    subtitle: 'Integración de Herramientas de IA para Inventario y Precios en Vivo',
+    badge: 'Ficha Técnica',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '5 min',
+    summary: 'Cómo funciona la arquitectura Model Context Protocol (MCP) para conectar modelos LLM con las bases de datos de Koala Lo Tiene sin alucinaciones de precios ni stock.',
+    content: `
+# Ficha Técnica: Servidor MCP Protocol v1.0
+*Estándar de Interoperabilidad para Agentes de IA en Koala Lo Tiene*
+
+### ¿Por qué MCP y no un bot tradicional?
+Los bots de preguntas frecuentes tradicionales inventan datos cuando un cliente pregunta por medidas o stock específico. Con **MCP (Model Context Protocol)**, el modelo de inteligencia artificial no memoriza el catálogo, sino que dispone de un conjunto de herramientas estandarizadas que invoca en milisegundos:
+
+\`\`\`json
+// Ejemplo de invocación de herramienta check_stock
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "check_stock",
+    "arguments": {
+      "sku": "POL-BOL-CAM-4050",
+      "branchId": "roca"
+    }
+  }
+}
+\`\`\`
+
+### Beneficios para Koala:
+* **Cero Alucinaciones**: El bot jamás confirma stock si el ERP tiene 0 unidades en esa sucursal.
+* **Reserva en el Chat**: El cliente puede pedir reservar un paquete de bolsas o descartables directamente desde WhatsApp.
+* **Aislamiento Seguro**: El modelo de IA no tiene acceso a las tablas maestras ni a los costos internos del ERP, solo a las herramientas públicas autorizadas.
     `
   }
 ];

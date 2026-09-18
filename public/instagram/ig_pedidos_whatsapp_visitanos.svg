@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="600" height="750">
+  <defs>
+    <linearGradient id="bgGrad4" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fffaf5"/>
+    </linearGradient>
+    <filter id="shadow4" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect width="600" height="750" fill="url(#bgGrad4)" rx="24"/>
+
+  <!-- Top Title -->
+  <g transform="translate(300, 65)" text-anchor="middle">
+    <text font-family="'Fredoka', system-ui, -apple-system, sans-serif" font-weight="900" font-size="36" fill="#0f172a">
+      HACÉ TU PEDIDO POR
+    </text>
+    <text y="44" font-family="'Fredoka', system-ui, -apple-system, sans-serif" font-weight="900" font-size="34" fill="#0f172a">
+      WHATSAPP Y VISITANOS
+    </text>
+  </g>
+
+  <!-- Brand with Cute Mini Mascot -->
+  <g transform="translate(300, 185)" text-anchor="middle">
+    <text font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="52" fill="#ea580c" stroke="#9a3412" stroke-width="2">
+      Koala
+    </text>
+    <!-- Mini Koala Head on the Top -->
+    <g transform="translate(70, -42) scale(0.4)">
+      <circle cx="-25" cy="-15" r="16" fill="#94a3b8"/>
+      <circle cx="25" cy="-15" r="16" fill="#94a3b8"/>
+      <ellipse cx="0" cy="0" rx="30" ry="24" fill="#cbd5e1"/>
+      <circle cx="-12" cy="-4" r="4" fill="#0f172a"/>
+      <circle cx="12" cy="-4" r="4" fill="#0f172a"/>
+      <ellipse cx="0" cy="2" rx="10" ry="12" fill="#475569"/>
+    </g>
+    <text y="38" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="32" fill="#0f172a">
+      Lo tiene!
+    </text>
+  </g>
+
+  <!-- Location Pins & Details -->
+  <g transform="translate(0, 275)">
+    <!-- Branch 1: General Roca -->
+    <g transform="translate(160, 0)">
+      <!-- Map Pin Circle -->
+      <g transform="translate(0, 0)">
+        <circle cx="0" cy="0" r="26" fill="#f97316" stroke="#0f172a" stroke-width="3"/>
+        <circle cx="0" cy="0" r="9" fill="#ffffff"/>
+      </g>
+      <text y="50" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="20" fill="#0f172a" text-anchor="middle">
+        GRAL ROCA
+      </text>
+      <text y="70" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="16" fill="#0f172a" text-anchor="middle">
+        (CASA CENTRAL)
+      </text>
+      <text y="92" font-family="'Fredoka', system-ui, sans-serif" font-weight="700" font-size="16" fill="#334155" text-anchor="middle">
+        Av. Roca 1350
+      </text>
+    </g>
+
+    <!-- Branch 2: Neuquén Capital -->
+    <g transform="translate(440, 0)">
+      <!-- Map Pin Circle -->
+      <g transform="translate(0, 0)">
+        <circle cx="0" cy="0" r="26" fill="#f97316" stroke="#0f172a" stroke-width="3"/>
+        <circle cx="0" cy="0" r="9" fill="#ffffff"/>
+      </g>
+      <text y="50" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="20" fill="#0f172a" text-anchor="middle">
+        NEUQUÉN
+      </text>
+      <text y="70" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="18" fill="#0f172a" text-anchor="middle">
+        CAPITAL
+      </text>
+      <text y="92" font-family="'Fredoka', system-ui, sans-serif" font-weight="700" font-size="16" fill="#334155" text-anchor="middle">
+        Mitre 678
+      </text>
+    </g>
+  </g>
+
+  <!-- WhatsApp Contacts Section -->
+  <g transform="translate(0, 420)">
+    <!-- WhatsApp Roca -->
+    <g transform="translate(160, 0)">
+      <g transform="translate(-100, 0)">
+        <circle cx="0" cy="0" r="18" fill="#22c55e"/>
+        <path d="M -6 4 C 0 8 4 6 7 2 L 5 0 C 4 1 3 1 2 0 C 1 -1 1 -2 2 -3 L 0 -5 C -4 -2 -2 2 -6 4 Z" fill="#ffffff"/>
+      </g>
+      <text x="-70" y="-8" font-family="'Fredoka', system-ui, sans-serif" font-weight="700" font-size="14" fill="#0f172a">WhatsApp General Roca:</text>
+      <text x="-70" y="16" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="22" fill="#0f172a">298 453-6376</text>
+    </g>
+
+    <!-- WhatsApp Neuquén -->
+    <g transform="translate(440, 0)">
+      <g transform="translate(-95, 0)">
+        <circle cx="0" cy="0" r="18" fill="#22c55e"/>
+        <path d="M -6 4 C 0 8 4 6 7 2 L 5 0 C 4 1 3 1 2 0 C 1 -1 1 -2 2 -3 L 0 -5 C -4 -2 -2 2 -6 4 Z" fill="#ffffff"/>
+      </g>
+      <text x="-65" y="-8" font-family="'Fredoka', system-ui, sans-serif" font-weight="700" font-size="14" fill="#0f172a">WhatsApp Nqn:</text>
+      <text x="-65" y="16" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="22" fill="#0f172a">299 509-3911</text>
+    </g>
+  </g>
+
+  <!-- Center BPN Badge -->
+  <g transform="translate(240, 510)">
+    <circle cx="0" cy="0" r="25" fill="#0284c7"/>
+    <path d="M 0 14 L 0 -14 M -12 -5 L 0 -14 L 12 -5 M -14 5 L 0 -9 L 14 5" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <text x="35" y="10" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="38" fill="#0284c7">BPN</text>
+  </g>
+
+  <!-- Mascot with Phone (Bottom Right) -->
+  <g transform="translate(490, 560)">
+    <circle cx="-35" cy="-25" r="22" fill="#94a3b8"/>
+    <circle cx="-35" cy="-25" r="14" fill="#fbcfe8"/>
+    <circle cx="35" cy="-25" r="22" fill="#94a3b8"/>
+    <circle cx="35" cy="-25" r="14" fill="#fbcfe8"/>
+    <ellipse cx="0" cy="0" rx="38" ry="32" fill="#cbd5e1"/>
+    <circle cx="-20" cy="8" r="6" fill="#f472b6" opacity="0.6"/>
+    <circle cx="20" cy="8" r="6" fill="#f472b6" opacity="0.6"/>
+    <ellipse cx="-14" cy="-4" rx="5" ry="7" fill="#0f172a"/>
+    <circle cx="-12" cy="-6" r="2" fill="#ffffff"/>
+    <ellipse cx="14" cy="-4" rx="5" ry="7" fill="#0f172a"/>
+    <circle cx="16" cy="-6" r="2" fill="#ffffff"/>
+    <ellipse cx="0" cy="2" rx="12" ry="15" fill="#475569"/>
+    <path d="M -8 15 Q 0 22 8 15" fill="none" stroke="#0f172a" stroke-width="2"/>
+    <path d="M -15 30 C -25 45 -20 70 0 70 C 20 70 25 45 15 30" fill="#94a3b8"/>
+    <!-- Phone in Hand -->
+    <g transform="translate(-40, 20)">
+      <rect x="-14" y="-24" width="28" height="48" rx="6" fill="#0f172a"/>
+      <rect x="-11" y="-20" width="22" height="40" rx="4" fill="#22c55e"/>
+    </g>
+  </g>
+
+  <!-- Huge Orange CTA Button: HACÉ TU PEDIDO POR WHATSAPP -->
+  <g transform="translate(300, 680)">
+    <rect x="-260" y="-35" width="520" height="70" rx="35" fill="#ea580c" stroke="#9a3412" stroke-width="2" filter="url(#shadow4)"/>
+    <text y="-4" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="28" fill="#ffffff" text-anchor="middle">
+      HACÉ TU PEDIDO
+    </text>
+    <text y="24" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="28" fill="#ffffff" text-anchor="middle">
+      POR WHATSAPP
+    </text>
+  </g>
+</svg>

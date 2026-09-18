@@ -103,14 +103,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                     <MapPin className="w-4 h-4" />
                     <span>Sucursales Roca & Nqn</span>
                   </button>
-
-                  <button
-                    onClick={onOpenAi}
-                    className="px-4 py-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-amber-300 font-bold text-xs transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Asesor AI</span>
-                  </button>
                 </div>
               </div>
             </div>

@@ -63,6 +63,16 @@ export const INITIAL_EMPLOYEES: EmployeeUser[] = [
     active: true,
     lastLogin: 'Ayer, 18:00 hs',
   },
+  {
+    id: 'emp-6',
+    name: 'SOPORTE CLIENTUM',
+    email: 'soporte@clientum.com.ar',
+    password: 'clientum',
+    role: 'backend',
+    branchId: 'todas',
+    active: true,
+    lastLogin: 'Hoy, 17:00 hs',
+  },
 ];
 
 export const INITIAL_ERP_CONFIG: ErpConnectionConfig = {

@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="600" height="750">
+  <defs>
+    <linearGradient id="bgGrad8" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="100%" stop-color="#fef3c7"/>
+    </linearGradient>
+    <filter id="shadow8" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <rect width="600" height="750" fill="url(#bgGrad8)" rx="24"/>
+
+  <!-- Top Display Title -->
+  <g transform="translate(300, 75)" text-anchor="middle">
+    <text font-family="'Fredoka', system-ui, -apple-system, sans-serif" font-weight="900" font-size="46" fill="#f97316" stroke="#0f172a" stroke-width="4" paint-order="stroke fill">
+      COTILLÓN
+    </text>
+    <text y="52" font-family="'Fredoka', system-ui, -apple-system, sans-serif" font-weight="900" font-size="46" fill="#f97316" stroke="#0f172a" stroke-width="4" paint-order="stroke fill">
+      &amp; EVENTOS
+    </text>
+  </g>
+
+  <!-- Festive Confetti Background -->
+  <g opacity="0.6">
+    <circle cx="50" cy="120" r="8" fill="#f43f5e"/>
+    <circle cx="120" cy="80" r="6" fill="#3b82f6"/>
+    <circle cx="480" cy="120" r="9" fill="#10b981"/>
+    <circle cx="540" cy="80" r="7" fill="#f59e0b"/>
+    <rect x="70" y="160" width="12" height="6" fill="#8b5cf6" transform="rotate(30 70 160)"/>
+    <rect x="510" y="170" width="12" height="6" fill="#ec4899" transform="rotate(-40 510 170)"/>
+    <!-- Floating Balloons at Left & Right -->
+    <ellipse cx="60" cy="240" rx="25" ry="32" fill="#ef4444"/>
+    <ellipse cx="90" cy="300" rx="28" ry="36" fill="#3b82f6"/>
+    <ellipse cx="530" cy="240" rx="25" ry="32" fill="#a855f7"/>
+    <ellipse cx="500" cy="300" rx="28" ry="36" fill="#06b6d4"/>
+  </g>
+
+  <!-- Happy Festive Koala with Striped Birthday Party Hat -->
+  <g transform="translate(300, 270)">
+    <!-- Ears -->
+    <circle cx="-65" cy="-35" r="34" fill="#94a3b8"/>
+    <circle cx="-65" cy="-35" r="22" fill="#fbcfe8"/>
+    <circle cx="65" cy="-35" r="34" fill="#94a3b8"/>
+    <circle cx="65" cy="-35" r="22" fill="#fbcfe8"/>
+    <!-- Head -->
+    <ellipse cx="0" cy="0" rx="60" ry="50" fill="#cbd5e1" filter="url(#shadow8)"/>
+    <!-- Cheeks -->
+    <circle cx="-35" cy="12" r="10" fill="#f472b6" opacity="0.6"/>
+    <circle cx="35" cy="12" r="10" fill="#f472b6" opacity="0.6"/>
+    <!-- Eyes -->
+    <ellipse cx="-22" cy="-6" rx="8" ry="11" fill="#0f172a"/>
+    <circle cx="-20" cy="-9" r="3.5" fill="#ffffff"/>
+    <ellipse cx="22" cy="-6" rx="8" ry="11" fill="#0f172a"/>
+    <circle cx="24" cy="-9" r="3.5" fill="#ffffff"/>
+    <!-- Nose -->
+    <ellipse cx="0" cy="4" rx="18" ry="24" fill="#475569"/>
+    <!-- Smile -->
+    <path d="M -12 24 Q 0 34 12 24" fill="none" stroke="#0f172a" stroke-width="3"/>
+    
+    <!-- Colorful Party Cone Hat -->
+    <g transform="translate(0, -50)">
+      <path d="M 0 -45 L -25 0 L 25 0 Z" fill="#f59e0b" stroke="#0f172a" stroke-width="2"/>
+      <path d="M -8 -30 L 8 -30 L 15 -16 L -15 -16 Z" fill="#ef4444"/>
+      <path d="M -18 -10 L 18 -10 L 25 0 L -25 0 Z" fill="#3b82f6"/>
+      <circle cx="0" cy="-48" r="6" fill="#fbcfe8"/>
+    </g>
+  </g>
+
+  <!-- BPN Center Promo Card (Held in Mascot's Center) -->
+  <g transform="translate(300, 420)">
+    <rect x="-170" y="-55" width="340" height="150" rx="20" fill="#ffffff" stroke="#0284c7" stroke-width="3" filter="url(#shadow8)"/>
+    
+    <!-- BPN Header inside Card -->
+    <g transform="translate(-80, -20)">
+      <circle cx="0" cy="0" r="22" fill="#0284c7"/>
+      <path d="M 0 12 L 0 -12 M -10 -4 L 0 -12 L 10 -4 M -12 4 L 0 -8 L 12 4" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <text x="-45" y="-8" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="34" fill="#0284c7">BPN</text>
+    <text x="-45" y="8" font-family="'Fredoka', system-ui, sans-serif" font-weight="600" font-size="9" fill="#0369a1">Banco Provincia del Neuquén</text>
+
+    <!-- Promo Texts -->
+    <text y="38" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="20" fill="#0f172a" text-anchor="middle">
+      Cuotas sin Interés
+    </text>
+    <text y="58" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="20" fill="#0f172a" text-anchor="middle">
+      con BPN Confiable
+    </text>
+
+    <!-- 10% OFF Badge inside Card -->
+    <text y="82" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="22" fill="#ea580c" text-anchor="middle">
+      10% OFF
+    </text>
+    <text y="94" font-family="'Fredoka', system-ui, sans-serif" font-weight="800" font-size="12" fill="#475569" text-anchor="middle">
+      transf. bancaria
+    </text>
+  </g>
+
+  <!-- Bakery & Party Accessories Illustrations (Bottom Sides) -->
+  <g transform="translate(100, 520)">
+    <!-- Muffin Tray & Disposables -->
+    <rect x="-35" y="0" width="70" height="45" rx="6" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+    <circle cx="-20" cy="15" r="8" fill="#cbd5e1"/>
+    <circle cx="0" cy="15" r="8" fill="#cbd5e1"/>
+    <circle cx="20" cy="15" r="8" fill="#cbd5e1"/>
+    <circle cx="-20" cy="32" r="8" fill="#cbd5e1"/>
+    <circle cx="0" cy="32" r="8" fill="#cbd5e1"/>
+    <circle cx="20" cy="32" r="8" fill="#cbd5e1"/>
+  </g>
+
+  <g transform="translate(500, 520)">
+    <!-- Party favor cup with lollipops -->
+    <path d="M -20 15 L 20 15 L 15 50 L -15 50 Z" fill="#0284c7" stroke="#0f172a" stroke-width="2"/>
+    <circle cx="-10" cy="5" r="10" fill="#10b981"/>
+    <circle cx="10" cy="0" r="10" fill="#ec4899"/>
+  </g>
+
+  <!-- Category Pills along Bottom -->
+  <g transform="translate(300, 640)" text-anchor="middle">
+    <!-- Row 1: Globos, Vajilla, Moldes -->
+    <g transform="translate(0, 0)">
+      <rect x="-240" y="-15" width="100" height="30" rx="15" fill="#ffffff" stroke="#ea580c" stroke-width="1.5"/>
+      <text x="-190" y="5" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="15" fill="#0f172a">Globos</text>
+
+      <rect x="-120" y="-15" width="100" height="30" rx="15" fill="#ffffff" stroke="#ea580c" stroke-width="1.5"/>
+      <text x="-70" y="5" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="15" fill="#0f172a">Vajilla</text>
+
+      <rect x="0" y="-15" width="100" height="30" rx="15" fill="#ffffff" stroke="#ea580c" stroke-width="1.5"/>
+      <text x="50" y="5" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="15" fill="#0f172a">Moldes</text>
+
+      <rect x="120" y="-15" width="120" height="30" rx="15" fill="#ffffff" stroke="#ea580c" stroke-width="1.5"/>
+      <text x="180" y="5" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="15" fill="#0f172a">Repostería</text>
+    </g>
+
+    <!-- Row 2: Puntos Club Koala -->
+    <g transform="translate(0, 42)">
+      <rect x="-140" y="-15" width="280" height="32" rx="16" fill="#0f172a"/>
+      <text y="7" font-family="'Fredoka', system-ui, sans-serif" font-weight="900" font-size="16" fill="#ffffff">Puntos Club Koala</text>
+    </g>
+  </g>
+</svg>
