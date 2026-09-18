@@ -268,6 +268,22 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
     return result.slice(0, 8);
   }, [products]);
 
+  // Detección automática de palabras clave de productos dentro del texto del agente
+  const detectProductsFromText = React.useCallback((text: string): Product[] => {
+    if (!text) return [];
+    const lower = text.toLowerCase();
+    const catalog = products.length > 0 ? products : PRODUCTS_CATALOG;
+
+    const matched = catalog.filter((p) => {
+      const pNameLower = p.name.toLowerCase();
+      if (lower.includes(pNameLower)) return true;
+      const keyWords = pNameLower.split(' ').filter((w) => w.length >= 4 && !['para', 'con', 'las', 'los', 'del', 'pack', 'set', 'bolsa'].includes(w));
+      return keyWords.some((kw) => lower.includes(kw));
+    });
+
+    return matched.slice(0, 3);
+  }, [products]);
+
   // Consulta en tiempo real al servidor ICXN ERP (https://icxn.com.ar/)
   const handleQueryErpStock = async () => {
     setHasUserActed(true);
@@ -830,8 +846,8 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
             <div
               onScroll={handleChatScroll}
               className={`p-3.5 overflow-y-auto space-y-2.5 flex-1 transition-all duration-300 ${
-                isHeaderCollapsed ? 'max-h-76 sm:max-h-84' : 'max-h-64'
-              } bg-slate-100/60 dark:bg-slate-900/60`}
+                isHeaderCollapsed ? 'max-h-76 sm:max-h-84' : 'max-h-64 sm:max-h-72'
+              } bg-slate-100/60 dark:bg-slate-900/60 pb-5 scrollbar-thin`}
             >
               {/* Notificación de reinicio del chat */}
               <AnimatePresence>
@@ -850,61 +866,69 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
 
               {chatHistory.length > 0 ? (
                 <div className="space-y-2.5">
-                  {chatHistory.map((item) => (
-                    <div
-                      key={item.id}
-                      className={`flex flex-col ${item.sender === 'user' ? 'items-end' : 'items-start'}`}
-                    >
-                      <div
-                        className={`p-2.5 rounded-2xl text-xs max-w-[88%] leading-relaxed ${
-                          item.sender === 'user'
-                            ? 'bg-emerald-600 text-white rounded-tr-xs shadow-xs'
-                            : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-tl-xs shadow-xs'
-                        }`}
-                      >
-                        <p>{item.text}</p>
+                  {chatHistory.map((item) => {
+                    const agentMatchedProducts = item.sender === 'agent'
+                      ? (item.suggestedProducts && item.suggestedProducts.length > 0
+                          ? item.suggestedProducts
+                          : detectProductsFromText(item.text))
+                      : [];
 
-                        {/* Botones directos 'Añadir al carrito' dentro de la burbuja del agente */}
-                        {item.sender === 'agent' && item.suggestedProducts && item.suggestedProducts.length > 0 && (
-                          <div className="mt-2.5 pt-2 border-t border-slate-200/80 dark:border-slate-700/80 space-y-1.5">
-                            <div className="text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300 flex items-center gap-1">
-                              <ShoppingCart className="w-3 h-3 text-emerald-600" />
-                              <span>Añadir al carrito directo:</span>
-                            </div>
-                            {item.suggestedProducts.map((prod) => (
-                              <div
-                                key={prod.id}
-                                className="bg-slate-50 dark:bg-slate-750 p-1.5 rounded-xl border border-slate-200 dark:border-slate-650 flex items-center justify-between gap-2"
-                              >
-                                <div className="min-w-0">
-                                  <div className="font-bold text-[10px] text-slate-900 dark:text-white truncate">
-                                    {prod.name}
-                                  </div>
-                                  <div className="text-[9px] text-emerald-600 dark:text-emerald-400 font-extrabold">
-                                    {formatCurrency(prod.price)}
-                                  </div>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => handleAddToCartClick(prod)}
-                                  className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] flex items-center gap-1 shrink-0 transition-all cursor-pointer active:scale-95 shadow-2xs"
-                                >
-                                  {addedMap[prod.id] ? (
-                                    <>
-                                      <Check className="w-3 h-3 text-white" />
-                                      <span>¡Añadido!</span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <PlusCircle className="w-3 h-3" />
-                                      <span>Añadir al carrito</span>
-                                    </>
-                                  )}
-                                </button>
+                    return (
+                      <div
+                        key={item.id}
+                        className={`flex flex-col ${item.sender === 'user' ? 'items-end' : 'items-start'}`}
+                      >
+                        <div
+                          className={`p-2.5 rounded-2xl text-xs max-w-[88%] leading-relaxed ${
+                            item.sender === 'user'
+                              ? 'bg-emerald-600 text-white rounded-tr-xs shadow-xs font-medium'
+                              : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-tl-xs shadow-xs'
+                          }`}
+                        >
+                          <p className="whitespace-pre-line">{item.text}</p>
+
+                          {/* Botones directos 'Añadir al carrito' detectados dentro de la respuesta del agente */}
+                          {item.sender === 'agent' && agentMatchedProducts.length > 0 && (
+                            <div className="mt-2.5 pt-2 border-t border-slate-200/80 dark:border-slate-700/80 space-y-1.5">
+                              <div className="text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300 flex items-center gap-1">
+                                <ShoppingCart className="w-3 h-3 text-emerald-600 shrink-0" />
+                                <span>Añadir al carrito directo ({agentMatchedProducts.length}):</span>
                               </div>
-                            ))}
-                          </div>
-                        )}
+                              {agentMatchedProducts.map((prod) => (
+                                <div
+                                  key={prod.id}
+                                  className="bg-slate-50 dark:bg-slate-750 p-1.5 sm:p-2 rounded-xl border border-slate-200 dark:border-slate-650 flex items-center justify-between gap-2 shadow-2xs"
+                                >
+                                  <div className="min-w-0 flex-1">
+                                    <div className="font-bold text-[10px] sm:text-[11px] text-slate-900 dark:text-white truncate">
+                                      {prod.name}
+                                    </div>
+                                    <div className="text-[9px] sm:text-[10px] text-emerald-600 dark:text-emerald-400 font-extrabold flex items-center gap-1">
+                                      <span>{formatCurrency(prod.price)}</span>
+                                      <span className="text-slate-400 font-normal truncate">• {prod.unit}</span>
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAddToCartClick(prod)}
+                                    className="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-[9.5px] sm:text-[10.5px] flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-2xs"
+                                  >
+                                    {addedMap[prod.id] ? (
+                                      <>
+                                        <Check className="w-3 h-3 text-white" />
+                                        <span>¡Añadido!</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <PlusCircle className="w-3 h-3" />
+                                        <span>Añadir al carrito</span>
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
 
                         {/* Indicador de Status en Tiempo Real - ICXN ERP */}
                         {item.sender === 'agent' && (item.erpLiveNotice || item.text.includes('ICXN ERP') || item.text.toLowerCase().includes('stock') || item.text.includes('icxn.com.ar')) && (
@@ -1015,7 +1039,8 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                         {item.time}
                       </span>
                     </div>
-                  ))}
+                  );
+                })}
 
                   {/* Componente visual 'está escribiendo...' con indicador de latencia ICXN ERP */}
                   <AnimatePresence>

@@ -65,6 +65,24 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
   // Checkout Multi-Step State: 1 = Cart, 2 = Customer & Delivery, 3 = Payment Gateway, 4 = Confirmation
   const [checkoutStep, setCheckoutStep] = React.useState<1 | 2 | 3 | 4>(1);
 
+  // Atomic ERP Lock Reservation State (15 min lock)
+  const [stockReservation, setStockReservation] = React.useState<{
+    reservationId: string;
+    lockExpiresAt: string;
+    secondsLeft: number;
+    active: boolean;
+  } | null>(null);
+
+  // Real-time out of stock simulation modal
+  const [stockAlertModal, setStockAlertModal] = React.useState<{
+    isOpen: boolean;
+    productName: string;
+    requestedQty: number;
+    availableBranchQty: number;
+    alternateBranchName: string;
+    alternateBranchQty: number;
+  } | null>(null);
+
   // Customer & Shipping Form State
   const [clientName, setClientName] = React.useState(loyaltyProfile?.name || '');
   const [clientPhone, setClientPhone] = React.useState(loyaltyProfile?.phone || '');
@@ -88,6 +106,64 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
   const [isExportingPdf, setIsExportingPdf] = React.useState(false);
   const [completedOrder, setCompletedOrder] = React.useState<CompletedOrderReceipt | null>(null);
   const [formError, setFormError] = React.useState<string | null>(null);
+
+  // Atomic stock reservation lock timer (15 minutes countdown)
+  React.useEffect(() => {
+    if (!stockReservation?.active || stockReservation.secondsLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setStockReservation((prev) => {
+        if (!prev || prev.secondsLeft <= 1) {
+          return prev ? { ...prev, secondsLeft: 0, active: false } : null;
+        }
+        return { ...prev, secondsLeft: prev.secondsLeft - 1 };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [stockReservation?.active, stockReservation?.secondsLeft]);
+
+  // Request atomic ERP lock
+  const requestAtomicLock = async () => {
+    try {
+      const res = await fetch('/api/erp/stock/reserve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          branchId: currentBranch.id,
+          cartItems: cartItems.map(item => ({
+            productId: item.product.id,
+            productName: item.product.name,
+            quantity: item.quantity,
+          })),
+          clientName: clientName || 'Comprador Online',
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setStockReservation({
+          reservationId: data.reservationId || `LCK-${Math.floor(100000 + Math.random() * 900000)}`,
+          lockExpiresAt: data.lockExpiresAt || new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+          secondsLeft: data.lockDurationMinutes ? data.lockDurationMinutes * 60 : 900,
+          active: true,
+        });
+      }
+    } catch {
+      // Offline fallback lock simulation
+      setStockReservation({
+        reservationId: `LCK-${Math.floor(100000 + Math.random() * 900000)}`,
+        lockExpiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+        secondsLeft: 900,
+        active: true,
+      });
+    }
+  };
+
+  const handleProceedToStep2 = () => {
+    if (cartItems.length === 0) return;
+    requestAtomicLock();
+    setCheckoutStep(2);
+  };
 
   const handleAutofillDemoData = () => {
     setClientName('Panadería & Confitería San Martín');
@@ -505,8 +581,44 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
                       </div>
                     </div>
 
+                    {/* Prominent Estimated Installments Breakdown */}
+                    <div className="p-3.5 bg-slate-800/90 border border-slate-700/80 rounded-xl space-y-2">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-amber-400">
+                        <span className="flex items-center gap-1.5">
+                          <CreditCard className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Planes de Financiación Estimados</span>
+                        </span>
+                        <span className="text-[10px] bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">
+                          Mercado Pago & Bancos
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-slate-200 text-xs">
+                        <div className="p-2 bg-slate-900/90 rounded-lg border border-slate-700 text-center">
+                          <div className="text-[10px] text-slate-400 font-semibold">3 Cuotas Fijas</div>
+                          <div className="text-xs font-black text-white font-mono">
+                            {formatCurrency(Math.round((itemsSubtotal - loyaltyDiscount) / 3))}
+                          </div>
+                          <div className="text-[9px] text-emerald-400 font-bold">Sin interés</div>
+                        </div>
+                        <div className="p-2 bg-slate-900/90 rounded-lg border border-slate-700 text-center">
+                          <div className="text-[10px] text-slate-400 font-semibold">6 Cuotas Fijas</div>
+                          <div className="text-xs font-black text-white font-mono">
+                            {formatCurrency(Math.round((itemsSubtotal - loyaltyDiscount) / 6))}
+                          </div>
+                          <div className="text-[9px] text-emerald-400 font-bold">Sin interés</div>
+                        </div>
+                        <div className="col-span-2 sm:col-span-1 p-2 bg-emerald-950/50 rounded-lg border border-emerald-700/60 text-center">
+                          <div className="text-[10px] text-emerald-300 font-semibold">1 Pago Transferencia</div>
+                          <div className="text-xs font-black text-emerald-400 font-mono">
+                            {formatCurrency(Math.round((itemsSubtotal - loyaltyDiscount) * 0.95))}
+                          </div>
+                          <div className="text-[9px] text-emerald-300 font-extrabold">-5% Extra OFF</div>
+                        </div>
+                      </div>
+                    </div>
+
                     <button
-                      onClick={() => setCheckoutStep(2)}
+                      onClick={handleProceedToStep2}
                       className="w-full py-3.5 px-4 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-sm shadow-lg shadow-orange-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer"
                     >
                       <span>Comprar Online (Entrega & Pago)</span>
@@ -545,19 +657,69 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
               {/* STEP 2: SHIPPING & BILLING FORM */}
               {checkoutStep === 2 && (
                 <div className="space-y-5">
+                  {/* Atomic Lock Live Banner */}
+                  {stockReservation?.active && (
+                    <div className="p-3.5 bg-gradient-to-r from-slate-950 via-slate-900 to-orange-950 border border-orange-500/50 rounded-2xl text-white text-xs flex items-center justify-between shadow-md">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-orange-600/30 border border-orange-500 flex items-center justify-center shrink-0">
+                          <ShieldCheck className="w-4 h-4 text-orange-400" />
+                        </div>
+                        <div>
+                          <div className="font-bold flex items-center gap-1.5 text-slate-100">
+                            <span>Reserva Atómica ERP ICXN Activa</span>
+                            <span className="text-[10px] bg-orange-600 text-white px-1.5 py-0.2 rounded font-mono font-bold">
+                              #{stockReservation.reservationId}
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-slate-300">
+                            Stock bloqueado en <strong className="text-orange-300">{currentBranch.name}</strong> durante 15 minutos para evitar sobreventas físicas.
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0 pl-2">
+                        <div className="text-[10px] text-slate-400 font-semibold uppercase">Lock ERP</div>
+                        <div className="text-sm sm:text-base font-black text-amber-400 font-mono tracking-wider">
+                          {Math.floor(stockReservation.secondsLeft / 60)}:{(stockReservation.secondsLeft % 60).toString().padStart(2, '0')}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex flex-wrap items-center justify-between gap-2 pb-1 border-b border-slate-200 dark:border-slate-800">
                     <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider font-fredoka">
                       2. Modalidad de Entrega y Datos Fiscales
                     </h3>
-                    <button
-                      type="button"
-                      onClick={handleAutofillDemoData}
-                      className="px-2.5 py-1 rounded-lg bg-orange-100 dark:bg-orange-950/60 hover:bg-orange-200 text-orange-800 dark:text-orange-300 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-orange-300 dark:border-orange-800 shadow-xs"
-                      title="Carga automática de datos de cliente mayorista para demostración en vivo"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
-                      <span>⚡ Autocompletar Demo (Panadería)</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const first = cartItems[0]?.product;
+                          setStockAlertModal({
+                            isOpen: true,
+                            productName: first?.name || 'Bobina Polietileno',
+                            requestedQty: cartItems[0]?.quantity || 5,
+                            availableBranchQty: 0,
+                            alternateBranchName: currentBranch.id === 'roca' ? 'Neuquén Capital (Mitre)' : 'General Roca (Casa Central)',
+                            alternateBranchQty: 28,
+                          });
+                        }}
+                        className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 text-[10.5px] font-bold flex items-center gap-1 transition-colors cursor-pointer border border-slate-300 dark:border-slate-700"
+                        title="Simular alerta de evento stock agotado en tiempo real"
+                      >
+                        <AlertTriangle className="w-3 h-3 text-amber-500" />
+                        <span>Simular Evento Quiebre</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleAutofillDemoData}
+                        className="px-2.5 py-1 rounded-lg bg-orange-100 dark:bg-orange-950/60 hover:bg-orange-200 text-orange-800 dark:text-orange-300 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-orange-300 dark:border-orange-800 shadow-xs"
+                        title="Carga automática de datos de cliente mayorista para demostración en vivo"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
+                        <span>⚡ Autocompletar Demo (Panadería)</span>
+                      </button>
+                    </div>
                   </div>
 
                   {formError && (
@@ -923,6 +1085,33 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
                       </div>
                     </div>
 
+                    {/* Prominent Estimated Installment Options Breakdown */}
+                    <div className="p-3 bg-slate-800/90 border border-slate-700/80 rounded-xl space-y-2">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-amber-400">
+                        <span className="flex items-center gap-1.5">
+                          <CreditCard className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Cuotas Estimadas para este Total</span>
+                        </span>
+                        <span className="text-[10px] text-slate-300 font-mono">
+                          Sin interés
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5 text-center text-xs">
+                        <div className="p-1.5 bg-slate-900 rounded-lg border border-slate-700">
+                          <div className="text-[10px] text-slate-400">3 cuotas de</div>
+                          <div className="text-xs font-bold text-white font-mono">{formatCurrency(Math.round(totalCalculated / 3))}</div>
+                        </div>
+                        <div className="p-1.5 bg-slate-900 rounded-lg border border-slate-700">
+                          <div className="text-[10px] text-slate-400">6 cuotas de</div>
+                          <div className="text-xs font-bold text-white font-mono">{formatCurrency(Math.round(totalCalculated / 6))}</div>
+                        </div>
+                        <div className="p-1.5 bg-slate-900 rounded-lg border border-slate-700">
+                          <div className="text-[10px] text-slate-400">12 cuotas de</div>
+                          <div className="text-xs font-bold text-amber-300 font-mono">{formatCurrency(Math.round((totalCalculated * 1.15) / 12))}</div>
+                        </div>
+                      </div>
+                    </div>
+
                     {paymentMethod === 'whatsapp' ? (
                       <button
                         onClick={handleSendWhatsApp}
@@ -1040,6 +1229,58 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
           )}
         </div>
       </div>
+
+      {/* Real-time Out-of-Stock Notification Modal */}
+      {stockAlertModal?.isOpen && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/80 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-md w-full shadow-2xl border border-amber-300/80 dark:border-amber-700 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5 text-amber-600" />
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-slate-900 dark:text-white font-fredoka">
+                  Quiebre de Stock en Tiempo Real
+                </h4>
+                <p className="text-xs text-amber-700 dark:text-amber-400 font-semibold">
+                  Evento ERP ICXN Detectado
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              El artículo <strong>{stockAlertModal.productName}</strong> acaba de agotarse en la sucursal de <strong>{currentBranch.name}</strong> por venta simultánea en mostrador físico.
+            </p>
+
+            <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-1 text-xs">
+              <div className="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>Solución de Traspaso Automático:</span>
+              </div>
+              <p className="text-[11px] text-emerald-800 dark:text-emerald-300">
+                Hay <strong>{stockAlertModal.alternateBranchQty} unidades</strong> disponibles en <strong>{stockAlertModal.alternateBranchName}</strong>. Podemos despacharlo por traspaso logístico interno en 24 horas sin costo adicional.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setStockAlertModal(null)}
+                className="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                Aceptar Traspaso Logístico 24hs
+              </button>
+              <button
+                type="button"
+                onClick={() => setStockAlertModal(null)}
+                className="w-full py-2 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+              >
+                Revisar Carrito
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

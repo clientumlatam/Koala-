@@ -683,6 +683,7 @@ export default function App() {
           onAddToCart={handleAddToCart}
           cartItemsMap={cartItemsMap}
           onOpenAi={() => setAiOpen(true)}
+          currentBranch={currentBranch}
         />
 
         {/* Store Locations & Maps Section */}

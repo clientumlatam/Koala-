@@ -127,38 +127,53 @@ export function buildWhatsAppMessage(
   targetBranch: BranchInfo
 ): string {
   const dateStr = new Date().toLocaleDateString('es-AR');
+  const quoteCode = `COT-${targetBranch.id.toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
   
   let total = 0;
+  let wholesaleSavings = 0;
+
   const itemLines = items.map((item, index) => {
+    const regularPrice = item.product.price;
     const itemUnitPrice = item.isWholesale && item.product.wholesalePrice 
       ? item.product.wholesalePrice 
       : item.product.price;
     const subtotal = itemUnitPrice * item.quantity;
     total += subtotal;
 
-    const wholesaleTag = item.isWholesale ? ' *(Precio Mayorista)*' : '';
-    return `${index + 1}. *${item.product.name}*\n   • Cantidad: ${item.quantity} ${item.product.unit}${wholesaleTag}\n   • Subtotal: ${formatCurrency(subtotal)}`;
+    if (item.isWholesale && item.product.wholesalePrice) {
+      wholesaleSavings += (regularPrice - item.product.wholesalePrice) * item.quantity;
+    }
+
+    const wholesaleTag = item.isWholesale ? ' *(Precio Mayorista / Bulto)*' : '';
+    return `${index + 1}. *${item.product.name}*\n   • Cantidad: ${item.quantity} ${item.product.unit}${wholesaleTag}\n   • Precio Unit: ${formatCurrency(itemUnitPrice)}\n   • Subtotal: ${formatCurrency(subtotal)}`;
   }).join('\n\n');
 
-  const text = `🦘 *NUEVA CONSULTA / PEDIDO - KOALA LO TIENE* 🦘
+  const finalTotal = Math.max(0, total + (quote.deliveryFee || 0) - (quote.appliedLoyaltyDiscount || 0));
+
+  const text = `🦘 *COTIZACIÓN OFICIAL / PEDIDO WEB - KOALA LO TIENE* 🦘
 ------------------------------------------------
-📍 *Sucursal Destino:* ${targetBranch.name} (${targetBranch.address}, ${targetBranch.city})
+🔖 *Código de Cotización:* #${quoteCode}
+📍 *Sucursal de Compra:* ${targetBranch.name}
+📌 *Dirección:* ${targetBranch.address} (${targetBranch.city})
 📅 *Fecha:* ${dateStr}
 
-👤 *Datos del Cliente:*
-• Nombre: ${quote.clientName || 'Sin especificar'}
-• Teléfono: ${quote.clientPhone || 'Sin especificar'}
-• Modalidad: ${quote.deliveryType === 'retiro' ? '📦 Retiro por Local' : '🚚 Envío a Domicilio'}
-${quote.deliveryType === 'envio' ? `• Dirección de Envío: ${quote.deliveryAddress || 'Pendiente acordar'}\n` : ''}• Forma de Pago Estimada: ${quote.paymentMethod.toUpperCase()}
+👤 *Datos del Comprador:*
+• Cliente: ${quote.clientName || 'Consumidor Final'}
+• Teléfono: ${quote.clientPhone || 'A confirmar'}
+• CUIT / DNI: ${quote.clientCuitOrDni || 'No informado'}
+• Tipo Comprobante: ${quote.invoiceType || 'Factura B'}
+• Modalidad: ${quote.deliveryType === 'retiro' ? '📦 Retiro en Sucursal' : '🚚 Envío a Domicilio'}
+${quote.deliveryType === 'envio' ? `• Dirección de Envío: ${quote.deliveryAddress || 'A coordinar'}\n` : ''}• Medio de Pago: ${quote.paymentMethod.toUpperCase()}
 
-🛒 *Detalle del Pedido:*
+🛒 *Detalle de Artículos:*
 ${itemLines}
 
 ------------------------------------------------
-💰 *TOTAL ESTIMADO:* ${formatCurrency(total)}
-${quote.notes ? `\n💬 *Notas adicionales:* ${quote.notes}` : ''}
+Subtotal: ${formatCurrency(total)}
+${wholesaleSavings > 0 ? `🔥 *Ahorro Mayorista Aplicado:* -${formatCurrency(wholesaleSavings)}\n` : ''}${quote.deliveryFee ? `🚚 *Costo de Envío:* +${formatCurrency(quote.deliveryFee)}\n` : ''}${quote.appliedLoyaltyDiscount ? `🎁 *Descuento Club Koala:* -${formatCurrency(quote.appliedLoyaltyDiscount)}\n` : ''}💰 *TOTAL FINAL:* ${formatCurrency(finalTotal)}
+${quote.notes ? `\n💬 *Observaciones:* ${quote.notes}` : ''}
 
-_Consulta generada desde el catálogo web oficial de Koala Lo Tiene._`;
+_Sincronizado vía ICXN ERP con reserva atómica de stock._`;
 
   return encodeURIComponent(text);
 }

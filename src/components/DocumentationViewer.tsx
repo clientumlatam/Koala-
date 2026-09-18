@@ -32,7 +32,6 @@ export const DocumentationViewer: React.FC<DocumentationViewerProps> = ({ initia
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'comercial' | 'tecnico' | 'demo'>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
-  const [printTab, setPrintTab] = useState<'cotillon' | 'ferreteria' | 'integral'>('cotillon');
 
   const selectedDoc = DOCUMENTATION_DATA.find((d) => d.id === selectedDocId) || DOCUMENTATION_DATA[0];
 
@@ -372,38 +371,13 @@ export const DocumentationViewer: React.FC<DocumentationViewerProps> = ({ initia
                 </h3>
               </div>
 
-              {/* View Switcher Pills */}
-              <div className="flex items-center gap-1 bg-slate-200/80 p-1 rounded-lg text-xs font-semibold">
-                <button
-                  onClick={() => setPrintTab('cotillon')}
-                  className={`px-3 py-1 rounded-md transition-all ${
-                    printTab === 'cotillon'
-                      ? 'bg-white text-orange-700 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Koala Cotillón (LP SRL)
-                </button>
-                <button
-                  onClick={() => setPrintTab('ferreteria')}
-                  className={`px-3 py-1 rounded-md transition-all ${
-                    printTab === 'ferreteria'
-                      ? 'bg-white text-blue-700 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Koala Ferretería (4 Suc.)
-                </button>
-                <button
-                  onClick={() => setPrintTab('integral')}
-                  className={`px-3 py-1 rounded-md transition-all ${
-                    printTab === 'integral'
-                      ? 'bg-white text-emerald-700 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  Propuesta Integral
-                </button>
+              {/* Header Info */}
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-orange-600 text-sm">Clientum</span>
+                <span className="text-slate-300">|</span>
+                <h3 className="font-bold text-slate-900 text-sm">
+                  Propuesta Comercial Oficial — Koala Cotillón (LP SRL)
+                </h3>
               </div>
 
               <div className="flex items-center gap-2">
@@ -442,27 +416,23 @@ export const DocumentationViewer: React.FC<DocumentationViewerProps> = ({ initia
                   </div>
 
                   <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
-                    {printTab === 'cotillon' && 'Propuesta Comercial — Koala Cotillón (LP SRL)'}
-                    {printTab === 'ferreteria' && 'Propuesta Comercial — Koala Ferretería y Corralón'}
-                    {printTab === 'integral' && 'Propuesta Comercial Unificada — Transformación Digital Omnicanal'}
+                    Propuesta Comercial — Koala Cotillón (LP SRL)
                   </h1>
                   <p className="text-xs sm:text-sm text-slate-600 mt-1.5">
-                    {printTab === 'cotillon' && 'Expansión de ventas online — e-commerce + SEO + automatización'}
-                    {printTab === 'ferreteria' && 'Neuquén Capital · 4 sucursales · Digitalización operativa integral'}
-                    {printTab === 'integral' && 'Dos perfiles de negocio · Una propuesta integral (Cotillón & Ferretería)'}
+                    Expansión de ventas online — e-commerce + SEO + automatización
                   </p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 text-xs">
                     <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                       <div className="text-[10px] uppercase font-semibold text-slate-400">Cliente / Razón Social</div>
                       <div className="font-bold text-slate-800">
-                        {printTab === 'cotillon' ? 'LP SRL (Mikhail Murekian)' : printTab === 'ferreteria' ? 'Koala Ferretería y Corralón' : 'Koala Cotillón & Ferretería'}
+                        LP SRL (Mikhail Murekian)
                       </div>
                     </div>
                     <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                       <div className="text-[10px] uppercase font-semibold text-slate-400">Alcance Geográfico</div>
                       <div className="font-bold text-slate-800">
-                        {printTab === 'cotillon' ? 'Gral. Roca & Neuquén' : 'Neuquén Capital (4 Suc.)'}
+                        Gral. Roca & Neuquén
                       </div>
                     </div>
                     <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
@@ -473,171 +443,96 @@ export const DocumentationViewer: React.FC<DocumentationViewerProps> = ({ initia
                 </div>
 
                 {/* COTILLÓN / LP SRL CONTENT */}
-                {(printTab === 'cotillon' || printTab === 'integral') && (
-                  <div className="mb-8">
-                    {printTab === 'integral' && (
-                      <div className="flex items-center gap-2 mb-3 pb-2 border-b border-orange-100">
-                        <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-                        <h2 className="text-sm font-bold text-orange-950 uppercase tracking-wide">
-                          PARTE 1 — Koala Cotillón (LP SRL)
-                        </h2>
-                      </div>
-                    )}
+                <div className="mb-8">
+                  {/* Diagnóstico */}
+                  <div className="mb-4 p-4 rounded-xl bg-orange-50/50 border border-orange-200/70 text-xs leading-relaxed text-slate-700">
+                    <div className="font-bold text-orange-950 mb-1">DIAGNÓSTICO DE SITUACIÓN:</div>
+                    El principal dolor de Koala Cotillón es la baja visibilidad y conversión en canales digitales. Quien busca cotillón, globos, polietileno o descartables en Google en el Alto Valle no encuentra a Koala entre los primeros resultados.
+                    <ul className="list-disc list-inside mt-2 space-y-0.5 text-slate-600">
+                      <li>Ausencia de posicionamiento orgánico en buscadores (SEO).</li>
+                      <li>Sin e-commerce propio con catálogo actualizado en tiempo real.</li>
+                      <li>Atención a consultas online sin automatización — cuellos de botella en horarios pico.</li>
+                      <li>Canales sociales activos (Instagram, Facebook) sin integración fluida al flujo de ventas.</li>
+                    </ul>
+                  </div>
 
-                    {/* Diagnóstico */}
-                    <div className="mb-4 p-4 rounded-xl bg-orange-50/50 border border-orange-200/70 text-xs leading-relaxed text-slate-700">
-                      <div className="font-bold text-orange-950 mb-1">DIAGNÓSTICO DE SITUACIÓN:</div>
-                      El principal dolor de Koala Cotillón es la baja visibilidad y conversión en canales digitales. Quien busca cotillón, globos, polietileno o descartables en Google en el Alto Valle no encuentra a Koala entre los primeros resultados.
-                      <ul className="list-disc list-inside mt-2 space-y-0.5 text-slate-600">
-                        <li>Ausencia de posicionamiento orgánico en buscadores (SEO).</li>
-                        <li>Sin e-commerce propio con catálogo actualizado en tiempo real.</li>
-                        <li>Atención a consultas online sin automatización — cuellos de botella en horarios pico.</li>
-                        <li>Canales sociales activos (Instagram, Facebook) sin integración fluida al flujo de ventas.</li>
-                      </ul>
+                  {/* Plan Modular 3 Etapas */}
+                  <div className="space-y-2.5 mb-4">
+                    <div className="border border-slate-200 rounded-lg p-3 bg-white">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="font-bold text-xs text-slate-900">1. E-commerce + Catálogo íntegro + SEO orgánico</h4>
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">~15–17 días</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        Sitio web con e-commerce completo y catálogo íntegro. Fotos, descripciones y categorías cargadas. Stock sincronizado. Estrategia SEO orgánico con palabras clave (cotillón, globos, descartables, polietileno). Alta y optimización en Google Business Profile.
+                      </p>
                     </div>
 
-                    {/* Plan Modular 3 Etapas */}
-                    <div className="space-y-2.5 mb-4">
-                      <div className="border border-slate-200 rounded-lg p-3 bg-white">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-bold text-xs text-slate-900">1. E-commerce + Catálogo íntegro + SEO orgánico</h4>
-                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">~15–17 días</span>
-                        </div>
-                        <p className="text-[11px] text-slate-600 leading-relaxed">
-                          Sitio web con e-commerce completo y catálogo íntegro. Fotos, descripciones y categorías cargadas. Stock sincronizado. Estrategia SEO orgánico con palabras clave (cotillón, globos, descartables, polietileno). Alta y optimización en Google Business Profile.
-                        </p>
+                    <div className="border border-slate-200 rounded-lg p-3 bg-white">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="font-bold text-xs text-slate-900">2. Integración con ERP y Reserva Atómica</h4>
+                        <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">A convenir según ERP</span>
                       </div>
-
-                      <div className="border border-slate-200 rounded-lg p-3 bg-white">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-bold text-xs text-slate-900">2. Integración con ERP y Reserva Atómica</h4>
-                          <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">A convenir según ERP</span>
-                        </div>
-                        <p className="text-[11px] text-slate-600 leading-relaxed">
-                          Conexión bidireccional entre el ERP y el e-commerce. Precios y stock actualizados automáticamente. Reserva temporal de stock en tiempo real (15 min) para prevenir conflictos de venta simultánea en mostrador vs. online.
-                        </p>
-                      </div>
-
-                      <div className="border border-slate-200 rounded-lg p-3 bg-white">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="font-bold text-xs text-slate-900">3. Bot Web + Bot WhatsApp con Servidor MCP</h4>
-                          <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">A convenir</span>
-                        </div>
-                        <p className="text-[11px] text-slate-600 leading-relaxed">
-                          Chatbot integrado en la página web para atención 24/7. Derivación automática hacia WhatsApp Business del local correspondiente. Servidor MCP para consultar stock y precios en tiempo real sin alucinaciones.
-                        </p>
-                      </div>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        Conexión bidireccional entre el ERP y el e-commerce. Precios y stock actualizados automáticamente. Reserva temporal de stock en tiempo real (15 min) para prevenir conflictos de venta simultánea en mostrador vs. online.
+                      </p>
                     </div>
 
-                    {/* Tabla de inversión Cotillón */}
-                    <div className="rounded-xl border border-slate-200 overflow-hidden text-xs mb-4">
-                      <div className="bg-slate-50 px-3 py-2 border-b border-slate-200 font-bold text-slate-800 flex justify-between items-center">
-                        <span>Estructura de Inversión — Koala Cotillón</span>
-                        <span className="text-[10px] font-semibold text-slate-500">Valores sin IVA · Validez 15 días</span>
+                    <div className="border border-slate-200 rounded-lg p-3 bg-white">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="font-bold text-xs text-slate-900">3. Bot Web + Bot WhatsApp con Servidor MCP</h4>
+                        <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">A convenir</span>
                       </div>
-                      <table className="w-full text-left">
-                        <thead className="bg-slate-100/75 text-[10px] font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200">
-                          <tr>
-                            <th className="p-2.5">Concepto</th>
-                            <th className="p-2.5">Setup (ARS)</th>
-                            <th className="p-2.5">Mensual (ARS)</th>
-                            <th className="p-2.5">Condición</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 text-[11px]">
-                          <tr>
-                            <td className="p-2.5 font-medium text-slate-900">Etapa 1 — E-commerce + SEO</td>
-                            <td className="p-2.5 font-bold text-slate-800">$ 518.000</td>
-                            <td className="p-2.5 text-slate-600">$ 104.000 / $ 133.200</td>
-                            <td className="p-2.5 text-slate-600">Pago al inicio</td>
-                          </tr>
-                          <tr>
-                            <td className="p-2.5 font-medium text-slate-900">Etapa 2 — Integración ERP</td>
-                            <td className="p-2.5 font-bold text-slate-800">$ 414.400</td>
-                            <td className="p-2.5 text-slate-600">$ 86.000 / $ 111.000</td>
-                            <td className="p-2.5 text-slate-600">A convenir según ERP</td>
-                          </tr>
-                          <tr>
-                            <td className="p-2.5 font-medium text-slate-900">Etapa 3 — Bots Web + WhatsApp</td>
-                            <td className="p-2.5 font-bold text-slate-800">$ 187.600</td>
-                            <td className="p-2.5 text-slate-600">$ 77.000 / $ 66.600</td>
-                            <td className="p-2.5 text-slate-600">Al inicio de la etapa</td>
-                          </tr>
-                          <tr className="bg-orange-50/70 font-bold text-orange-950">
-                            <td className="p-2.5">PACK COMPLETO SUGERIDO</td>
-                            <td className="p-2.5 font-extrabold text-orange-900">$ 1.120.000</td>
-                            <td className="p-2.5 font-bold text-orange-900">$ 267.000 / $ 310.800</td>
-                            <td className="p-2.5 text-orange-800">Anticipo 50% al iniciar</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        Chatbot integrado en la página web para atención 24/7. Derivación automática hacia WhatsApp Business del local correspondiente. Servidor MCP para consultar stock y precios en tiempo real sin alucinaciones.
+                      </p>
                     </div>
                   </div>
-                )}
 
-                {/* FERRETERÍA CONTENT */}
-                {(printTab === 'ferreteria' || printTab === 'integral') && (
-                  <div className="mb-8">
-                    {printTab === 'integral' && (
-                      <div className="flex items-center gap-2 mb-3 pb-2 border-b border-blue-100">
-                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                        <h2 className="text-sm font-bold text-blue-950 uppercase tracking-wide">
-                          PARTE 2 — Koala Ferretería y Corralón
-                        </h2>
-                      </div>
-                    )}
-
-                    {/* Diagnóstico Ferretería */}
-                    <div className="mb-4 p-4 rounded-xl bg-blue-50/50 border border-blue-200/70 text-xs leading-relaxed text-slate-700">
-                      <div className="font-bold text-blue-950 mb-1">DIAGNÓSTICO — 4 SUCURSALES (ZONA OESTE, NEUQUÉN):</div>
-                      Cuenta con 4 sucursales activas en Neuquén Capital. Atención manual por WhatsApp que genera demoras y presupuestos sin seguimiento. Sin tienda online que refleje stock unificado en tiempo real entre sucursales.
+                  {/* Tabla de inversión Cotillón */}
+                  <div className="rounded-xl border border-slate-200 overflow-hidden text-xs mb-4">
+                    <div className="bg-slate-50 px-3 py-2 border-b border-slate-200 font-bold text-slate-800 flex justify-between items-center">
+                      <span>Estructura de Inversión — Koala Cotillón</span>
+                      <span className="text-[10px] font-semibold text-slate-500">Valores sin IVA · Validez 15 días</span>
                     </div>
-
-                    {/* Tabla de inversión Ferretería */}
-                    <div className="rounded-xl border border-slate-200 overflow-hidden text-xs mb-4">
-                      <div className="bg-slate-50 px-3 py-2 border-b border-slate-200 font-bold text-slate-800 flex justify-between items-center">
-                        <span>Estructura de Inversión — Koala Ferretería y Corralón</span>
-                        <span className="text-[10px] font-semibold text-slate-500">4 Sucursales · Neuquén Capital</span>
-                      </div>
-                      <table className="w-full text-left">
-                        <thead className="bg-slate-100/75 text-[10px] font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200">
-                          <tr>
-                            <th className="p-2.5">Etapa</th>
-                            <th className="p-2.5">Setup (ARS)</th>
-                            <th className="p-2.5">Mensual (ARS)</th>
-                            <th className="p-2.5">Condición</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 text-[11px]">
-                          <tr>
-                            <td className="p-2.5 font-medium text-slate-900">1. Tienda Online (WooCommerce / Web)</td>
-                            <td className="p-2.5 font-bold text-slate-800">$ 518.000</td>
-                            <td className="p-2.5 text-slate-600">$ 133.200</td>
-                            <td className="p-2.5 text-slate-600">Pago al inicio</td>
-                          </tr>
-                          <tr>
-                            <td className="p-2.5 font-medium text-slate-900">2. Sincronización con ERP (4 sucursales)</td>
-                            <td className="p-2.5 font-bold text-slate-800">$ 414.400</td>
-                            <td className="p-2.5 text-slate-600">$ 111.000</td>
-                            <td className="p-2.5 text-slate-600">A convenir</td>
-                          </tr>
-                          <tr>
-                            <td className="p-2.5 font-medium text-slate-900">3. Broadcast y Redes Sociales</td>
-                            <td className="p-2.5 font-bold text-slate-800">$ 177.600</td>
-                            <td className="p-2.5 text-slate-600">$ 66.600</td>
-                            <td className="p-2.5 text-slate-600">Al inicio etapa</td>
-                          </tr>
-                          <tr className="bg-blue-50/70 font-bold text-blue-950">
-                            <td className="p-2.5">PACK COMPLETO (Ahorro $266.400 en setup)</td>
-                            <td className="p-2.5 font-extrabold text-blue-900">$ 1.110.000</td>
-                            <td className="p-2.5 font-bold text-blue-900">$ 310.800</td>
-                            <td className="p-2.5 text-blue-800">Anticipo 50% al iniciar</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                    <table className="w-full text-left">
+                      <thead className="bg-slate-100/75 text-[10px] font-bold uppercase tracking-wider text-slate-600 border-b border-slate-200">
+                        <tr>
+                          <th className="p-2.5">Concepto</th>
+                          <th className="p-2.5">Setup (ARS)</th>
+                          <th className="p-2.5">Mensual (ARS)</th>
+                          <th className="p-2.5">Condición</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-[11px]">
+                        <tr>
+                          <td className="p-2.5 font-medium text-slate-900">Etapa 1 — E-commerce + SEO</td>
+                          <td className="p-2.5 font-bold text-slate-800">$ 518.000</td>
+                          <td className="p-2.5 text-slate-600">$ 104.000 / $ 133.200</td>
+                          <td className="p-2.5 text-slate-600">Pago al inicio</td>
+                        </tr>
+                        <tr>
+                          <td className="p-2.5 font-medium text-slate-900">Etapa 2 — Integración ERP</td>
+                          <td className="p-2.5 font-bold text-slate-800">$ 414.400</td>
+                          <td className="p-2.5 text-slate-600">$ 86.000 / $ 111.000</td>
+                          <td className="p-2.5 text-slate-600">A convenir según ERP</td>
+                        </tr>
+                        <tr>
+                          <td className="p-2.5 font-medium text-slate-900">Etapa 3 — Bots Web + WhatsApp</td>
+                          <td className="p-2.5 font-bold text-slate-800">$ 187.600</td>
+                          <td className="p-2.5 text-slate-600">$ 77.000 / $ 66.600</td>
+                          <td className="p-2.5 text-slate-600">Al inicio de la etapa</td>
+                        </tr>
+                        <tr className="bg-orange-50/70 font-bold text-orange-950">
+                          <td className="p-2.5">PACK COMPLETO SUGERIDO</td>
+                          <td className="p-2.5 font-extrabold text-orange-900">$ 1.120.000</td>
+                          <td className="p-2.5 font-bold text-orange-900">$ 267.000 / $ 310.800</td>
+                          <td className="p-2.5 text-orange-800">Anticipo 50% al iniciar</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
-                )}
+                </div>
 
                 {/* Por qué Clientum */}
                 <div className="mb-6 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs">

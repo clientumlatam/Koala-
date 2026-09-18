@@ -18,21 +18,21 @@ export const DOCUMENTATION_DATA: DocItem[] = [
     id: 'propuesta-unificada',
     category: 'comercial',
     categoryLabel: '01. Comercial & Propuestas',
-    title: 'Propuesta Comercial Unificada — Koala Cotillón & Ferretería',
-    subtitle: 'Plan de Transformación Digital Omnicanal en 3 Etapas',
+    title: 'Propuesta Comercial — Koala Cotillón & Descartables',
+    subtitle: 'Plan de Transformación Digital Omnicanal en 3 Etapas (LP SRL)',
     badge: 'Propuesta Oficial',
     lastUpdated: 'Septiembre 2026',
-    readTime: '7 min',
-    summary: 'Documento integral oficial (16 págs.) que contempla los dos perfiles de negocio de Koala: Cotillón / Descartables (LP SRL) y Ferretería / Corralón (4 sucursales Neuquén), con desglose de inversión, condiciones y próximos pasos.',
+    readTime: '5 min',
+    summary: 'Documento integral oficial para Koala Cotillón, Descartables y Polietileno (LP SRL — Mikhail Murekian) en General Roca y Neuquén Capital, con desglose de inversión, condiciones y próximos pasos.',
     content: `
-# Propuesta Comercial Unificada — Clientum × KOALA
+# Propuesta Comercial — Clientum × KOALA
 **Plan de Transformación Digital Omnicanal**
-*Dos perfiles de negocio, una propuesta integral: Cotillón / Descartables y Ferretería / Corralón.*
-*General Roca, Río Negro, Argentina · Septiembre 2026*
+*Koala Cotillón, Descartables, Repostería y Polietileno (LP SRL)*
+*General Roca, Río Negro y Neuquén Capital, Argentina · Septiembre 2026*
 
 ---
 
-## PARTE 1: Koala Cotillón (LP SRL)
+## Alcance del Proyecto: Koala Cotillón (LP SRL)
 **Expansión de ventas online — e-commerce + SEO + automatización**
 
 * **Cliente**: Koala Cotillón (LP SRL — Mikhail Murekian)
@@ -78,31 +78,6 @@ El principal dolor de Koala Cotillón es la baja visibilidad y conversión en ca
 | **PACK COMPLETO SUGERIDO** | **$ 1.120.000** | **$ 267.000 / $ 310.800** | Anticipo 50% al iniciar |
 
 *Validez: 15 días corridos. Los valores no incluyen IVA.*
-
----
-
-## PARTE 2: Koala Ferretería y Corralón
-**Neuquén Capital · 4 sucursales · Digitalización operativa integral**
-
-* **Cliente**: Koala Ferretería y Corralón
-* **Sucursales**: 4 — Zona Oeste, Neuquén Capital
-* **Fecha**: Septiembre 2026
-
-### Diagnóstico
-Koala Ferretería y Corralón cuenta con 4 sucursales activas en Neuquén Capital, presencia en Instagram/Facebook y atención por WhatsApp Business. La atención manual genera demoras, presupuestos sin seguimiento y promociones no segmentadas. No disponen de tienda online que refleje stock unificado en tiempo real entre sucursales.
-
-### Resumen de Etapas y Precios — Ferretería
-| Concepto | Setup (ARS) | Mensual (ARS) | Condición |
-| :--- | :--- | :--- | :--- |
-| **Etapa 1 — Tienda Online (WooCommerce / Web)** | $ 518.000 | $ 133.200 | Pago al inicio |
-| **Etapa 2 — Sincronización con ERP (4 sucursales)** | $ 414.400 | $ 111.000 | A convenir |
-| **Etapa 3 — Broadcast y Redes Sociales** | $ 177.600 | $ 66.600 | Al inicio etapa |
-| **PACK COMPLETO (Ahorro $266.400 setup)** | **$ 1.110.000** | **$ 310.800** | Anticipo 50% |
-
-### Detalle por Etapa
-* **Etapa 1**: Catálogo completo con pagos integrados (tarjeta, transferencia, cuotas), pedidos derivados automáticamente por WhatsApp al vendedor correspondiente, panel de stock y órdenes multi-sucursal.
-* **Etapa 2**: Stock en tiempo real entre las 4 sucursales, precios sincronizados automáticamente sin intervención manual, alertas automáticas de quiebre crítico.
-* **Etapa 3**: Promociones masivas segmentadas por WhatsApp, captura de leads desde Facebook e Instagram, derivación directa al vendedor de la sucursal correspondiente.
 
 ---
 

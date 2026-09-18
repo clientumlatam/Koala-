@@ -15,19 +15,20 @@ import {
   BookOpen,
   Coffee
 } from 'lucide-react';
-import { CategoryId, CategoryInfo, Product } from '../types';
+import { CategoryId, CategoryInfo, Product, BranchInfo, ProductInventoryRecord } from '../types';
 import { ProductCard } from './ProductCard';
 import { KoalaLogo } from './KoalaLogo';
 import { normalizeSearchText } from '../utils/helpers';
 
 interface ProductCatalogProps {
   categories: CategoryInfo[];
-  products: Product[];
+  products: (Product | ProductInventoryRecord)[];
   selectedCategory: CategoryId;
   onSelectCategory: (catId: CategoryId) => void;
   onAddToCart: (product: Product, quantity: number, isWholesale: boolean) => void;
   cartItemsMap: Record<string, number>;
   onOpenAi: () => void;
+  currentBranch?: BranchInfo;
 }
 
 export const ProductCatalog: React.FC<ProductCatalogProps> = ({
@@ -38,6 +39,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   onAddToCart,
   cartItemsMap,
   onOpenAi,
+  currentBranch,
 }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchGlobally, setSearchGlobally] = React.useState(true);
@@ -277,6 +279,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
               product={product}
               onAddToCart={onAddToCart}
               cartQuantity={cartItemsMap[product.id] || 0}
+              currentBranch={currentBranch}
             />
           ))}
         </div>
