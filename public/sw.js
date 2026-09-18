@@ -1,8 +1,8 @@
 // Service Worker for Koala Lo Tiene
 // Provides offline capability and caching for catalog, branches, and assets
 
-const CACHE_NAME = 'koala-cache-v1';
-const DYNAMIC_CACHE_NAME = 'koala-dynamic-v1';
+const CACHE_NAME = 'koala-cache-v2';
+const DYNAMIC_CACHE_NAME = 'koala-dynamic-v2';
 
 // Static assets to precache on install
 const PRECACHE_ASSETS = [

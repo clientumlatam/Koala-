@@ -214,7 +214,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1750,
     wholesaleMinPack: 36,
-    image: '',
+    image: '/fotos_reales/KOA-POL-106.jpeg',
     tags: ['cinta', 'embalaje', 'cajas', 'transparente', 'pegamento'],
   },
 
@@ -274,7 +274,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 25,
     wholesalePrice: 6800,
     wholesaleMinPack: 8,
-    image: '',
+    image: '/ilustraciones_png/KOA-DES-107.png',
     tags: ['helado', 'potes', 'termico', 'postre', 'delivery'],
   },
   {
@@ -288,7 +288,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 50,
     wholesalePrice: 2400,
     wholesaleMinPack: 20,
-    image: '',
+    image: '/ilustraciones_png/KOA-DES-108.png',
     tags: ['tenedores', 'cuchillos', 'cubiertos', 'comida', 'evento'],
   },
   {
@@ -302,7 +302,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 100,
     wholesalePrice: 1500,
     wholesaleMinPack: 30,
-    image: '',
+    image: '/ilustraciones_png/KOA-DES-112.png',
     tags: ['servilletas', 'papel', 'mesa', 'gastronomia'],
   },
 
@@ -334,7 +334,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 2150,
     wholesaleMinPack: 12,
     isBestSeller: true,
-    image: '',
+    image: '/ilustraciones_png/KOA-COT-113.png',
     tags: ['cortina', 'metalizada', 'fotos', 'decoracion', 'cumple'],
   },
   {
@@ -348,7 +348,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2400,
     wholesaleMinPack: 10,
-    image: '',
+    image: '/ilustraciones_png/KOA-COT-115.png',
     tags: ['globos', 'numeros', 'dorado', 'helio', 'gigante'],
   },
   {
@@ -362,7 +362,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 4,
     wholesalePrice: 2900,
     wholesaleMinPack: 10,
-    image: '',
+    image: '/fotos_reales/KOA-COT-116.jpeg',
     tags: ['bengala', 'fuego frio', 'torta', 'velas', 'fiesta'],
   },
   {
@@ -376,7 +376,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2700,
     wholesaleMinPack: 12,
-    image: '',
+    image: '/ilustraciones_png/KOA-COT-117.png',
     tags: ['nieve', 'espuma', 'egresados', 'carnaval', 'festejo'],
   },
 
@@ -393,7 +393,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 3300,
     wholesaleMinPack: 10,
     isBestSeller: true,
-    image: '/reposteria_placeholder_1789707126834.jpg',
+    image: '/ilustraciones_png/KOA-REP-118.png',
     tags: ['mangas', 'pasteleria', 'reposteria', 'dulce de leche', 'decoracion'],
   },
   {
@@ -407,7 +407,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 5900,
     wholesaleMinPack: 5,
-    image: '/reposteria_placeholder_1789707126834.jpg',
+    image: '/ilustraciones_png/KOA-REP-119.png',
     tags: ['picos', 'acero inoxidable', 'decorar', 'tortas', 'cupcakes'],
   },
   {
@@ -421,7 +421,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3800,
     wholesaleMinPack: 6,
-    image: '',
+    image: '/ilustraciones_png/KOA-REP-120.png',
     tags: ['molde', 'silicona', 'muffins', 'cupcakes', 'horno'],
   },
   {
@@ -435,7 +435,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 5,
     wholesalePrice: 4600,
     wholesaleMinPack: 10,
-    image: '',
+    image: '/fotos_reales/KOA-REP-121.jpeg',
     tags: ['bases', 'torta', 'dorado', 'pasteleria', 'laminado'],
   },
   {
@@ -449,7 +449,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3500,
     wholesaleMinPack: 8,
-    image: '',
+    image: '/ilustraciones_png/KOA-REP-122.png',
     tags: ['perlas', 'comestible', 'azucar', 'dorado', 'decoracion'],
   },
 
@@ -466,7 +466,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 5500,
     wholesaleMinPack: 10,
     isBestSeller: true,
-    image: '/envases_placeholder_1789707149163.jpg',
+    image: '/fotos_reales/KOA-ENV-126.jpeg',
     tags: ['pet', 'frascos', 'miel', 'envases', 'tapa'],
   },
   {
@@ -480,7 +480,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1500,
     wholesaleMinPack: 24,
-    image: '/envases_placeholder_1789707149163.jpg',
+    image: '/ilustraciones_png/KOA-ENV-124.png',
     tags: ['pulverizador', 'gatillo', 'alcohol', 'limpieza', 'spray'],
   },
   {
@@ -494,7 +494,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1150,
     wholesaleMinPack: 30,
-    image: '',
+    image: '/ilustraciones_png/KOA-ENV-125.png',
     tags: ['dosificador', 'jabon', 'crema', 'pet', 'bomba'],
   },
   {
@@ -508,7 +508,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1950,
     wholesaleMinPack: 20,
-    image: '',
+    image: '/ilustraciones_png/KOA-ENV-123.png',
     tags: ['bidon', '5litros', 'quimicos', 'limpieza', 'pead'],
   },
 
@@ -525,7 +525,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 6900,
     wholesaleMinPack: 5,
     isBestSeller: true,
-    image: '/libreria_placeholder_1789707175275.jpg',
+    image: '/fotos_reales/KOA-LIB-129.jpeg',
     tags: ['resma', 'a4', 'papel', 'impresion', 'oficina'],
   },
   {
@@ -539,7 +539,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3000,
     wholesaleMinPack: 10,
-    image: '/libreria_placeholder_1789707175275.jpg',
+    image: '/fotos_reales/KOA-LIB-130.jpeg',
     tags: ['cuaderno', 'espiral', 'a4', 'escolar', 'estudio'],
   },
   {
@@ -553,7 +553,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1550,
     wholesaleMinPack: 24,
-    image: '',
+    image: '/ilustraciones_png/KOA-LIB-127.png',
     tags: ['cinta', 'pintor', 'masking', 'papel', 'libreria'],
   },
   {
@@ -567,7 +567,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 12,
     wholesalePrice: 5900,
     wholesaleMinPack: 5,
-    image: '',
+    image: '/ilustraciones_png/KOA-LIB-128.png',
     tags: ['marcadores', 'permanente', 'fibra', 'indeleble', 'libreria'],
   },
 
@@ -583,7 +583,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2600,
     wholesaleMinPack: 12,
-    image: '/bazar_placeholder_1789707164449.jpg',
+    image: '/ilustraciones_png/KOA-BAZ-131.png',
     tags: ['jarra', 'medidor', 'bazar', 'cocina', 'plastico'],
   },
   {
@@ -597,7 +597,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 4900,
     wholesaleMinPack: 6,
-    image: '/bazar_placeholder_1789707164449.jpg',
+    image: '/fotos_reales/KOA-BAZ-132.jpeg',
     tags: ['hermeticos', 'taper', 'organizadores', 'bazar', 'bpa free'],
   },
 
@@ -614,7 +614,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 3900,
     wholesaleMinPack: 10,
     isManufacturer: true,
-    image: '',
+    image: '/fotos_reales/KOA-POL-133.jpeg',
     tags: ['bolsas', 'arranque', 'rollo', 'polietileno', 'fiambreria'],
   },
   {
@@ -630,7 +630,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesaleMinPack: 10,
     isManufacturer: true,
     isBestSeller: true,
-    image: '',
+    image: '/fotos_reales/KOA-POL-134.jpeg',
     tags: ['bolsas', 'arranque', 'verdulería', 'polietileno', 'rollo'],
   },
   {
@@ -644,7 +644,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2150,
     wholesaleMinPack: 24,
-    image: '',
+    image: '/fotos_reales/KOA-POL-135.jpeg',
     tags: ['cinta', 'fragil', 'embalaje', 'seguridad', 'envios'],
   },
   {
@@ -659,7 +659,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 5400,
     wholesaleMinPack: 10,
     isBestSeller: true,
-    image: '',
+    image: '/fotos_reales/KOA-DES-136.jpeg',
     tags: ['bandejas', 'pet', 'bisagra', 'ensaladas', 'viandas'],
   },
   {
@@ -674,7 +674,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 4500,
     wholesaleMinPack: 20,
     isNew: true,
-    image: '',
+    image: '/ilustraciones_png/KOA-DES-137.png',
     tags: ['vasos', '500cc', 'cerveza', 'licuados', 'descartables'],
   },
   {
@@ -688,7 +688,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 25,
     wholesalePrice: 6800,
     wholesaleMinPack: 8,
-    image: '',
+    image: '/fotos_reales/KOA-DES-138.jpeg',
     tags: ['viandero', 'telgopor', '3 divisiones', 'rotiseria', 'delivery'],
   },
   {
@@ -702,7 +702,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1500,
     wholesaleMinPack: 24,
-    image: '',
+    image: '/ilustraciones_png/KOA-COT-139.png',
     tags: ['nieve', 'aerosol', 'espuma', 'carnaval', 'cotillon'],
   },
   {
@@ -716,7 +716,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3950,
     wholesaleMinPack: 5,
-    image: '',
+    image: '/fotos_reales/KOA-COT-140.jpeg',
     tags: ['combo', 'fiesta', 'cumpleaños', 'polipapel', 'cotillon'],
   },
   {
@@ -730,7 +730,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 6,
     wholesalePrice: 2750,
     wholesaleMinPack: 10,
-    image: '',
+    image: '/ilustraciones_png/KOA-REP-141.png',
     tags: ['cortantes', 'galletitas', 'acero', 'reposteria', 'fondant'],
   },
   {
@@ -744,7 +744,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 100,
     wholesalePrice: 1300,
     wholesaleMinPack: 20,
-    image: '',
+    image: '/ilustraciones_png/KOA-REP-142.png',
     tags: ['pirotines', 'muffins', 'cupcakes', 'horno', 'reposteria'],
   },
   {
@@ -758,7 +758,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 20,
     wholesalePrice: 4300,
     wholesaleMinPack: 10,
-    image: '',
+    image: '/fotos_reales/KOA-ENV-143.jpeg',
     tags: ['botellas', 'pet', '500ml', 'jugos', 'envases'],
   },
   {
@@ -773,7 +773,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 8200,
     wholesaleMinPack: 5,
     isManufacturer: true,
-    image: '',
+    image: '/ilustraciones_png/KOA-ENV-144.png',
     tags: ['pulverizador', 'presion previa', '2litros', 'limpieza', 'sanitizante'],
   },
   {
@@ -787,7 +787,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 7700,
     wholesaleMinPack: 5,
-    image: '',
+    image: '/ilustraciones_png/KOA-LIB-145.png',
     tags: ['resma', 'oficio', 'papel', 'legal', 'libreria'],
   },
   {
@@ -801,7 +801,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 4100,
     wholesaleMinPack: 6,
-    image: '',
+    image: '/fotos_reales/KOA-LIB-146.jpeg',
     tags: ['abrochadora', 'metal', 'oficina', 'libreria', 'ganchos'],
   },
   {
@@ -815,7 +815,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3700,
     wholesaleMinPack: 10,
-    image: '',
+    image: '/ilustraciones_png/KOA-BAZ-147.png',
     tags: ['escurridor', 'platos', 'bazar', 'cocina', 'organizadores'],
   },
 ];
