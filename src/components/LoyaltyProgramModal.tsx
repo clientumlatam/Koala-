@@ -16,7 +16,11 @@ import {
   Tag, 
   ShieldCheck,
   UserCheck,
-  Percent
+  Percent,
+  Bell,
+  BellRing,
+  Smartphone,
+  Radio
 } from 'lucide-react';
 import { LoyaltyProfile, LoyaltyReward } from '../types';
 import { AVAILABLE_LOYALTY_REWARDS } from '../data/loyaltyData';
@@ -38,7 +42,7 @@ export const LoyaltyProgramModal: React.FC<LoyaltyProgramModalProps> = ({
   onUpdateProfile,
   onSelectRewardForCheckout,
 }) => {
-  const [activeTab, setActiveTab] = React.useState<'points' | 'punchcard' | 'rewards' | 'history'>('points');
+  const [activeTab, setActiveTab] = React.useState<'points' | 'punchcard' | 'rewards' | 'history' | 'notifications'>('points');
   
   // Registration Form State
   const [name, setName] = React.useState('');
@@ -46,6 +50,15 @@ export const LoyaltyProgramModal: React.FC<LoyaltyProgramModalProps> = ({
   const [phone, setPhone] = React.useState('');
   const [cuitOrDni, setCuitOrDni] = React.useState('');
   const [feedbackMsg, setFeedbackMsg] = React.useState<string | null>(null);
+
+  // Push notification state
+  const [pushPermission, setPushPermission] = React.useState<NotificationPermission>(
+    typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'default'
+  );
+  const [notifyStockChanges, setNotifyStockChanges] = React.useState(true);
+  const [notifyPromotions, setNotifyPromotions] = React.useState(true);
+  const [notifyNewLaunches, setNotifyNewLaunches] = React.useState(true);
+  const [isPushSubscribing, setIsPushSubscribing] = React.useState(false);
 
   if (!isOpen) return null;
 
@@ -268,6 +281,19 @@ export const LoyaltyProgramModal: React.FC<LoyaltyProgramModalProps> = ({
               >
                 <Clock className="w-4 h-4" />
                 <span>Historial</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('notifications')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap ${
+                  activeTab === 'notifications'
+                    ? 'bg-orange-500 text-white shadow-md'
+                    : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
+                }`}
+              >
+                <BellRing className="w-4 h-4 text-orange-300" />
+                <span>Alertas Push</span>
+                <span className={`w-2 h-2 rounded-full ${pushPermission === 'granted' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
               </button>
             </div>
           )}
@@ -674,6 +700,169 @@ export const LoyaltyProgramModal: React.FC<LoyaltyProgramModalProps> = ({
                         )}
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 5: PUSH NOTIFICATIONS & STOCK ALERTS */}
+              {activeTab === 'notifications' && (
+                <div className="space-y-5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider font-fredoka flex items-center gap-2">
+                        <BellRing className="w-4 h-4 text-orange-600" />
+                        <span>Notificaciones Push & Alertas de Stock</span>
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Recibí alertas instantáneas en tu celular o PC cuando ingrese stock en General Roca o Neuquén.
+                      </p>
+                    </div>
+
+                    <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+                      pushPermission === 'granted'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800'
+                        : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800'
+                    }`}>
+                      {pushPermission === 'granted' ? '🔔 Notificaciones Activas' : '⚠️ Permiso Pendiente'}
+                    </span>
+                  </div>
+
+                  {/* Push Permission Activation Box */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 dark:from-slate-800 dark:to-slate-850 border border-orange-200 dark:border-slate-700 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2.5 rounded-xl bg-orange-500 text-white shadow-xs shrink-0">
+                        <Smartphone className="w-5 h-5" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
+                          Alertas automáticas vía Service Worker (PWA)
+                        </h4>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                          Sincronizado en tiempo real con el gateway de stock del ERP para avisarte de reposición de bobinas de polietileno, vasos térmicos, piñatas y artículos de repostería.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      {pushPermission !== 'granted' ? (
+                        <button
+                          type="button"
+                          disabled={isPushSubscribing}
+                          onClick={async () => {
+                            setIsPushSubscribing(true);
+                            if (typeof window !== 'undefined' && 'Notification' in window) {
+                              try {
+                                const permission = await Notification.requestPermission();
+                                setPushPermission(permission);
+                                if (permission === 'granted') {
+                                  setFeedbackMsg('🎉 ¡Notificaciones activadas con éxito!');
+                                  setTimeout(() => setFeedbackMsg(null), 3000);
+                                  if ('serviceWorker' in navigator) {
+                                    const reg = await navigator.serviceWorker.ready;
+                                    reg.showNotification('🐨 ¡Bienvenido al Club Koala!', {
+                                      body: 'Ahora recibirás avisos de stock y descuentos exclusivos de sucursales Roca y Neuquén.',
+                                      icon: '/koala-logo.png',
+                                      badge: '/koala-logo.png'
+                                    });
+                                  }
+                                }
+                              } catch (e) {
+                                console.error(e);
+                              }
+                            }
+                            setIsPushSubscribing(false);
+                          }}
+                          className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                        >
+                          <Bell className="w-4 h-4" />
+                          <span>{isPushSubscribing ? 'Solicitando...' : 'Habilitar Notificaciones Push'}</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if ('serviceWorker' in navigator) {
+                              try {
+                                const reg = await navigator.serviceWorker.ready;
+                                reg.showNotification('🐨 Koala Lo Tiene — Alerta de Stock', {
+                                  body: '¡Ingresaron 50 bultos de Film Stretch y Bolsas Camiseta a Casa Central General Roca!',
+                                  icon: '/koala-logo.png',
+                                  badge: '/koala-logo.png'
+                                });
+                                setFeedbackMsg('🔔 Notificación de prueba enviada al dispositivo.');
+                                setTimeout(() => setFeedbackMsg(null), 3000);
+                              } catch {
+                                alert('Notificación de prueba enviada');
+                              }
+                            }
+                          }}
+                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                        >
+                          <Radio className="w-4 h-4" />
+                          <span>Enviar Alerta de Prueba</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Channel Preferences Toggles */}
+                  <div className="space-y-3">
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                      Tus Preferencias de Avisos
+                    </h4>
+
+                    <div className="space-y-2">
+                      <label className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-100/70 transition-colors">
+                        <div className="space-y-0.5">
+                          <div className="text-xs font-bold text-slate-900 dark:text-white">
+                            Reposición de Stock en Favoritos
+                          </div>
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                            Avisarme cuando vuelva a haber inventario de mis artículos cotizados.
+                          </div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={notifyStockChanges}
+                          onChange={(e) => setNotifyStockChanges(e.target.checked)}
+                          className="w-4 h-4 text-orange-600 rounded border-slate-300 focus:ring-orange-500"
+                        />
+                      </label>
+
+                      <label className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-100/70 transition-colors">
+                        <div className="space-y-0.5">
+                          <div className="text-xs font-bold text-slate-900 dark:text-white">
+                            Promociones de Temporada & Descuentos Mayoristas
+                          </div>
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                            Alertas de campañas de cotillón (Halloween, Navidad, Pascuas, Aniversario).
+                          </div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={notifyPromotions}
+                          onChange={(e) => setNotifyPromotions(e.target.checked)}
+                          className="w-4 h-4 text-orange-600 rounded border-slate-300 focus:ring-orange-500"
+                        />
+                      </label>
+
+                      <label className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 cursor-pointer hover:bg-slate-100/70 transition-colors">
+                        <div className="space-y-0.5">
+                          <div className="text-xs font-bold text-slate-900 dark:text-white">
+                            Nuevos Lanzamientos & Fabricación Propia
+                          </div>
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                            Avisos de nuevas medidas de polietileno, descartables ecológicos y moldes de repostería.
+                          </div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={notifyNewLaunches}
+                          onChange={(e) => setNotifyNewLaunches(e.target.checked)}
+                          className="w-4 h-4 text-orange-600 rounded border-slate-300 focus:ring-orange-500"
+                        />
+                      </label>
+                    </div>
                   </div>
                 </div>
               )}

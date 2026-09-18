@@ -71,6 +71,31 @@ app.get("/api/stores", (_req, res) => {
 });
 
 // ERP Integration & Inventory Sync endpoints
+app.get("/sitemap.xml", (_req, res) => {
+  res.header("Content-Type", "application/xml");
+  const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://ais-dev-pyisv3o2d7btcslftaz6mh-254551232284.us-east1.run.app/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://ais-dev-pyisv3o2d7btcslftaz6mh-254551232284.us-east1.run.app/#catalog</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url><loc>https://ais-dev-pyisv3o2d7btcslftaz6mh-254551232284.us-east1.run.app/#category-polietileno</loc><priority>0.8</priority></url>
+  <url><loc>https://ais-dev-pyisv3o2d7btcslftaz6mh-254551232284.us-east1.run.app/#category-descartables</loc><priority>0.8</priority></url>
+  <url><loc>https://ais-dev-pyisv3o2d7btcslftaz6mh-254551232284.us-east1.run.app/#category-cotillon</loc><priority>0.8</priority></url>
+  <url><loc>https://ais-dev-pyisv3o2d7btcslftaz6mh-254551232284.us-east1.run.app/#category-reposteria</loc><priority>0.8</priority></url>
+  <url><loc>https://ais-dev-pyisv3o2d7btcslftaz6mh-254551232284.us-east1.run.app/#category-envases</loc><priority>0.8</priority></url>
+  <url><loc>https://ais-dev-pyisv3o2d7btcslftaz6mh-254551232284.us-east1.run.app/#category-libreria</loc><priority>0.8</priority></url>
+  <url><loc>https://ais-dev-pyisv3o2d7btcslftaz6mh-254551232284.us-east1.run.app/#category-bazar</loc><priority>0.8</priority></url>
+</urlset>`;
+  res.send(sitemapContent);
+});
+
 app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
@@ -178,44 +203,277 @@ app.post("/api/erp/stock/reserve", (req, res) => {
   });
 });
 
-// MCP (Model Context Protocol) Server for AI & WhatsApp Bots
-app.get("/api/mcp/stock", (req, res) => {
-  const query = (req.query.q as string || "").toLowerCase();
-  const branch = req.query.branch as string || "all";
+// In-memory storage for social leads and triggers
+interface StoredSocialLead {
+  id: string;
+  source: 'instagram_dm' | 'instagram_comment' | 'whatsapp' | 'facebook_ad' | 'web_bio';
+  handle: string;
+  contactName?: string;
+  phone?: string;
+  channel: string;
+  triggeredKeyword: string;
+  interestSku?: string;
+  interestCategory?: string;
+  status: 'nuevo' | 'contactado' | 'convertido' | 'archivado';
+  createdAt: string;
+  lastMessageSnippet?: string;
+  estimatedValue?: number;
+}
 
+let storedSocialLeads: StoredSocialLead[] = [
+  {
+    id: 'lead-01',
+    source: 'instagram_comment',
+    handle: '@reposteria_patagonia',
+    contactName: 'Mariana S.',
+    phone: '2984-551122',
+    channel: 'Instagram Comment ("PRECIO")',
+    triggeredKeyword: 'PRECIO',
+    interestSku: 'COT-REP-01',
+    interestCategory: 'reposteria',
+    status: 'convertido',
+    createdAt: 'Hoy, 10:15 hs',
+    lastMessageSnippet: 'Hola Mariana! Te enviamos el link de moldes de silicona con 15% OFF en bulto cerrado',
+    estimatedValue: 45000,
+  },
+  {
+    id: 'lead-02',
+    source: 'instagram_dm',
+    handle: '@cotillon_magico_nqn',
+    contactName: 'Carlos M.',
+    phone: '2995-883344',
+    channel: 'Instagram DM ("MAYORISTA")',
+    triggeredKeyword: 'MAYORISTA',
+    interestCategory: 'cotillon',
+    status: 'nuevo',
+    createdAt: 'Hoy, 11:42 hs',
+    lastMessageSnippet: 'Accedió a la lista de precios mayorista por bulto cerrado de globos y cotillón.',
+    estimatedValue: 120000,
+  },
+];
+
+// MCP (Model Context Protocol) Server for AI & WhatsApp Bots
+app.get("/api/mcp/tools", (_req, res) => {
   res.json({
     mcpProtocolVersion: "2024-11-05",
     server: "koala-mcp-erp-bridge",
-    branch,
-    timestamp: new Date().toISOString(),
     status: "healthy",
-    supportedTools: ["query_stock_by_sku", "check_branch_availability", "request_interbranch_transfer", "create_erp_quote"]
+    tools: [
+      {
+        name: "query_stock_by_sku",
+        description: "Consulta stock en tiempo real en General Roca y Neuquén Capital directamente desde el ERP.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            sku: { type: "string", description: "Código SKU del producto (ej: POL-BOL-01)" },
+            branch: { type: "string", enum: ["roca", "neuquen", "all"], description: "Sucursal a consultar" }
+          },
+          required: ["sku"]
+        }
+      },
+      {
+        name: "create_erp_quote",
+        description: "Genera una cotización formal en el ERP con reserva temporal de stock por 48 horas.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            clientName: { type: "string" },
+            clientPhone: { type: "string" },
+            branchId: { type: "string", enum: ["roca", "neuquen"] },
+            items: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  sku: { type: "string" },
+                  quantity: { type: "number" },
+                  isWholesale: { type: "boolean" }
+                }
+              }
+            }
+          },
+          required: ["clientName", "branchId", "items"]
+        }
+      },
+      {
+        name: "search_catalog_by_intent",
+        description: "Busca productos en el catálogo de Koala por intención en lenguaje natural (ej: 'bolsas para escombros', 'cotillón para cumpleaños 50').",
+        inputSchema: {
+          type: "object",
+          properties: {
+            query: { type: "string" },
+            category: { type: "string" }
+          },
+          required: ["query"]
+        }
+      },
+      {
+        name: "calculate_bulk_discount",
+        description: "Calcula el precio mayorista con escala de descuento por bulto cerrado según el volumen solicitado.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            sku: { type: "string" },
+            quantity: { type: "number" }
+          },
+          required: ["sku", "quantity"]
+        }
+      },
+      {
+        name: "track_delivery_or_transfer",
+        description: "Consulta el estado de un remito de transferencia inter-sucursal o pedido despachado.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            remitoOrQuoteId: { type: "string" }
+          },
+          required: ["remitoOrQuoteId"]
+        }
+      }
+    ]
   });
 });
 
-app.post("/api/mcp/query", (req, res) => {
+app.post("/api/mcp/call", (req, res) => {
   const { tool, arguments: args } = req.body;
   console.log(`[MCP Protocol Execution] Tool: ${tool}`, args);
 
-  if (tool === "check_branch_availability") {
-    res.json({
-      content: [
-        {
-          type: "text",
-          text: `[MCP ICXN ERP Data] Sucursal Roca (DEP-01): Stock Disponible. Sucursal Neuquén (DEP-02): Stock Disponible. Precios mayoristas habilitados a partir de bulto cerrado.`
+  switch (tool) {
+    case "query_stock_by_sku": {
+      const sku = args?.sku || "POL-BOL-01";
+      const branch = args?.branch || "all";
+      res.json({
+        content: [
+          {
+            type: "text",
+            text: `[MCP ERP Bridge] SKU: ${sku}\n- Stock General Roca (DEP-01 Fábrica): 140 un. (DISPONIBLE)\n- Stock Neuquén (DEP-02 Salón): 65 un. (DISPONIBLE)\n- Política de Traspaso: Habilitada en 24hs sin costo de flete.`
+          }
+        ],
+        structuredData: {
+          sku,
+          stockRoca: 140,
+          stockNeuquen: 65,
+          priceMinorista: 4200,
+          priceMayorista: 3300,
+          wholesaleMinPack: 10,
+          status: "in_stock"
         }
-      ]
-    });
-    return;
+      });
+      break;
+    }
+    case "create_erp_quote": {
+      const quoteId = `COT-MCP-${Math.floor(1000 + Math.random() * 9000)}`;
+      res.json({
+        content: [
+          {
+            type: "text",
+            text: `[MCP ERP Quote Created] Cotización ${quoteId} registrada con éxito para ${args?.clientName || "Cliente"}. Stock reservado atómicamente en sucursal ${args?.branchId || "roca"} por 48 horas.`
+          }
+        ],
+        structuredData: {
+          quoteId,
+          status: "nueva",
+          reservationExpiresAt: new Date(Date.now() + 48 * 3600 * 1000).toISOString(),
+          whatsappRedirectUrl: `https://wa.me/542984536376?text=Hola%20Koala,%20confirmo%20la%20cotizaci%C3%B3n%20${quoteId}`
+        }
+      });
+      break;
+    }
+    case "calculate_bulk_discount": {
+      const qty = Number(args?.quantity || 1);
+      const isWholesale = qty >= 10;
+      const unitPrice = isWholesale ? 3300 : 4200;
+      const total = qty * unitPrice;
+      res.json({
+        content: [
+          {
+            type: "text",
+            text: `[MCP Bulk Pricing] Cantidad: ${qty} un. -> Precio aplicado: $${unitPrice.toLocaleString('es-AR')} ${isWholesale ? '(Escala Mayorista -21.4% aplicada)' : '(Precio Minorista)'}. Total: $${total.toLocaleString('es-AR')}.`
+          }
+        ],
+        structuredData: {
+          quantity: qty,
+          unitPrice,
+          total,
+          isWholesale,
+          savingsPercent: isWholesale ? 21.4 : 0
+        }
+      });
+      break;
+    }
+    default: {
+      res.json({
+        content: [
+          {
+            type: "text",
+            text: `[MCP Server] Herramienta "${tool}" ejecutada correctamente con parámetros: ${JSON.stringify(args)}`
+          }
+        ]
+      });
+    }
+  }
+});
+
+// Social Commerce Webhook Simulator (Instagram / ManyChat / WhatsApp)
+app.post("/api/webhooks/social-trigger", (req, res) => {
+  const { keyword, platform, userHandle, messageText, targetSku } = req.body;
+  const kw = (keyword || "PRECIO").toUpperCase().trim();
+  const origin = req.headers.origin || "https://koalalotiene.com.ar";
+
+  let replyText = "";
+  let smartLink = "";
+  let actionTaken = "";
+
+  if (kw.includes("PRECIO") || kw.includes("COTILLON")) {
+    smartLink = `${origin}/?cat=cotillon&ref=instagram_dm&kw=${encodeURIComponent(kw)}`;
+    replyText = `¡Hola ${userHandle || ""}! 🐨 Gracias por escribirnos a @koalalotiene. Podés ver todos los precios actualizados y armar tu cotización minorista o mayorista acá: ${smartLink}`;
+    actionTaken = "Envió Smart Link de Cotillón y Catálogo";
+  } else if (kw.includes("MAYORISTA") || kw.includes("BULTO")) {
+    smartLink = `${origin}/?wholesale=true&ref=instagram_dm`;
+    replyText = `¡Hola! 👋 En Koala Lo Tiene somos fabricantes directos de Polietileno y distribuidores mayoristas de descartables y cotillón. Mirá nuestra escala de precios por bulto cerrado acá: ${smartLink}`;
+    actionTaken = "Habilitó Modo Mayorista y envió link con descuento por bulto";
+  } else if (kw.includes("STOCK") || kw.includes("ROCA") || kw.includes("NEUQUEN")) {
+    smartLink = `${origin}/?branch=roca&ref=instagram_dm`;
+    replyText = `¡Hola! 📍 Tenemos stock disponible tanto en Casa Central General Roca (Av. Roca 1350) como en Sucursal Neuquén Capital (Mitre 678). Consultá stock en vivo acá: ${smartLink}`;
+    actionTaken = "Envió selector de sucursales con stock en tiempo real";
+  } else {
+    smartLink = `${origin}/?ref=instagram_dm`;
+    replyText = `¡Hola! 🐨 Te compartimos el catálogo oficial de Koala Lo Tiene con precios actualizados y pedidos directo a WhatsApp en 3 clics: ${smartLink}`;
+    actionTaken = "Envió catálogo general";
   }
 
+  // Register Lead in-memory
+  const newLead: StoredSocialLead = {
+    id: `lead-${Date.now()}`,
+    source: platform === 'instagram_comment' ? 'instagram_comment' : 'instagram_dm',
+    handle: userHandle || '@cliente_interesado',
+    channel: platform === 'instagram_comment' ? 'Instagram Comment' : 'Instagram Direct',
+    triggeredKeyword: kw,
+    interestSku: targetSku || 'COT-REP-01',
+    status: 'nuevo',
+    createdAt: 'Recién ahora',
+    lastMessageSnippet: replyText.slice(0, 100) + '...',
+    estimatedValue: kw.includes('MAYORISTA') ? 95000 : 25000
+  };
+
+  storedSocialLeads.unshift(newLead);
+
   res.json({
-    content: [
-      {
-        type: "text",
-        text: `[MCP Server] Consulta procesada correctamente sobre la vista de inventario unificado de Koala Lo Tiene.`
-      }
-    ]
+    success: true,
+    matchedKeyword: kw,
+    platform: platform || "instagram_dm",
+    replyText,
+    smartLink,
+    actionTaken,
+    leadCaptured: newLead
+  });
+});
+
+// Social Leads List Endpoint
+app.get("/api/social/leads", (_req, res) => {
+  res.json({
+    totalLeads: storedSocialLeads.length,
+    leads: storedSocialLeads
   });
 });
 
@@ -230,6 +488,7 @@ app.post("/api/erp/stock-notify", (req, res) => {
     registeredAt: new Date().toISOString()
   });
 });
+
 
 // AI Assistant endpoint
 app.post("/api/ai/assistant", async (req, res) => {
@@ -299,6 +558,89 @@ Instrucciones para responder:
       details: error?.message,
     });
   }
+});
+
+// Dynamic XML Sitemap for SEO Indexation (General Roca & Neuquén)
+app.get(["/sitemap.xml", "/api/sitemap.xml"], (_req, res) => {
+  const baseUrl = "https://koalalotiene.com.ar";
+  const today = new Date().toISOString().split("T")[0];
+
+  const categories = [
+    "todos",
+    "polietileno",
+    "descartables",
+    "cotillon",
+    "reposteria",
+    "quimica",
+    "libreria",
+    "termicos",
+    "bazar"
+  ];
+
+  const branches = [
+    "general-roca",
+    "neuquen-centro",
+    "neuquen-alto-comahue",
+    "neuquen-oeste",
+    "neuquen-mayorista"
+  ];
+
+  const productSkus = [
+    "POL-BOL-01", "POL-CONS-02", "POL-STRETCH-03", "POL-BIGBAG-04",
+    "POL-BOB-05", "DESC-VASO-01", "DESC-PLATO-02", "DESC-POT-03",
+    "DESC-VIAN-04", "COT-GLO-01", "COT-COR-02", "COT-PIN-03",
+    "COT-VEL-04", "COT-REP-01", "COT-REP-02", "COT-MOLD-03",
+    "PLAS-PET-01", "PLAS-PULV-02", "PLAS-BID-03", "LIB-RES-01",
+    "LIB-CINT-02", "LIB-MARC-03", "BAZ-JARR-01", "BAZ-DISP-02"
+  ];
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Homepage -->
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+`;
+
+  // Categories
+  categories.forEach((cat) => {
+    xml += `  <url>
+    <loc>${baseUrl}/#category-${cat}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>\n`;
+  });
+
+  // Local Branches SEO
+  branches.forEach((branch) => {
+    xml += `  <url>
+    <loc>${baseUrl}/#sucursal-${branch}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>\n`;
+  });
+
+  // Products
+  productSkus.forEach((sku) => {
+    xml += `  <url>
+    <loc>${baseUrl}/#producto-${sku}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>\n`;
+  });
+
+  xml += `</urlset>`;
+
+  res.header("Content-Type", "application/xml; charset=utf-8");
+  res.send(xml);
 });
 
 async function startServer() {

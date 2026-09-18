@@ -28,7 +28,8 @@ import {
   INITIAL_INVOICES,
   INITIAL_TRANSFERS,
   INITIAL_CSV_CRON_TASKS,
-  INITIAL_CSV_CRON_LOGS
+  INITIAL_CSV_CRON_LOGS,
+  INITIAL_WEBHOOK_EVENTS
 } from './data/adminData';
 import { 
   BranchId, 
@@ -44,6 +45,7 @@ import {
   StockTransferOrder,
   CsvCronTask,
   CsvCronExecutionLog,
+  ErpWebhookEventRecord,
   LoyaltyProfile,
   LoyaltyReward,
   LoyaltyPointTransaction
@@ -231,6 +233,56 @@ export default function App() {
   const [transfers, setTransfers] = React.useState<StockTransferOrder[]>(INITIAL_TRANSFERS);
   const [cronTasks, setCronTasks] = React.useState<CsvCronTask[]>(INITIAL_CSV_CRON_TASKS);
   const [cronLogs, setCronLogs] = React.useState<CsvCronExecutionLog[]>(INITIAL_CSV_CRON_LOGS);
+  const [webhookEvents, setWebhookEvents] = React.useState<ErpWebhookEventRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem('koala_webhook_events');
+      return saved ? JSON.parse(saved) : INITIAL_WEBHOOK_EVENTS;
+    } catch {
+      return INITIAL_WEBHOOK_EVENTS;
+    }
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('koala_webhook_events', JSON.stringify(webhookEvents));
+  }, [webhookEvents]);
+
+  const handleRetryWebhookEvent = (eventId: string) => {
+    setWebhookEvents(prev => prev.map(ev => {
+      if (ev.id === eventId) {
+        return {
+          ...ev,
+          status: 'success',
+          errorMessage: undefined,
+          retryCount: (ev.retryCount || 0) + 1,
+          timestamp: `Hoy, ${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })} hs`
+        };
+      }
+      return ev;
+    }));
+  };
+
+  const handleSimulateWebhookEvent = () => {
+    const newEv: ErpWebhookEventRecord = {
+      id: `wh-${Math.floor(Math.random() * 9000 + 1000)}`,
+      timestamp: `Hoy, ${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })} hs`,
+      eventType: 'stock_update',
+      status: Math.random() > 0.2 ? 'success' : 'error',
+      source: 'ICXN ERP Webhook Gateway (icxn.com.ar)',
+      payload: JSON.stringify({
+        event: 'stock.updated',
+        branch: 'roca',
+        timestamp: new Date().toISOString(),
+        items: [
+          { sku: 'KOA-POL-101', stockRoca: Math.floor(Math.random() * 150 + 50), stockNeuquen: Math.floor(Math.random() * 100 + 30) }
+        ]
+      }, null, 2),
+      retryCount: 0,
+    };
+    if (newEv.status === 'error') {
+      newEv.errorMessage = 'Error HTTP 500 Internal Server Error al procesar JSON payload en el receptor ICXN';
+    }
+    setWebhookEvents(prev => [newEv, ...prev]);
+  };
 
   // Loyalty Program Handlers
   const handleUpdateLoyaltyProfile = (updatedProfile: LoyaltyProfile) => {
@@ -615,6 +667,9 @@ export default function App() {
           onUpdateInventoryPrices={handleUpdateInventoryPrices}
           onUpdateFullProduct={handleUpdateFullProduct}
           onDeleteProduct={handleDeleteProduct}
+          webhookEvents={webhookEvents}
+          onRetryWebhookEvent={handleRetryWebhookEvent}
+          onSimulateWebhookEvent={handleSimulateWebhookEvent}
         />
       );
     }
@@ -820,6 +875,9 @@ export default function App() {
           onUpdateInventoryPrices={handleUpdateInventoryPrices}
           onUpdateFullProduct={handleUpdateFullProduct}
           onDeleteProduct={handleDeleteProduct}
+          webhookEvents={webhookEvents}
+          onRetryWebhookEvent={handleRetryWebhookEvent}
+          onSimulateWebhookEvent={handleSimulateWebhookEvent}
         />
       )}
 

@@ -12,12 +12,12 @@ import {
   Facebook,
   Navigation
 } from 'lucide-react';
-import { BranchInfo } from '../types';
+import { BranchInfo, BranchId } from '../types';
 
 interface StoreLocationsSectionProps {
   branches: BranchInfo[];
   currentBranch: BranchInfo;
-  onSelectBranch: (branchId: 'roca' | 'neuquen') => void;
+  onSelectBranch: (branchId: BranchId) => void;
 }
 
 export const StoreLocationsSection: React.FC<StoreLocationsSectionProps> = ({

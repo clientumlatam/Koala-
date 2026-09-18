@@ -1,8 +1,15 @@
-export type BranchId = 'roca' | 'neuquen';
+export type BranchId = 
+  | 'roca' 
+  | 'neuquen' 
+  | 'neuquen-centro' 
+  | 'neuquen-alto-comahue' 
+  | 'neuquen-oeste' 
+  | 'neuquen-mayorista';
 
 export interface BranchInfo {
   id: BranchId;
   name: string;
+  shortName?: string;
   city: string;
   province: string;
   address: string;
@@ -11,6 +18,8 @@ export interface BranchInfo {
   whatsapp: string;
   whatsappFormatted: string;
   email: string;
+  badge?: string;
+  depotCode?: string;
   hours: {
     weekdays: string;
     saturday: string;
@@ -62,7 +71,7 @@ export interface CartItem {
   isWholesale: boolean;
 }
 
-export type EmployeeRole = 'admin' | 'ventas' | 'deposito' | 'facturacion';
+export type EmployeeRole = 'admin' | 'ventas' | 'deposito' | 'facturacion' | 'backend';
 
 export type ErpSystemType = 'ICXN ERP (https://icxn.com.ar/)' | 'Tango Gestión ERP' | 'Bejerman ERP' | 'SAP Business One' | 'Dragonfish' | 'API REST Koala Directa' | (string & {});
 
@@ -88,9 +97,21 @@ export interface ErpConnectionConfig {
   autoSyncOrders: boolean;
   autoSyncStock: boolean;
   syncIntervalMinutes: number;
+  webhookUrl: string;
   webhookSecret: string;
   lastSuccessfulPing?: string;
   environment: 'production' | 'testing_sandbox';
+}
+
+export interface ErpWebhookEventRecord {
+  id: string;
+  timestamp: string;
+  eventType: 'stock_update' | 'order_sync' | 'price_update' | 'ping_test';
+  status: 'success' | 'error';
+  source: string;
+  payload: string;
+  errorMessage?: string;
+  retryCount?: number;
 }
 
 export interface ErpInvoice {
@@ -313,4 +334,69 @@ export interface CompletedOrderReceipt {
   stampsEarned: number;
   status: 'confirmado' | 'en_preparacion' | 'listo_retiro' | 'en_camino';
 }
+
+// Social Commerce & Instagram Automation Types
+export interface SocialTriggerRule {
+  id: string;
+  keyword: string;
+  platform: 'instagram_dm' | 'instagram_comment' | 'manychat' | 'facebook_messenger' | 'whatsapp';
+  actionType: 'reply_catalog_link' | 'reply_product_quote' | 'apply_coupon' | 'transfer_to_human';
+  responseTemplate: string;
+  targetCategoryId?: CategoryId;
+  targetProductSku?: string;
+  discountPromoCode?: string;
+  active: boolean;
+  matchCount: number;
+}
+
+export interface SocialLead {
+  id: string;
+  source: 'instagram_dm' | 'instagram_comment' | 'meta_ads' | 'link_in_bio' | 'whatsapp_direct';
+  handleOrName: string;
+  phone?: string;
+  email?: string;
+  interestCategory?: CategoryId | string;
+  requestedProduct?: string;
+  branchPreference: BranchId | 'ambas';
+  status: 'nuevo' | 'contactado_whatsapp' | 'presupuesto_enviado' | 'cerrado_erp' | 'descartado';
+  date: string;
+  estimatedValue?: number;
+  quoteCode?: string;
+  notes?: string;
+}
+
+export interface SocialCampaignLink {
+  id: string;
+  name: string;
+  slug: string;
+  targetUrl: string;
+  category?: CategoryId;
+  productSku?: string;
+  campaignSource: 'instagram_bio' | 'instagram_story' | 'instagram_reel' | 'meta_ad' | 'qr_store';
+  clicksCount: number;
+  ordersGenerated: number;
+  active: boolean;
+}
+
+export interface McpToolDefinition {
+  name: string;
+  description: string;
+  parameters: {
+    type: string;
+    properties: Record<string, { type: string; description: string; enum?: string[] }>;
+    required: string[];
+  };
+}
+
+export interface McpToolCallLog {
+  id: string;
+  timestamp: string;
+  caller: 'whatsapp_gemini_bot' | 'web_assistant' | 'icxn_erp_bridge' | 'manychat_agent';
+  tool: string;
+  arguments: Record<string, any>;
+  result: Record<string, any>;
+  latencyMs: number;
+  status: 'success' | 'error';
+}
+
 

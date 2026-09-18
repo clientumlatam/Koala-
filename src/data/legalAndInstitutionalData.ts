@@ -146,7 +146,7 @@ export const TERMINOS_CONDICIONES_TEXT = {
   sections: [
     {
       title: '1. Ámbito de aplicación',
-      content: 'El presente sitio web es operado por Koala Lo Tiene SRL (CUIT 30-71458921-3), con domicilio comercial en Av. Roca 1350, General Roca, Río Negro, y sucursal en Mitre 678, Neuquén Capital.',
+      content: 'El presente sitio web y catálogo comercial es operado por LP SRL (CUIT 30-59986913-8 — https://ventaslp.com/), con casa central y planta de fabricación en Av. Roca 1350, General Roca, Río Negro, y sucursales comerciales en la provincia de Neuquén.',
     },
     {
       title: '2. Presupuestos y Lista de Precios',
@@ -168,7 +168,7 @@ export const PRIVACIDAD_TEXT = {
   sections: [
     {
       title: 'Tratamiento responsable de datos',
-      content: 'En Koala Lo Tiene protegemos la información personal y comercial de nuestros clientes. Los datos solicitados para generar cotizaciones (nombre, teléfono, correo, CUIT y dirección de entrega) son utilizados exclusivamente para procesar tus pedidos y brindarte soporte postventa.',
+      content: 'En LP SRL (ventaslp.com) protegemos la información personal y comercial de nuestros clientes. Los datos solicitados para generar cotizaciones (nombre, teléfono, correo, CUIT y dirección de entrega) son utilizados exclusivamente para procesar tus pedidos y brindarte soporte postventa.',
     },
     {
       title: 'Seguridad y no divulgación',
@@ -186,7 +186,7 @@ export const DERECHOS_DATOS_TEXT = {
   sections: [
     {
       title: 'Marco Normativo Nacional',
-      content: 'En cumplimiento de la Ley 25.326 de Protección de los Datos Personales (Habeas Data) y su Decreto Reglamentario 1558/01, Koala Lo Tiene SRL informa a todos los usuarios que los datos recolectados se incorporan a bases debidamente protegidas.',
+      content: 'En cumplimiento de la Ley 25.326 de Protección de los Datos Personales (Habeas Data) y su Decreto Reglamentario 1558/01, LP SRL (https://ventaslp.com/) informa a todos los usuarios que los datos recolectados se incorporan a bases debidamente protegidas.',
     },
     {
       title: 'Derechos de Acceso, Rectificación y Supresión',

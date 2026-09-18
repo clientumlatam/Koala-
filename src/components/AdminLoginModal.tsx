@@ -47,6 +47,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
     ventas: { title: 'Ejecutivo de Ventas', color: 'bg-orange-100 text-orange-900 border-orange-300 dark:bg-orange-950/80 dark:text-orange-200 dark:border-orange-800', badge: '💼 Ventas' },
     deposito: { title: 'Logística y Depósito', color: 'bg-blue-100 text-blue-900 border-blue-300 dark:bg-blue-950/80 dark:text-blue-200 dark:border-blue-800', badge: '📦 Depósito' },
     facturacion: { title: 'Administración y ERP', color: 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-200 dark:border-emerald-800', badge: '🧾 Facturación' },
+    backend: { title: 'Backend & Integraciones ERP', color: 'bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-800', badge: '⚙️ Backend' },
   };
 
   const handleLogin = (e: React.FormEvent) => {

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512">
+<rect width="64" height="64" fill="#EBE5D6"/>
+<g transform="translate(6,6) scale(0.8125)" stroke="#7C5228" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<ellipse cx="32" cy="26" rx="16" ry="20"/><path d="M32 46 L29 52 L35 52 Z"/><text x="32" y="32" font-size="18" text-anchor="middle" fill="#7C5228" stroke="none" font-family="var(--font-display)">40</text>
+</g>
+</svg>

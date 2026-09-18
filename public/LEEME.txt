@@ -1,0 +1,19 @@
+CATÁLOGO KOALA — IMÁGENES DE PRODUCTOS
+========================================
+
+/fotos_reales/
+  20 productos con foto de referencia real (las que subiste), renombradas
+  por SKU. Son fotos de stock genéricas emparejadas por nombre/categoría,
+  no fotografía del producto físico exacto — confirmalas antes de usarlas
+  en canales de venta. Algunos SKU tienen más de una foto (sufijo _2, _3...).
+
+/ilustraciones_svg/  y  /ilustraciones_png/
+  28 productos sin foto real todavía. Cada uno tiene un ícono de línea
+  original (dibujado para este catálogo, sin derechos de terceros) como
+  reemplazo temporal, en SVG (vectorial, editable) y PNG (512x512,
+  fondo color catálogo) para usar directo en fichas de producto o ERP.
+  Reemplazalos por fotos reales del producto cuando las tengas — mismo
+  nombre de archivo (SKU) para que el emparejamiento no se pierda.
+
+Todos los archivos están nombrados por SKU (ej: KOA-POL-100.jpeg),
+igual que en koala_catalogo_completo.csv, columna "SKU".

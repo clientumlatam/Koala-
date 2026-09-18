@@ -106,6 +106,27 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
   const [isExportingPdf, setIsExportingPdf] = React.useState(false);
   const [completedOrder, setCompletedOrder] = React.useState<CompletedOrderReceipt | null>(null);
   const [formError, setFormError] = React.useState<string | null>(null);
+  const [criticalStockAcknowledged, setCriticalStockAcknowledged] = React.useState(false);
+
+  // Critical Stock Evaluation in Selected Branch
+  const itemsWithCriticalStock = cartItems.map(item => {
+    const stockInBranch = currentBranch.id === 'roca' 
+      ? item.product.stockRoca 
+      : item.product.stockNeuquen;
+    const isCritical = item.quantity > stockInBranch;
+    const alternateStock = currentBranch.id === 'roca' ? item.product.stockNeuquen : item.product.stockRoca;
+    const alternateBranchName = currentBranch.id === 'roca' ? 'Neuquén' : 'General Roca';
+    return {
+      item,
+      stockInBranch,
+      isCritical,
+      deficit: item.quantity - stockInBranch,
+      alternateStock,
+      alternateBranchName
+    };
+  }).filter(res => res.isCritical);
+
+  const hasCriticalStock = itemsWithCriticalStock.length > 0;
 
   // Atomic stock reservation lock timer (15 minutes countdown)
   React.useEffect(() => {
@@ -195,6 +216,16 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
     return acc + (price * item.quantity);
   }, 0);
 
+  // Wholesale savings total calculation
+  const totalWholesaleSavings = cartItems.reduce((acc, item) => {
+    if (item.isWholesale && item.product.wholesalePrice) {
+      const normalTotal = item.product.price * item.quantity;
+      const wholesaleTotal = item.product.wholesalePrice * item.quantity;
+      return acc + (normalTotal - wholesaleTotal);
+    }
+    return acc;
+  }, 0);
+
   // Free delivery threshold ($35,000)
   const FREE_DELIVERY_THRESHOLD = 35000;
   const deliveryFee = deliveryType === 'envio' 
@@ -259,6 +290,11 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
 
   const handleSendWhatsApp = () => {
     if (cartItems.length === 0) return;
+    if (hasCriticalStock && !criticalStockAcknowledged) {
+      setFormError('Por favor confirmá el reconocimiento de stock crítico para continuar con el pedido por WhatsApp.');
+      return;
+    }
+    setFormError(null);
     const quote = getQuoteData();
     const encodedText = buildWhatsAppMessage(cartItems, quote, currentBranch);
     const whatsappUrl = `https://wa.me/${currentBranch.whatsapp}?text=${encodedText}`;
@@ -266,6 +302,11 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
   };
 
   const handleProcessOrderPayment = () => {
+    if (hasCriticalStock && !criticalStockAcknowledged) {
+      setFormError('Por favor confirmá el reconocimiento de stock crítico para continuar con el pago.');
+      setCheckoutStep(1);
+      return;
+    }
     if (!clientName || !clientPhone) {
       setFormError('Por favor completá tu nombre y teléfono para procesar el pedido.');
       setCheckoutStep(2);
@@ -401,6 +442,35 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
               {/* STEP 1: SHOPPING CART & LOYALTY COUPON SELECTION */}
               {checkoutStep === 1 && (
                 <div className="space-y-5">
+                  {/* Critical Stock Warning Banner */}
+                  {hasCriticalStock && (
+                    <div className="bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 p-4 rounded-2xl space-y-2">
+                      <div className="flex items-center gap-2 text-amber-900 dark:text-amber-300 font-bold text-xs">
+                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                        <span>⚠️ Stock Crítico: Cantidad solicitada supera el stock en {currentBranch.shortName}</span>
+                      </div>
+                      <p className="text-[11px] text-amber-800 dark:text-amber-400 leading-relaxed">
+                        Los siguientes productos exceden el stock disponible en la sucursal seleccionada. Podés continuar reconociendo el plazo de despacho por traspaso de sucursal (24h) o ajustando las cantidades:
+                      </p>
+                      <ul className="text-[11px] font-semibold space-y-1 pl-4 list-disc text-amber-900 dark:text-amber-200">
+                        {itemsWithCriticalStock.map(({ item, stockInBranch }) => (
+                          <li key={item.product.id}>
+                            <strong>{item.product.name}</strong> — Solicitado: {item.quantity} u. | Stock disponible: {stockInBranch} u.
+                          </li>
+                        ))}
+                      </ul>
+                      <label className="flex items-center gap-2 pt-2 text-xs font-bold text-slate-900 dark:text-white cursor-pointer bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800">
+                        <input 
+                          type="checkbox" 
+                          checked={criticalStockAcknowledged} 
+                          onChange={(e) => setCriticalStockAcknowledged(e.target.checked)}
+                          className="rounded border-amber-400 text-orange-600 focus:ring-orange-500 w-4 h-4"
+                        />
+                        <span>Reconozco el stock crítico y acepto el despacho por traspaso logístico (24h).</span>
+                      </label>
+                    </div>
+                  )}
+
                   {/* Loyalty Points Preview Banner */}
                   <div className="bg-gradient-to-r from-slate-900 to-orange-950 text-white p-4 rounded-2xl border border-orange-500/30 flex flex-wrap items-center justify-between gap-3 shadow-sm">
                     <div className="flex items-center gap-3">
@@ -466,6 +536,103 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
                           Quitar Cupón
                         </button>
                       )}
+                    </div>
+                  )}
+
+                  {/* CRITICAL STOCK WARNING BANNER */}
+                  {hasCriticalStock && (
+                    <div className="bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-500 dark:border-amber-600 p-4 rounded-2xl space-y-3 shadow-md">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-amber-500 text-slate-950 rounded-xl shrink-0 mt-0.5 font-bold">
+                          <AlertTriangle className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-black text-amber-900 dark:text-amber-300 font-fredoka uppercase tracking-wide">
+                              ⚠️ Advertencia: Stock Crítico en {currentBranch.name}
+                            </h4>
+                            <span className="text-[10px] font-bold bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-full">
+                              {itemsWithCriticalStock.length} producto(s) en déficit
+                            </span>
+                          </div>
+                          <p className="text-xs text-amber-800 dark:text-amber-300/90 leading-relaxed">
+                            La cantidad que seleccionaste supera las unidades de entrega inmediata en el mostrador de <strong>{currentBranch.name}</strong>.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Deficit Items Breakdown */}
+                      <div className="space-y-2 pt-1 border-t border-amber-200/80 dark:border-amber-800/80">
+                        {itemsWithCriticalStock.map(({ item, stockInBranch, deficit, alternateStock, alternateBranchName }) => (
+                          <div
+                            key={item.product.id}
+                            className="bg-white/80 dark:bg-slate-900/80 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
+                          >
+                            <div>
+                              <span className="font-bold text-slate-900 dark:text-white block">
+                                {item.product.name}
+                              </span>
+                              <span className="text-[11px] text-amber-700 dark:text-amber-400">
+                                Solicitado: <strong>{item.quantity} un.</strong> | En {currentBranch.name}: <strong>{stockInBranch} un.</strong> (Faltan {deficit} un.)
+                              </span>
+                              {alternateStock > 0 && (
+                                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block font-semibold">
+                                  ✓ Hay {alternateStock} un. disponibles en {alternateBranchName} para traspaso
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  // Adjust quantity to available stock
+                                  const diff = stockInBranch - item.quantity;
+                                  onUpdateQuantity(item.product.id, diff);
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-900/60 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-900 dark:text-amber-200 text-[11px] font-bold transition-all cursor-pointer"
+                              >
+                                Ajustar a {stockInBranch} un.
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Quick Resolution Actions */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-amber-200/80 dark:border-amber-800/80">
+                        <div className="text-[11px] text-amber-800 dark:text-amber-300 font-medium">
+                          Opciones de resolución:
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              itemsWithCriticalStock.forEach(({ item, stockInBranch }) => {
+                                const diff = stockInBranch - item.quantity;
+                                onUpdateQuantity(item.product.id, diff);
+                              });
+                              setCriticalStockAcknowledged(true);
+                            }}
+                            className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                          >
+                            Ajustar todo al stock disponible
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNotes((prev) => {
+                                const transferText = `[SOLICITUD DE TRASPASO INTER-SUCURSAL (24h)]: Se solicitan unidades adicionales de productos con stock crítico para retirar en ${currentBranch.name}.`;
+                                return prev ? `${prev}\n${transferText}` : transferText;
+                              });
+                              setCriticalStockAcknowledged(true);
+                            }}
+                            className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition-all shadow-xs cursor-pointer"
+                          >
+                            Solicitar traspaso inter-sucursal (24h)
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -1049,7 +1216,7 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
                         <div><strong>Banco:</strong> Banco Macro / Banco Provincia de Río Negro</div>
                         <div><strong>CBU:</strong> 0170094520000008819203</div>
                         <div><strong>Alias MP/CBU:</strong> KOALA.ROCA.PAGOS</div>
-                        <div><strong>Titular:</strong> Koala Lo Tiene S.R.L.</div>
+                        <div><strong>Titular:</strong> LP S.R.L. (ventaslp.com)</div>
                       </div>
                     </div>
                   )}
@@ -1061,6 +1228,15 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
                         <span>Subtotal Ítems:</span>
                         <span>{formatCurrency(itemsSubtotal)}</span>
                       </div>
+                      {totalWholesaleSavings > 0 && (
+                        <div className="flex justify-between text-emerald-400 font-bold bg-emerald-950/40 p-2 rounded-xl border border-emerald-800/60">
+                          <span className="flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Ahorro Mayorista Total:</span>
+                          </span>
+                          <span>-{formatCurrency(totalWholesaleSavings)}</span>
+                        </div>
+                      )}
                       {deliveryFee > 0 && (
                         <div className="flex justify-between">
                           <span>Envío a Domicilio:</span>

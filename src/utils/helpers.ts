@@ -145,7 +145,7 @@ export function buildWhatsAppMessage(
     }
 
     const wholesaleTag = item.isWholesale ? ' *(Precio Mayorista / Bulto)*' : '';
-    return `${index + 1}. *${item.product.name}*\n   • Cantidad: ${item.quantity} ${item.product.unit}${wholesaleTag}\n   • Precio Unit: ${formatCurrency(itemUnitPrice)}\n   • Subtotal: ${formatCurrency(subtotal)}`;
+    return `${index + 1}. *${item.product.name}* [SKU: ${item.product.id}]\n   • Cantidad: ${item.quantity} ${item.product.unit}${wholesaleTag}\n   • Precio Unit: ${formatCurrency(itemUnitPrice)}\n   • Subtotal: ${formatCurrency(subtotal)}`;
   }).join('\n\n');
 
   const finalTotal = Math.max(0, total + (quote.deliveryFee || 0) - (quote.appliedLoyaltyDiscount || 0));
@@ -153,7 +153,7 @@ export function buildWhatsAppMessage(
   const text = `🦘 *COTIZACIÓN OFICIAL / PEDIDO WEB - KOALA LO TIENE* 🦘
 ------------------------------------------------
 🔖 *Código de Cotización:* #${quoteCode}
-📍 *Sucursal de Compra:* ${targetBranch.name}
+📍 *Sucursal de Compra:* ${targetBranch.name} (${targetBranch.depotCode || 'DEP-01'})
 📌 *Dirección:* ${targetBranch.address} (${targetBranch.city})
 📅 *Fecha:* ${dateStr}
 
@@ -173,7 +173,7 @@ Subtotal: ${formatCurrency(total)}
 ${wholesaleSavings > 0 ? `🔥 *Ahorro Mayorista Aplicado:* -${formatCurrency(wholesaleSavings)}\n` : ''}${quote.deliveryFee ? `🚚 *Costo de Envío:* +${formatCurrency(quote.deliveryFee)}\n` : ''}${quote.appliedLoyaltyDiscount ? `🎁 *Descuento Club Koala:* -${formatCurrency(quote.appliedLoyaltyDiscount)}\n` : ''}💰 *TOTAL FINAL:* ${formatCurrency(finalTotal)}
 ${quote.notes ? `\n💬 *Observaciones:* ${quote.notes}` : ''}
 
-_Sincronizado vía ICXN ERP con reserva atómica de stock._`;
+🔒 _Sincronizado vía ICXN ERP con bloqueo atómico de stock (15 min)._`;
 
   return encodeURIComponent(text);
 }

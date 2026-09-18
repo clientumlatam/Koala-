@@ -145,3 +145,58 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
+// 4. Push Notifications Handler for Stock Changes & Seasonal Promotions
+self.addEventListener('push', (event) => {
+  let data = {
+    title: '🐨 Koala Lo Tiene — Alerta de Stock & Ofertas',
+    body: '¡Hay reposición de stock en sucursales General Roca y Neuquén!',
+    icon: '/koala-logo.png',
+    badge: '/koala-logo.png',
+    data: { url: '/' }
+  };
+
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      data = { ...data, ...payload };
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: data.icon || '/koala-logo.png',
+    badge: data.badge || '/koala-logo.png',
+    vibrate: [150, 50, 150],
+    data: data.data || { url: '/' },
+    actions: [
+      { action: 'open_catalog', title: 'Ver en Catálogo' },
+      { action: 'close', title: 'Cerrar' }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+

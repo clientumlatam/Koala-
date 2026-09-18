@@ -7,7 +7,8 @@ import {
   ErpInvoice, 
   StockTransferOrder,
   CsvCronTask,
-  CsvCronExecutionLog
+  CsvCronExecutionLog,
+  ErpWebhookEventRecord
 } from '../types';
 import { PRODUCTS_CATALOG } from './products';
 
@@ -68,16 +69,67 @@ export const INITIAL_ERP_CONFIG: ErpConnectionConfig = {
   systemType: 'ICXN ERP (https://icxn.com.ar/)',
   serverUrl: 'https://api.icxn.com.ar/v1/koala/gateway',
   apiBearerToken: 'icxn_live_koala_30714589213_sec_key',
-  companyId: '30-71458921-3 (Koala Lo Tiene SRL)',
+  companyId: '30-59986913-8 (LP SRL — https://ventaslp.com/)',
   pointOfSaleRoca: 'DEP-01 (Av. Roca 1350 - Casa Central)',
   pointOfSaleNeuquen: 'DEP-02 (Mitre 678 - Salón Neuquén)',
   autoSyncOrders: true,
   autoSyncStock: true,
   syncIntervalMinutes: 1,
+  webhookUrl: 'https://api.koalalotiene.com.ar/api/webhooks/icxn-stock',
   webhookSecret: 'whsec_icxn_9f83a847b2c912e',
   lastSuccessfulPing: 'Hoy, 16:30:12 hs (18ms)',
   environment: 'production',
 };
+
+export const INITIAL_WEBHOOK_EVENTS: ErpWebhookEventRecord[] = [
+  {
+    id: 'wh-9001',
+    timestamp: 'Hoy, 19:45 hs',
+    eventType: 'stock_update',
+    status: 'success',
+    source: 'ICXN ERP Webhook Gateway (icxn.com.ar)',
+    payload: JSON.stringify({
+      event: 'stock.updated',
+      branch: 'roca',
+      timestamp: '2026-09-17T19:45:00Z',
+      items: [
+        { sku: 'KOA-POL-101', stockRoca: 125, stockNeuquen: 85 }
+      ]
+    }, null, 2),
+    retryCount: 0,
+  },
+  {
+    id: 'wh-9002',
+    timestamp: 'Hoy, 18:20 hs',
+    eventType: 'stock_update',
+    status: 'error',
+    source: 'ICXN ERP Webhook Gateway (icxn.com.ar)',
+    payload: JSON.stringify({
+      event: 'stock.updated',
+      branch: 'neuquen',
+      timestamp: '2026-09-17T18:20:10Z',
+      items: [
+        { sku: 'KOA-CAR-104', stockRoca: 300, stockNeuquen: 198 }
+      ]
+    }, null, 2),
+    errorMessage: 'Timeout de conexión 504 Gateway Timeout al intentar entregar payload a /api/webhooks/icxn-stock',
+    retryCount: 2,
+  },
+  {
+    id: 'wh-9003',
+    timestamp: 'Ayer, 11:30 hs',
+    eventType: 'order_sync',
+    status: 'success',
+    source: 'ICXN ERP Webhook Gateway (icxn.com.ar)',
+    payload: JSON.stringify({
+      event: 'order.created',
+      quoteId: 'COT-8840',
+      totalAmount: 51000,
+      client: 'Pastelería Las Lilas'
+    }, null, 2),
+    retryCount: 0,
+  }
+];
 
 export const INITIAL_ERP_STATUS: ErpSyncStatus = {
   isConnected: true,

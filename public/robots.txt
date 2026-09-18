@@ -1,0 +1,14 @@
+# robots.txt for Koala Lo Tiene (Río Negro & Neuquén)
+User-agent: *
+Allow: /
+Allow: /api/stores
+Allow: /sitemap.xml
+Allow: /robots.txt
+
+# Crawl delay & Host
+Crawl-delay: 1
+Host: https://koalalotiene.com.ar
+
+# Sitemaps
+Sitemap: https://ais-pre-pyisv3o2d7btcslftaz6mh-254551232284.us-east1.run.app/sitemap.xml
+Sitemap: https://koalalotiene.com.ar/sitemap.xml

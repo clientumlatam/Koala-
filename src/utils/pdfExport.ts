@@ -109,7 +109,7 @@ export function generateQuotePDF({
     ? `${currentBranch.hours.weekdays} | Sáb: ${currentBranch.hours.saturday}`
     : currentBranch.hours;
   doc.text(`• Horarios: ${hoursText}`, 18, startY + 25);
-  doc.text('• CUIT: 30-71482910-8 | IVA Responsable Inscripto', 18, startY + 31);
+  doc.text('• Razón Social: LP SRL (ventaslp.com) | IVA Resp. Inscripto', 18, startY + 31);
 
   // Right Box: Datos del Cliente
   doc.setFillColor(248, 250, 252);
@@ -294,7 +294,7 @@ export function generateQuotePDF({
   doc.setFontSize(6.5);
   doc.setTextColor(148, 163, 184);
   doc.text(
-    `Documento generado automáticamente por Koala Lo Tiene • www.koalailotiene.com.ar • Sucursales: Gral. Roca (Mitre 642) y Neuquén (Sarmiento 235)`,
+    `Documento comercial emitido por LP SRL (ventaslp.com) • Koala Lo Tiene • Fábrica General Roca y Sucursales Neuquén`,
     14,
     pageHeight - 6
   );

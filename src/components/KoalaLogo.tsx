@@ -5,7 +5,6 @@ interface KoalaLogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   variant?: 'full' | 'mascot-only' | 'badge' | 'compact';
   onClick?: () => void;
-  withTagline?: boolean;
 }
 
 export const KoalaLogo: React.FC<KoalaLogoProps> = ({
@@ -13,7 +12,6 @@ export const KoalaLogo: React.FC<KoalaLogoProps> = ({
   size = 'md',
   variant = 'full',
   onClick,
-  withTagline = false,
 }) => {
   const [imgError, setImgError] = useState(false);
 
@@ -21,7 +19,7 @@ export const KoalaLogo: React.FC<KoalaLogoProps> = ({
   const sizeClasses = {
     xs: 'h-7',
     sm: 'h-9',
-    md: 'h-12',
+    md: 'h-11 sm:h-13',
     lg: 'h-16',
     xl: 'h-24',
   }[size];
@@ -115,7 +113,7 @@ export const KoalaLogo: React.FC<KoalaLogoProps> = ({
     return (
       <div 
         onClick={onClick} 
-        className={`inline-flex items-center gap-2 select-none group ${onClick ? 'cursor-pointer hover:opacity-95 transition-opacity' : ''} ${className}`}
+        className={`inline-flex items-center select-none group ${onClick ? 'cursor-pointer hover:opacity-95 transition-opacity' : ''} ${className}`}
       >
         <div className={`relative flex items-center shrink-0 ${sizeClasses}`}>
           <img
@@ -126,16 +124,6 @@ export const KoalaLogo: React.FC<KoalaLogoProps> = ({
             className="h-full w-auto object-contain rounded-lg drop-shadow-xs group-hover:scale-105 transition-transform"
           />
         </div>
-        {withTagline && (
-          <div className="hidden md:flex flex-col text-left whitespace-nowrap leading-tight pl-1 border-l border-slate-200">
-            <span className="text-[11px] font-extrabold text-orange-600 uppercase tracking-wide whitespace-nowrap">
-              Casa Central & Fábrica
-            </span>
-            <span className="text-[10px] text-slate-500 font-medium whitespace-nowrap">
-              Río Negro y Neuquén
-            </span>
-          </div>
-        )}
       </div>
     );
   }

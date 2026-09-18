@@ -40,7 +40,11 @@ import {
   SlidersHorizontal,
   ChevronRight,
   ChevronLeft,
-  BookOpen
+  BookOpen,
+  Share2,
+  Bot,
+  Instagram,
+  Cpu
 } from 'lucide-react';
 import { 
   EmployeeUser, 
@@ -55,7 +59,8 @@ import {
   ErpSystemType,
   CsvCronTask,
   CsvCronExecutionLog,
-  StockMovementRecord
+  StockMovementRecord,
+  ErpWebhookEventRecord
 } from '../types';
 import { formatCurrency } from '../utils/helpers';
 import { CsvCronManager } from './CsvCronManager';
@@ -63,8 +68,11 @@ import { StockErpHub } from './StockErpHub';
 import { LiveEnterpriseDemoHub } from './LiveEnterpriseDemoHub';
 import { SyncHealthDashboard } from './SyncHealthDashboard';
 import { DocumentationViewer } from './DocumentationViewer';
+import { SocialCommerceHub } from './SocialCommerceHub';
+import { McpIntegrationConsole } from './McpIntegrationConsole';
 import { KoalaLogo } from './KoalaLogo';
 import { INITIAL_STOCK_MOVEMENTS } from '../data/adminData';
+
 
 interface AdminPanelModalProps {
   isOpen: boolean;
@@ -96,6 +104,9 @@ interface AdminPanelModalProps {
   isStandalonePage?: boolean;
   onNavigateToStore?: () => void;
   onNavigateToDedicatedRoute?: () => void;
+  webhookEvents?: ErpWebhookEventRecord[];
+  onRetryWebhookEvent?: (eventId: string) => void;
+  onSimulateWebhookEvent?: () => void;
 }
 
 export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
@@ -128,15 +139,20 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   isStandalonePage = false,
   onNavigateToStore,
   onNavigateToDedicatedRoute,
+  webhookEvents,
+  onRetryWebhookEvent,
+  onSimulateWebhookEvent,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    'enterprise_demo' | 'sync_health' | 'docs' | 'dashboard' | 'quotes' | 'inventory' | 'transfers' | 'invoices' | 'prices_import' | 'csv_cron' | 'staff' | 'erp_config' | 'api_tester'
+    'enterprise_demo' | 'sync_health' | 'docs' | 'social_commerce' | 'mcp_protocol' | 'dashboard' | 'quotes' | 'inventory' | 'transfers' | 'invoices' | 'prices_import' | 'csv_cron' | 'staff' | 'erp_config' | 'api_tester'
   >(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab');
       if (tabParam) return tabParam as any;
       const hash = window.location.hash.toLowerCase();
+      if (hash.includes('social') || hash.includes('instagram')) return 'social_commerce';
+      if (hash.includes('mcp')) return 'mcp_protocol';
       if (hash.includes('demo')) return 'enterprise_demo';
       if (hash.includes('health') || hash.includes('sync')) return 'sync_health';
       if (hash.includes('inventory') || hash.includes('stock')) return 'inventory';
@@ -144,6 +160,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     }
     return 'erp_config';
   });
+
 
   const tabsNavRef = React.useRef<HTMLDivElement>(null);
 
@@ -408,13 +425,22 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   // Role permissions checker helper
   const canAccess = (tab: typeof activeTab) => {
-    if (tab === 'enterprise_demo' || tab === 'sync_health' || tab === 'docs') return true;
     if (currentUser.role === 'admin') return true;
-    if (currentUser.role === 'ventas') return tab === 'quotes' || tab === 'inventory' || tab === 'invoices' || tab === 'csv_cron';
-    if (currentUser.role === 'deposito') return tab === 'inventory' || tab === 'transfers' || tab === 'quotes';
-    if (currentUser.role === 'facturacion') return tab === 'quotes' || tab === 'invoices' || tab === 'dashboard' || tab === 'erp_config' || tab === 'prices_import' || tab === 'csv_cron';
+    if (currentUser.role === 'ventas') {
+      return ['dashboard', 'quotes', 'inventory', 'invoices', 'social_commerce'].includes(tab);
+    }
+    if (currentUser.role === 'deposito') {
+      return ['dashboard', 'inventory', 'transfers'].includes(tab);
+    }
+    if (currentUser.role === 'facturacion') {
+      return ['dashboard', 'quotes', 'invoices', 'prices_import'].includes(tab);
+    }
+    if (currentUser.role === 'backend') {
+      return ['dashboard', 'sync_health', 'erp_config', 'api_tester', 'csv_cron', 'mcp_protocol'].includes(tab);
+    }
     return false;
   };
+
 
   const filteredQuotes = quotes.filter((q) => {
     if (quoteFilterStatus !== 'todas' && q.status !== quoteFilterStatus) return false;
@@ -441,6 +467,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     ventas: { title: 'Ejecutivo de Ventas', color: 'bg-orange-100 text-orange-900 border-orange-300 dark:bg-orange-950/80 dark:text-orange-200 dark:border-orange-800', badge: '💼 Ventas' },
     deposito: { title: 'Logística y Depósito', color: 'bg-blue-100 text-blue-900 border-blue-300 dark:bg-blue-950/80 dark:text-blue-200 dark:border-blue-800', badge: '📦 Depósito' },
     facturacion: { title: 'Administración y ERP', color: 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-200 dark:border-emerald-800', badge: '🧾 Facturación' },
+    backend: { title: 'Backend & Integraciones ERP', color: 'bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-800', badge: '⚙️ Backend' },
   };
 
   const statusLabels: Record<QuoteRecord['status'], { label: string; color: string }> = {
@@ -669,6 +696,41 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               </button>
             )}
 
+            {canAccess('social_commerce') && (
+              <button
+                onClick={() => setActiveTab('social_commerce')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
+                  activeTab === 'social_commerce'
+                    ? 'border-purple-600 text-purple-600 dark:text-purple-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Instagram className="w-4 h-4 text-pink-500" />
+                <span>Social Commerce & Instagram @koalalotiene</span>
+                <span className="text-[10px] bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded font-black border border-purple-200 dark:border-purple-800">
+                  Bot Live
+                </span>
+              </button>
+            )}
+
+            {canAccess('mcp_protocol') && (
+              <button
+                onClick={() => setActiveTab('mcp_protocol')}
+                className={`px-3.5 py-2.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap relative ${
+                  activeTab === 'mcp_protocol'
+                    ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 rounded-t-xl shadow-xs'
+                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <Cpu className="w-4 h-4 text-indigo-500" />
+                <span>MCP Protocol ERP Server</span>
+                <span className="text-[10px] bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded font-mono font-black border border-indigo-200 dark:border-indigo-800">
+                  v1.0
+                </span>
+              </button>
+            )}
+
+
             {canAccess('dashboard') && (
               <button
                 onClick={() => setActiveTab('dashboard')}
@@ -823,14 +885,65 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         {/* Tab Content Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/60 dark:bg-slate-950/40">
           
+          {/* Failed Webhook Alert Banner */}
+          {webhookEvents && webhookEvents.some(ev => ev.status === 'error') && (
+            <div className="mb-5 bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-600/20 border border-rose-500/40 flex items-center justify-center text-rose-600 dark:text-rose-400 font-bold shrink-0">
+                  <AlertTriangle className="w-5 h-5 animate-bounce" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black font-fredoka text-rose-900 dark:text-rose-200">
+                    ⚠️ Alerta de Sincronización ERP: Webhook Fallido
+                  </h4>
+                  <p className="text-[11px] text-rose-700 dark:text-rose-300">
+                    Se detectaron errores en notificaciones webhook entrantes desde ICXN ERP. Los reintentos manuales pueden ejecutarse instantáneamente.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                {webhookEvents.filter(ev => ev.status === 'error').map(errEv => (
+                  <button
+                    key={errEv.id}
+                    onClick={() => {
+                      if (onRetryWebhookEvent) {
+                        onRetryWebhookEvent(errEv.id);
+                        showNotification(`¡Sincronización reintentada para evento Webhook ${errEv.id}! Estado actualizado a Exitoso.`);
+                      }
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Reintentar Webhook {errEv.id}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          
           {/* TAB: DOSSIER & DOCUMENTACION */}
           {activeTab === 'docs' && (
             <div className="h-full">
               <DocumentationViewer />
             </div>
           )}
+
+          {/* TAB: SOCIAL COMMERCE & INSTAGRAM INTEGRATION */}
+          {activeTab === 'social_commerce' && (
+            <SocialCommerceHub
+              inventory={inventory}
+              onNavigateToStore={onNavigateToStore}
+            />
+          )}
+
+          {/* TAB: MCP PROTOCOL CONSOLE */}
+          {activeTab === 'mcp_protocol' && (
+            <McpIntegrationConsole />
+          )}
           
           {/* TAB 0: LIVE ENTERPRISE DEMO (5 DEPARTMENTS & SLA/ISO) */}
+
           {activeTab === 'enterprise_demo' && (
             <LiveEnterpriseDemoHub
               inventory={inventory}
@@ -1196,6 +1309,9 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               onCreateTransfer={onCreateTransfer}
               onUpdateFullProduct={onUpdateFullProduct}
               onDeleteProduct={onDeleteProduct}
+              webhookEvents={webhookEvents}
+              onRetryWebhookEvent={onRetryWebhookEvent}
+              onSimulateWebhookEvent={onSimulateWebhookEvent}
             />
           )}
 
@@ -1575,6 +1691,53 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                       className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-mono"
                     />
                   </div>
+
+                  <div className="sm:col-span-2 pt-3 border-t border-slate-100 dark:border-slate-700">
+                    <h4 className="text-xs font-bold font-fredoka text-slate-900 dark:text-white flex items-center gap-1.5 mb-2">
+                      <Zap className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Configuración de Webhooks ICXN ERP (Notificaciones en Tiempo Real)</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+                      Configure el endpoint URL y el token secreto de seguridad (ERP_WEBHOOK_SECRET) para recibir eventos automáticos de stock y pedidos desde el sistema ICXN.
+                    </p>
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">
+                      Webhook URL Receptor
+                    </label>
+                    <input
+                      type="text"
+                      value={editConfig.webhookUrl || 'https://api.koalalotiene.com.ar/api/webhooks/icxn-stock'}
+                      onChange={(e) => setEditConfig({ ...editConfig, webhookUrl: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-mono"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">
+                      Token de Seguridad Webhook (ERP_WEBHOOK_SECRET)
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={editConfig.webhookSecret || 'whsec_icxn_9f83a847b2c912e'}
+                        onChange={(e) => setEditConfig({ ...editConfig, webhookSecret: e.target.value })}
+                        className="flex-1 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-mono"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newSec = `whsec_icxn_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
+                          setEditConfig({ ...editConfig, webhookSecret: newSec });
+                          showNotification('¡Nuevo ERP_WEBHOOK_SECRET generado exitosamente!');
+                        }}
+                        className="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 font-bold text-xs cursor-pointer"
+                      >
+                        Regenerar Secreto
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="pt-2 flex justify-end gap-2">
@@ -1743,6 +1906,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                         <option value="ventas">💼 Ejecutivo de Ventas</option>
                         <option value="deposito">📦 Logística y Depósito</option>
                         <option value="facturacion">🧾 Administrador Facturación ERP</option>
+                        <option value="backend">⚙️ Backend & Integraciones</option>
                         <option value="admin">👑 Super Admin / Gerencia</option>
                       </select>
                     </div>

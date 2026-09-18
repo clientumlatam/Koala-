@@ -32,7 +32,8 @@ import {
   ProductInventoryRecord,
   StockMovementRecord,
   BranchId,
-  StockTransferOrder
+  StockTransferOrder,
+  ErpWebhookEventRecord
 } from '../types';
 import { formatCurrency } from '../utils/helpers';
 import { ProductEditModal } from './ProductEditModal';
@@ -48,6 +49,9 @@ interface StockErpHubProps {
   onCreateTransfer: (transfer: StockTransferOrder) => void;
   onUpdateFullProduct?: (product: ProductInventoryRecord) => void;
   onDeleteProduct?: (productId: string) => void;
+  webhookEvents?: ErpWebhookEventRecord[];
+  onRetryWebhookEvent?: (eventId: string) => void;
+  onSimulateWebhookEvent?: () => void;
 }
 
 export const StockErpHub: React.FC<StockErpHubProps> = ({
@@ -61,9 +65,12 @@ export const StockErpHub: React.FC<StockErpHubProps> = ({
   onCreateTransfer,
   onUpdateFullProduct,
   onDeleteProduct,
+  webhookEvents,
+  onRetryWebhookEvent,
+  onSimulateWebhookEvent,
 }) => {
   // Active sub-tab
-  const [subTab, setSubTab] = useState<'inventory' | 'reconciliation' | 'simulator' | 'kardex' | 'replenishment'>('inventory');
+  const [subTab, setSubTab] = useState<'inventory' | 'reconciliation' | 'simulator' | 'kardex' | 'replenishment' | 'webhooks'>('inventory');
 
   // Search and filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -102,6 +109,63 @@ export const StockErpHub: React.FC<StockErpHubProps> = ({
   const showNotification = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  const handleExportFullCatalogCsv = () => {
+    if (!inventory || inventory.length === 0) return;
+
+    const headers = [
+      'ID',
+      'SKU',
+      'Codigo ERP',
+      'Nombre',
+      'Categoria',
+      'Subcategoria',
+      'Descripcion',
+      'Precio Minorista',
+      'Precio Mayorista',
+      'Minimo Mayorista (u)',
+      'Stock General Roca',
+      'Stock Neuquén',
+      'Alerta Stock Minimo',
+      'Fabricacion Propia',
+      'Mas Vendido',
+      'Tags'
+    ];
+
+    const rows = inventory.map(item => [
+      item.id,
+      `"${item.sku}"`,
+      `"${item.erpCode}"`,
+      `"${item.name.replace(/"/g, '""')}"`,
+      `"${item.category}"`,
+      `"${item.subcategory}"`,
+      `"${(item.description || '').replace(/"/g, '""')}"`,
+      item.price,
+      item.wholesalePrice || '',
+      item.wholesaleMinPack || '',
+      item.stockRoca,
+      item.stockNeuquen,
+      item.minStockAlert,
+      item.isManufacturer ? 'SI' : 'NO',
+      item.isBestSeller ? 'SI' : 'NO',
+      `"${(item.tags || []).join(', ')}"`
+    ]);
+
+    const csvContent = [
+      headers.join(';'),
+      ...rows.map(r => r.join(';'))
+    ].join('\r\n');
+
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `koala_catalogo_completo_erp_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showNotification('¡Catálogo completo exportado a CSV con todas las columnas exitosamente!');
   };
 
   // Stock totals
@@ -321,6 +385,15 @@ export const StockErpHub: React.FC<StockErpHubProps> = ({
             </button>
 
             <button
+              onClick={handleExportFullCatalogCsv}
+              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              title="Exportar catálogo completo con todas las columnas a CSV"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>Exportar CSV Completo</span>
+            </button>
+
+            <button
               onClick={onOpenTransferModal}
               className="px-3.5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
             >
@@ -438,7 +511,7 @@ export const StockErpHub: React.FC<StockErpHubProps> = ({
 
         <button
           onClick={() => setSubTab('replenishment')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ml-auto ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ${
             subTab === 'replenishment'
               ? 'bg-rose-600 text-white shadow-xs'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -446,6 +519,21 @@ export const StockErpHub: React.FC<StockErpHubProps> = ({
         >
           <Truck className="w-3.5 h-3.5" />
           <span>Reposición Inteligente ({replenishmentSuggestions.length})</span>
+        </button>
+
+        <button
+          onClick={() => setSubTab('webhooks')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ml-auto ${
+            subTab === 'webhooks'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          <Activity className="w-3.5 h-3.5" />
+          <span>Webhooks ICXN ({webhookEvents?.length || 0})</span>
+          {webhookEvents && webhookEvents.some(ev => ev.status === 'error') && (
+            <span className="w-2 h-2 rounded-full bg-rose-400 animate-ping" />
+          )}
         </button>
       </div>
 
@@ -1157,7 +1245,145 @@ export const StockErpHub: React.FC<StockErpHubProps> = ({
         </div>
       )}
 
-      {/* SUB-TAB 5: REPLENISHMENT SUGGESTIONS */}
+      {/* SUB-TAB 6: WEBHOOKS ICXN */}
+      {subTab === 'webhooks' && (
+        <div className="space-y-4">
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h4 className="text-sm font-bold font-fredoka text-slate-900 dark:text-white flex items-center gap-2">
+                <Activity className="w-4 h-4 text-blue-600" />
+                <span>Historial de Eventos Webhook Recibidos (ICXN ERP Gateway)</span>
+              </h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Monitoreo en tiempo real de notificaciones push, actualización de stock y sincronización de comprobantes desde icxn.com.ar
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  if (onSimulateWebhookEvent) {
+                    onSimulateWebhookEvent();
+                    showNotification('¡Simulación de Webhook entrante desde ICXN ejecutada exitosamente!');
+                  }
+                }}
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>Simular Webhook Entrante (ICXN)</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                Total Registros Webhook: {webhookEvents?.length || 0}
+              </span>
+              <span className="text-[11px] text-slate-500 font-mono">
+                Secreto Activo: ERP_WEBHOOK_SECRET
+              </span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                  <tr>
+                    <th className="p-3.5">ID / Fecha</th>
+                    <th className="p-3.5">Tipo de Evento</th>
+                    <th className="p-3.5">Fuente</th>
+                    <th className="p-3.5">Estado Sincronización</th>
+                    <th className="p-3.5">Payload JSON & Error</th>
+                    <th className="p-3.5 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {webhookEvents && webhookEvents.length > 0 ? (
+                    webhookEvents.map((ev) => (
+                      <tr key={ev.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                        <td className="p-3.5 font-mono">
+                          <div className="font-bold text-slate-900 dark:text-white">{ev.id}</div>
+                          <div className="text-[11px] text-slate-500">{ev.timestamp}</div>
+                        </td>
+                        <td className="p-3.5">
+                          <span className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-mono font-bold text-[11px]">
+                            {ev.eventType}
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-slate-600 dark:text-slate-300 font-medium">
+                          {ev.source}
+                        </td>
+                        <td className="p-3.5">
+                          {ev.status === 'success' ? (
+                            <span className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold text-[11px] inline-flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" />
+                              <span>Sincronizado (OK)</span>
+                            </span>
+                          ) : (
+                            <span className="px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 font-bold text-[11px] inline-flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3" />
+                              <span>Error de Sincronización</span>
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-3.5 max-w-xs">
+                          {ev.errorMessage && (
+                            <div className="text-[11px] text-rose-600 dark:text-rose-400 font-semibold mb-1">
+                              ⚠️ {ev.errorMessage}
+                            </div>
+                          )}
+                          <details className="cursor-pointer text-[11px]">
+                            <summary className="font-mono text-slate-600 dark:text-slate-400 hover:text-orange-600 font-bold">
+                              Ver JSON Payload
+                            </summary>
+                            <pre className="mt-1.5 p-2 rounded-xl bg-slate-900 text-emerald-300 font-mono text-[10px] overflow-x-auto max-h-32">
+                              {ev.payload}
+                            </pre>
+                          </details>
+                        </td>
+                        <td className="p-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            {ev.status === 'error' && (
+                              <button
+                                onClick={() => {
+                                  if (onRetryWebhookEvent) {
+                                    onRetryWebhookEvent(ev.id);
+                                    showNotification(`¡Sincronización reintentada para evento ${ev.id}!`);
+                                  }
+                                }}
+                                className="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-xs transition-all cursor-pointer inline-flex items-center gap-1"
+                              >
+                                <RefreshCw className="w-3 h-3" />
+                                <span>Reintentar</span>
+                              </button>
+                            )}
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(ev.payload);
+                                showNotification(`¡Payload del evento ${ev.id} copiado al portapapeles!`);
+                              }}
+                              className="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 font-bold text-xs transition-all cursor-pointer"
+                              title="Copiar Payload JSON"
+                            >
+                              Copiar
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="p-6 text-center text-slate-500">
+                        No hay eventos webhook registrados recientemente.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
       {subTab === 'replenishment' && (
         <div className="space-y-3">
           <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-4 shadow-xs">

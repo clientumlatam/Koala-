@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Search, 
   X, 
@@ -29,6 +30,9 @@ interface ProductCatalogProps {
   cartItemsMap: Record<string, number>;
   onOpenAi: () => void;
   currentBranch?: BranchInfo;
+  globalWholesaleMode?: boolean;
+  onToggleWholesaleMode?: () => void;
+  onOpenInstagramBio?: () => void;
 }
 
 export const ProductCatalog: React.FC<ProductCatalogProps> = ({
@@ -40,12 +44,16 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   cartItemsMap,
   onOpenAi,
   currentBranch,
+  globalWholesaleMode = false,
+  onToggleWholesaleMode,
+  onOpenInstagramBio,
 }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchGlobally, setSearchGlobally] = React.useState(true);
   const [filterManufacturer, setFilterManufacturer] = React.useState(false);
   const [filterWholesale, setFilterWholesale] = React.useState(false);
   const [filterBestSeller, setFilterBestSeller] = React.useState(false);
+
 
   // Filter products logic
   const filteredProducts = React.useMemo(() => {
@@ -213,10 +221,39 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
       {/* Quick Filter Badges Bar */}
       <div id="wholesale" className="flex flex-wrap items-center justify-between gap-3 bg-slate-100/80 dark:bg-slate-800/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/60">
         <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
-          <span>Filtros Rápidos:</span>
+          <span>Modo de Precios:</span>
+          {onToggleWholesaleMode && (
+            <div className="flex items-center p-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
+              <button
+                onClick={() => globalWholesaleMode && onToggleWholesaleMode()}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  !globalWholesaleMode
+                    ? 'bg-orange-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+              >
+                Minorista
+              </button>
+              <button
+                onClick={() => !globalWholesaleMode && onToggleWholesaleMode()}
+                className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  globalWholesaleMode
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>Mayorista (Bulto Cerrado)</span>
+              </button>
+            </div>
+          )}
+
+          <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+
+          <span>Filtros:</span>
           <button
             onClick={() => setFilterManufacturer(!filterManufacturer)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
               filterManufacturer
                 ? 'bg-orange-600 text-white border-orange-600 shadow-xs'
                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
@@ -228,19 +265,19 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
 
           <button
             onClick={() => setFilterWholesale(!filterWholesale)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
               filterWholesale
                 ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
             }`}
           >
             <Tag className="w-3.5 h-3.5" />
-            <span>Precios Mayoristas</span>
+            <span>Ofertas Mayoristas</span>
           </button>
 
           <button
             onClick={() => setFilterBestSeller(!filterBestSeller)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
               filterBestSeller
                 ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-xs'
                 : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
@@ -250,6 +287,15 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
             <span>Más Vendidos</span>
           </button>
 
+          {onOpenInstagramBio && (
+            <button
+              onClick={onOpenInstagramBio}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-xs hover:from-purple-700 hover:to-pink-700 transition-all cursor-pointer"
+            >
+              <span>📲 Link en Bio @koalalotiene</span>
+            </button>
+          )}
+
           {(filterManufacturer || filterWholesale || filterBestSeller || searchQuery) && (
             <button
               onClick={() => {
@@ -258,7 +304,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                 setFilterBestSeller(false);
                 setSearchQuery('');
               }}
-              className="text-xs text-rose-600 dark:text-rose-400 hover:underline font-bold underline-offset-2 ml-2"
+              className="text-xs text-rose-600 dark:text-rose-400 hover:underline font-bold underline-offset-2 ml-2 cursor-pointer"
             >
               Limpiar filtros
             </button>
@@ -272,17 +318,35 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
 
       {/* Product Grid */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onAddToCart={onAddToCart}
-              cartQuantity={cartItemsMap[product.id] || 0}
-              currentBranch={currentBranch}
-            />
-          ))}
-        </div>
+        <motion.div 
+          layout
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredProducts.map((product) => (
+              <motion.div
+                key={product.id}
+                layout
+                initial={{ opacity: 0, scale: 0.94 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.94 }}
+                transition={{ 
+                  duration: 0.28,
+                  ease: [0.16, 1, 0.3, 1],
+                  layout: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
+                }}
+              >
+                <ProductCard
+                  product={product}
+                  onAddToCart={onAddToCart}
+                  cartQuantity={cartItemsMap[product.id] || 0}
+                  currentBranch={currentBranch}
+                  globalWholesaleMode={globalWholesaleMode}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       ) : (
         /* Empty State */
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center border border-dashed border-slate-300 dark:border-slate-800 max-w-lg mx-auto space-y-4">

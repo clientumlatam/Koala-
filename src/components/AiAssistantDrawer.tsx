@@ -429,18 +429,7 @@ export const AiAssistantDrawer: React.FC<AiAssistantDrawerProps> = ({
                           key={p.id}
                           className="w-44 shrink-0 bg-white dark:bg-slate-850 rounded-2xl p-2.5 border border-slate-200 dark:border-slate-700/80 shadow-xs flex flex-col justify-between space-y-2 group"
                         >
-                          {p.image ? (
-                            <img
-                              src={p.image}
-                              alt={p.name}
-                              referrerPolicy="no-referrer"
-                              className="w-full h-24 object-cover rounded-xl bg-slate-100"
-                            />
-                          ) : (
-                            <div className="w-full h-20 bg-orange-50 dark:bg-orange-950/40 rounded-xl flex items-center justify-center p-1">
-                              <KoalaLogo size="xs" variant="mascot-only" />
-                            </div>
-                          )}
+
 
                           <div className="space-y-1 min-w-0">
                             {p.isManufacturer && (

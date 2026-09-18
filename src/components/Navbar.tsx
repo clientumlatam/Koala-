@@ -137,11 +137,11 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-18">
           {/* Brand Logo */}
           <div 
-            className="flex items-center gap-3 cursor-pointer py-1 shrink-0" 
+            className="flex items-center cursor-pointer py-1 shrink-0" 
             onClick={() => onScrollToSection('hero')}
             title="Koala Lo Tiene - Inicio"
           >
-            <KoalaLogo size="md" withTagline={true} />
+            <KoalaLogo size="md" />
           </div>
 
           {/* Desktop Navigation Links */}
@@ -197,72 +197,155 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Action Controls */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Explicit Multi-Branch Segmented Selector */}
-            <div className="hidden sm:flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200/90 shadow-2xs">
-              {allBranches.map((b) => {
-                const isActive = b.id === currentBranch.id;
-                return (
-                  <button
-                    key={b.id}
-                    onClick={() => onSelectBranch(b.id)}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                      isActive
-                        ? 'bg-orange-600 text-white shadow-xs scale-[1.02]'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-                    }`}
-                    title={`Comprar en sucursal ${b.name}`}
-                  >
-                    <Building2 className={`w-3 h-3 ${isActive ? 'text-orange-200' : 'text-slate-400'}`} />
-                    <span>{b.city}</span>
-                    {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Mobile Branch Switcher Dropdown */}
-            <div className="sm:hidden relative">
+            {/* Prominent Multi-Branch Selector (General Roca vs 4 Sucursales Neuquén) */}
+            <div className="relative">
               <button
                 onClick={() => setShowBranchMenu(!showBranchMenu)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-orange-200 bg-orange-50 text-orange-900 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shadow-2xs"
-                title="Cambiar sucursal activa"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-orange-200 bg-orange-50/90 hover:bg-orange-100/90 text-orange-950 text-xs font-bold transition-all cursor-pointer shadow-2xs group"
+                title="Cambiar sucursal de compra (General Roca o 4 sedes Neuquén Capital)"
+                aria-expanded={showBranchMenu}
               >
-                <Building2 className="w-3.5 h-3.5 text-orange-600 shrink-0" />
-                <span>📍 {currentBranch.city}</span>
-                <ChevronDown className="w-3 h-3 text-orange-600 shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <MapPin className="w-3.5 h-3.5 text-orange-600 shrink-0" />
+                <div className="text-left leading-tight">
+                  <span className="text-[10px] text-orange-600/80 font-extrabold uppercase tracking-wider block sm:inline mr-1">
+                    {currentBranch.id === 'roca' ? 'Casa Central' : 'Sede NQN'}
+                  </span>
+                  <span className="font-black text-slate-900">
+                    {currentBranch.shortName || currentBranch.city}
+                  </span>
+                </div>
+                <ChevronDown className={`w-3.5 h-3.5 text-orange-700 shrink-0 transition-transform ${showBranchMenu ? 'rotate-180' : ''}`} />
               </button>
 
-              {showBranchMenu && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50">
-                  <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
-                    Seleccionar Sucursal de Compra
-                  </div>
-                  {allBranches.map((b) => (
-                    <button
-                      key={b.id}
-                      onClick={() => {
-                        onSelectBranch(b.id);
-                        setShowBranchMenu(false);
-                      }}
-                      className={`w-full text-left px-4 py-2.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
-                        b.id === currentBranch.id
-                          ? 'bg-orange-50 text-orange-700 font-bold'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
+              <AnimatePresence>
+                {showBranchMenu && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowBranchMenu(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 sm:right-auto sm:left-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 py-3 z-50 overflow-hidden"
                     >
-                      <div>
-                        <div className="font-bold text-slate-900">📍 {b.name}</div>
-                        <div className="text-[11px] text-slate-500">{b.address}</div>
+                      <div className="px-4 pb-2 mb-2 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                          <div className="text-xs font-extrabold text-slate-900">
+                            📍 Seleccionar Sucursal de Compra
+                          </div>
+                          <div className="text-[11px] text-slate-500">
+                            Precios y stock en tiempo real por depósito
+                          </div>
+                        </div>
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                          5 Puntos de Venta
+                        </span>
                       </div>
-                      {b.id === currentBranch.id && (
-                        <span className="w-2 h-2 rounded-full bg-orange-500" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
+
+                      {/* General Roca Section */}
+                      <div className="px-3 pb-1">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-2">
+                          Río Negro (Casa Central & Fábrica)
+                        </span>
+                        {allBranches.filter(b => b.id === 'roca').map(b => (
+                          <button
+                            key={b.id}
+                            onClick={() => {
+                              onSelectBranch(b.id);
+                              setShowBranchMenu(false);
+                            }}
+                            className={`w-full text-left p-2.5 rounded-xl text-xs flex items-start justify-between transition-all cursor-pointer mt-1 ${
+                              b.id === currentBranch.id
+                                ? 'bg-orange-50 border border-orange-200 text-orange-950 font-bold shadow-2xs'
+                                : 'hover:bg-slate-50 text-slate-700'
+                            }`}
+                          >
+                            <div className="space-y-0.5">
+                              <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                                <span>{b.name}</span>
+                                <span className="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">
+                                  {b.depotCode || 'DEP-01'}
+                                </span>
+                              </div>
+                              <div className="text-[11px] text-slate-500 flex items-center gap-1">
+                                <MapPin className="w-3 h-3 text-orange-500" />
+                                <span>{b.address} • {b.city}</span>
+                              </div>
+                            </div>
+                            {b.id === currentBranch.id && (
+                              <span className="px-2 py-0.5 rounded-full bg-orange-600 text-white text-[10px] font-black">
+                                Activa
+                              </span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Neuquén Capital Section (4 branches) */}
+                      <div className="px-3 pt-2">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-2">
+                          Neuquén Capital (4 Sucursales Comerciales)
+                        </span>
+                        <div className="space-y-1 mt-1 max-h-60 overflow-y-auto pr-1">
+                          {allBranches.filter(b => b.id !== 'roca').map(b => (
+                            <button
+                              key={b.id}
+                              onClick={() => {
+                                onSelectBranch(b.id);
+                                setShowBranchMenu(false);
+                              }}
+                              className={`w-full text-left p-2.5 rounded-xl text-xs flex items-start justify-between transition-all cursor-pointer ${
+                                b.id === currentBranch.id
+                                  ? 'bg-orange-50 border border-orange-200 text-orange-950 font-bold shadow-2xs'
+                                  : 'hover:bg-slate-50 text-slate-700 border border-transparent'
+                              }`}
+                            >
+                              <div className="space-y-0.5">
+                                <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                                  <span>{b.name}</span>
+                                  <span className="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">
+                                    {b.depotCode || 'DEP-02'}
+                                  </span>
+                                </div>
+                                <div className="text-[11px] text-slate-500 flex items-center gap-1">
+                                  <MapPin className="w-3 h-3 text-blue-500" />
+                                  <span>{b.address} • {b.city}</span>
+                                </div>
+                              </div>
+                              {b.id === currentBranch.id ? (
+                                <span className="px-2 py-0.5 rounded-full bg-orange-600 text-white text-[10px] font-black">
+                                  Activa
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-slate-400 font-semibold group-hover:text-slate-600">
+                                  Elegir
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="px-4 pt-2.5 mt-2 border-t border-slate-100 text-[10.5px] text-slate-500 flex items-center justify-between">
+                        <span>Traspaso inter-sucursal sin costo en 24h</span>
+                        <button
+                          onClick={() => {
+                            setShowBranchMenu(false);
+                            onScrollToSection('locations');
+                          }}
+                          className="text-orange-600 font-bold hover:underline cursor-pointer"
+                        >
+                          Ver mapa completo →
+                        </button>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Loyalty Club Profile Button */}

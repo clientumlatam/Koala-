@@ -3,7 +3,8 @@ import { BranchInfo, CategoryInfo, Product } from '../types';
 export const STORES_DATA: BranchInfo[] = [
   {
     id: 'roca',
-    name: 'General Roca (Casa Central)',
+    name: 'General Roca (Casa Central & Fábrica)',
+    shortName: 'Gral. Roca',
     city: 'General Roca',
     province: 'Río Negro',
     address: 'Av. Roca 1350',
@@ -12,6 +13,8 @@ export const STORES_DATA: BranchInfo[] = [
     whatsapp: '542984536376',
     whatsappFormatted: '298 453-6376',
     email: 'lpsrlmilton@lpsrl.com.ar',
+    badge: 'Fábrica & Depósito Central',
+    depotCode: 'DEP-01',
     hours: {
       weekdays: '08:30 a 12:30 hs y 16:00 a 20:00 hs',
       saturday: '09:00 a 13:00 hs',
@@ -21,8 +24,9 @@ export const STORES_DATA: BranchInfo[] = [
   },
   {
     id: 'neuquen',
-    name: 'Neuquén Capital',
-    city: 'Neuquén',
+    name: 'Neuquén Centro (Mitre)',
+    shortName: 'NQN Centro',
+    city: 'Neuquén Capital',
     province: 'Neuquén',
     address: 'Mitre 678',
     postalCode: '8300',
@@ -30,12 +34,77 @@ export const STORES_DATA: BranchInfo[] = [
     whatsapp: '542995093911',
     whatsappFormatted: '299 509-3911',
     email: 'nqn@koalalotiene.com.ar',
+    badge: 'Salón Comercial & Cotillón',
+    depotCode: 'DEP-02',
     hours: {
       weekdays: '08:30 a 12:30 hs y 16:00 a 20:00 hs',
       saturday: '09:00 a 13:00 hs',
       sunday: 'Cerrado',
     },
     mapsUrl: 'https://maps.google.com/?q=Mitre+678,+Neuquén+Capital',
+  },
+  {
+    id: 'neuquen-alto-comahue',
+    name: 'Neuquén Alto Comahue (Belgrano)',
+    shortName: 'NQN Alto Comahue',
+    city: 'Neuquén Capital',
+    province: 'Neuquén',
+    address: 'Av. Belgrano 1250',
+    postalCode: '8300',
+    phone: '(0299) 448-2233',
+    whatsapp: '542994881122',
+    whatsappFormatted: '299 488-1122',
+    email: 'comahue@koalalotiene.com.ar',
+    badge: 'Sucursal Alto Comahue',
+    depotCode: 'DEP-03',
+    hours: {
+      weekdays: '09:00 a 13:00 hs y 16:30 a 20:30 hs',
+      saturday: '09:30 a 13:30 hs',
+      sunday: 'Cerrado',
+    },
+    mapsUrl: 'https://maps.google.com/?q=Av.+Belgrano+1250,+Neuquén+Capital',
+  },
+  {
+    id: 'neuquen-oeste',
+    name: 'Neuquén San Martín (Oeste)',
+    shortName: 'NQN San Martín',
+    city: 'Neuquén Capital',
+    province: 'Neuquén',
+    address: 'San Martín 4200',
+    postalCode: '8300',
+    phone: '(0299) 445-7788',
+    whatsapp: '542996554433',
+    whatsappFormatted: '299 655-4433',
+    email: 'oeste@koalalotiene.com.ar',
+    badge: 'Sucursal Oeste / San Martín',
+    depotCode: 'DEP-04',
+    hours: {
+      weekdays: '08:30 a 12:30 hs y 16:00 a 20:00 hs',
+      saturday: '09:00 a 13:00 hs',
+      sunday: 'Cerrado',
+    },
+    mapsUrl: 'https://maps.google.com/?q=San+Martín+4200,+Neuquén+Capital',
+  },
+  {
+    id: 'neuquen-mayorista',
+    name: 'Neuquén Mayorista & Logística (Ruta 22)',
+    shortName: 'NQN Mayorista R22',
+    city: 'Neuquén Capital',
+    province: 'Neuquén',
+    address: 'J. J. Lastra 2400 (Ruta 22)',
+    postalCode: '8300',
+    phone: '(0299) 444-1234',
+    whatsapp: '542995779900',
+    whatsappFormatted: '299 577-9900',
+    email: 'mayorista@koalalotiene.com.ar',
+    badge: 'Centro Mayorista & Logística',
+    depotCode: 'DEP-05',
+    hours: {
+      weekdays: '08:00 a 17:00 hs (Corrido)',
+      saturday: '08:30 a 12:30 hs',
+      sunday: 'Cerrado',
+    },
+    mapsUrl: 'https://maps.google.com/?q=J.+J.+Lastra+2400,+Neuquén+Capital',
   },
 ];
 
@@ -115,7 +184,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesaleMinPack: 10,
     isBestSeller: true,
     isManufacturer: true,
-    image: 'https://images.unsplash.com/photo-1597484661643-2f5fef640dd1?auto=format&fit=crop&w=800&q=80',
+    image: '/fotos_reales/KOA-POL-100.jpeg',
     tags: ['bolsas', 'polietileno', 'camiseta', 'comercio', 'fabrica'],
   },
   {
@@ -131,7 +200,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesaleMinPack: 5,
     isBestSeller: true,
     isManufacturer: true,
-    image: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=800&q=80',
+    image: '/fotos_reales/KOA-POL-101.jpeg',
     tags: ['consorcio', 'basura', 'residuos', 'negra', 'reforzada'],
   },
   {
@@ -148,7 +217,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     isBestSeller: true,
     isManufacturer: true,
     isNew: true,
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
+    image: '/ilustraciones_png/KOA-POL-102.png',
     tags: ['big bag', 'escombros', 'aridos', 'construccion', 'industria', 'granel'],
   },
   {
@@ -164,7 +233,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesaleMinPack: 6,
     isBestSeller: true,
     isManufacturer: true,
-    image: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=800&q=80',
+    image: '/ilustraciones_png/KOA-POL-103.png',
     tags: ['film stretch', 'paletizado', 'embalaje', 'rollo', 'cristal'],
   },
   {
@@ -179,7 +248,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 13800,
     wholesaleMinPack: 6,
     isManufacturer: true,
-    image: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80',
+    image: '/ilustraciones_png/KOA-POL-104.png',
     tags: ['film stretch', 'negro', 'opaco', 'embalaje', 'pallet'],
   },
   {
@@ -194,7 +263,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 42500,
     wholesaleMinPack: 3,
     isManufacturer: true,
-    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=800&q=80',
+    image: '/ilustraciones_png/KOA-POL-105.png',
     tags: ['bobina', 'tubular', 'polietileno', 'manguera', 'fabrica'],
   },
   {
@@ -208,7 +277,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1750,
     wholesaleMinPack: 36,
-    image: 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['cinta', 'embalaje', 'cajas', 'transparente', 'pegamento'],
   },
 
@@ -225,7 +294,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 3200,
     wholesaleMinPack: 20,
     isBestSeller: true,
-    image: 'https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['vasos', 'descartables', 'fiesta', 'bebidas', 'plástico'],
   },
   {
@@ -239,7 +308,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 50,
     wholesalePrice: 3600,
     wholesaleMinPack: 10,
-    image: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['vasos térmicos', 'café', 'telgopor', 'caliente', 'oficina'],
   },
   {
@@ -254,7 +323,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 8500,
     wholesaleMinPack: 10,
     isBestSeller: true,
-    image: 'https://images.unsplash.com/photo-1615865417236-d67f57a3e6c0?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['aluminio', 'viandas', 'rotiseria', 'bandejas', 'horno'],
   },
   {
@@ -268,7 +337,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 25,
     wholesalePrice: 6800,
     wholesaleMinPack: 8,
-    image: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['helado', 'potes', 'termico', 'postre', 'delivery'],
   },
   {
@@ -282,7 +351,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 50,
     wholesalePrice: 2400,
     wholesaleMinPack: 20,
-    image: 'https://images.unsplash.com/photo-1581539250439-c96689b516dd?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['tenedores', 'cuchillos', 'cubiertos', 'comida', 'evento'],
   },
   {
@@ -296,7 +365,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 100,
     wholesalePrice: 1500,
     wholesaleMinPack: 30,
-    image: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['servilletas', 'papel', 'mesa', 'gastronomia'],
   },
 
@@ -313,7 +382,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 4200,
     wholesaleMinPack: 10,
     isBestSeller: true,
-    image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['globos', 'cumpleaños', 'latex', 'decoracion', 'fiesta'],
   },
   {
@@ -328,7 +397,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 2150,
     wholesaleMinPack: 12,
     isBestSeller: true,
-    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['cortina', 'metalizada', 'fotos', 'decoracion', 'cumple'],
   },
   {
@@ -342,7 +411,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2400,
     wholesaleMinPack: 10,
-    image: 'https://images.unsplash.com/photo-1574015974293-817f0ebebb74?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['globos', 'numeros', 'dorado', 'helio', 'gigante'],
   },
   {
@@ -356,7 +425,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 4,
     wholesalePrice: 2900,
     wholesaleMinPack: 10,
-    image: 'https://images.unsplash.com/photo-1565035010268-a3816f98589a?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['bengala', 'fuego frio', 'torta', 'velas', 'fiesta'],
   },
   {
@@ -370,7 +439,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2700,
     wholesaleMinPack: 12,
-    image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['nieve', 'espuma', 'egresados', 'carnaval', 'festejo'],
   },
 
@@ -387,7 +456,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 3300,
     wholesaleMinPack: 10,
     isBestSeller: true,
-    image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['mangas', 'pasteleria', 'reposteria', 'dulce de leche', 'decoracion'],
   },
   {
@@ -401,7 +470,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 5900,
     wholesaleMinPack: 5,
-    image: 'https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['picos', 'acero inoxidable', 'decorar', 'tortas', 'cupcakes'],
   },
   {
@@ -415,7 +484,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3800,
     wholesaleMinPack: 6,
-    image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['molde', 'silicona', 'muffins', 'cupcakes', 'horno'],
   },
   {
@@ -429,7 +498,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 5,
     wholesalePrice: 4600,
     wholesaleMinPack: 10,
-    image: 'https://images.unsplash.com/photo-1535141192574-5d4897c13136?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['bases', 'torta', 'dorado', 'pasteleria', 'laminado'],
   },
   {
@@ -443,7 +512,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3500,
     wholesaleMinPack: 8,
-    image: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['perlas', 'comestible', 'azucar', 'dorado', 'decoracion'],
   },
 
@@ -460,7 +529,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 5500,
     wholesaleMinPack: 10,
     isBestSeller: true,
-    image: 'https://images.unsplash.com/photo-1608248597260-2624d6d62d2d?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['pet', 'frascos', 'miel', 'envases', 'tapa'],
   },
   {
@@ -474,7 +543,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1500,
     wholesaleMinPack: 24,
-    image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['pulverizador', 'gatillo', 'alcohol', 'limpieza', 'spray'],
   },
   {
@@ -488,7 +557,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1150,
     wholesaleMinPack: 30,
-    image: 'https://images.unsplash.com/photo-1600428877878-1a0fd85beda8?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['dosificador', 'jabon', 'crema', 'pet', 'bomba'],
   },
   {
@@ -502,7 +571,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1950,
     wholesaleMinPack: 20,
-    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['bidon', '5litros', 'quimicos', 'limpieza', 'pead'],
   },
 
@@ -519,7 +588,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 6900,
     wholesaleMinPack: 5,
     isBestSeller: true,
-    image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['resma', 'a4', 'papel', 'impresion', 'oficina'],
   },
   {
@@ -533,7 +602,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3000,
     wholesaleMinPack: 10,
-    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['cuaderno', 'espiral', 'a4', 'escolar', 'estudio'],
   },
   {
@@ -547,7 +616,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1550,
     wholesaleMinPack: 24,
-    image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['cinta', 'pintor', 'masking', 'papel', 'libreria'],
   },
   {
@@ -561,7 +630,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 12,
     wholesalePrice: 5900,
     wholesaleMinPack: 5,
-    image: 'https://images.unsplash.com/photo-1585336261026-8f5786372969?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['marcadores', 'permanente', 'fibra', 'indeleble', 'libreria'],
   },
 
@@ -577,7 +646,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2600,
     wholesaleMinPack: 12,
-    image: 'https://images.unsplash.com/photo-1590856029826-c7a73142bbf1?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['jarra', 'medidor', 'bazar', 'cocina', 'plastico'],
   },
   {
@@ -591,7 +660,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 4900,
     wholesaleMinPack: 6,
-    image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['hermeticos', 'taper', 'organizadores', 'bazar', 'bpa free'],
   },
 
@@ -608,7 +677,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 3900,
     wholesaleMinPack: 10,
     isManufacturer: true,
-    image: 'https://images.unsplash.com/photo-1597484661643-2f5fef640dd1?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['bolsas', 'arranque', 'rollo', 'polietileno', 'fiambreria'],
   },
   {
@@ -624,7 +693,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesaleMinPack: 10,
     isManufacturer: true,
     isBestSeller: true,
-    image: 'https://images.unsplash.com/photo-1597484661643-2f5fef640dd1?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['bolsas', 'arranque', 'verdulería', 'polietileno', 'rollo'],
   },
   {
@@ -638,7 +707,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 2150,
     wholesaleMinPack: 24,
-    image: 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['cinta', 'fragil', 'embalaje', 'seguridad', 'envios'],
   },
   {
@@ -653,7 +722,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 5400,
     wholesaleMinPack: 10,
     isBestSeller: true,
-    image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['bandejas', 'pet', 'bisagra', 'ensaladas', 'viandas'],
   },
   {
@@ -668,7 +737,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 4500,
     wholesaleMinPack: 20,
     isNew: true,
-    image: 'https://images.unsplash.com/photo-1577705998148-6da4f3963bc8?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['vasos', '500cc', 'cerveza', 'licuados', 'descartables'],
   },
   {
@@ -682,7 +751,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 25,
     wholesalePrice: 6800,
     wholesaleMinPack: 8,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['viandero', 'telgopor', '3 divisiones', 'rotiseria', 'delivery'],
   },
   {
@@ -696,7 +765,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 1500,
     wholesaleMinPack: 24,
-    image: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['nieve', 'aerosol', 'espuma', 'carnaval', 'cotillon'],
   },
   {
@@ -710,7 +779,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3950,
     wholesaleMinPack: 5,
-    image: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['combo', 'fiesta', 'cumpleaños', 'polipapel', 'cotillon'],
   },
   {
@@ -724,7 +793,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 6,
     wholesalePrice: 2750,
     wholesaleMinPack: 10,
-    image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['cortantes', 'galletitas', 'acero', 'reposteria', 'fondant'],
   },
   {
@@ -738,7 +807,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 100,
     wholesalePrice: 1300,
     wholesaleMinPack: 20,
-    image: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['pirotines', 'muffins', 'cupcakes', 'horno', 'reposteria'],
   },
   {
@@ -752,7 +821,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 20,
     wholesalePrice: 4300,
     wholesaleMinPack: 10,
-    image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['botellas', 'pet', '500ml', 'jugos', 'envases'],
   },
   {
@@ -767,7 +836,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     wholesalePrice: 8200,
     wholesaleMinPack: 5,
     isManufacturer: true,
-    image: 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['pulverizador', 'presion previa', '2litros', 'limpieza', 'sanitizante'],
   },
   {
@@ -781,7 +850,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 7700,
     wholesaleMinPack: 5,
-    image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['resma', 'oficio', 'papel', 'legal', 'libreria'],
   },
   {
@@ -795,7 +864,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 4100,
     wholesaleMinPack: 6,
-    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['abrochadora', 'metal', 'oficina', 'libreria', 'ganchos'],
   },
   {
@@ -809,7 +878,7 @@ export const PRODUCTS_CATALOG: Product[] = [
     packageQuantity: 1,
     wholesalePrice: 3700,
     wholesaleMinPack: 10,
-    image: 'https://images.unsplash.com/photo-1610557892470-55d9e80c0bce?auto=format&fit=crop&w=800&q=80',
+    image: '',
     tags: ['escurridor', 'platos', 'bazar', 'cocina', 'organizadores'],
   },
 ];

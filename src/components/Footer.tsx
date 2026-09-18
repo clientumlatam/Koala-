@@ -248,8 +248,17 @@ export const Footer: React.FC<FooterProps> = ({
         {/* Bottom Bar */}
         <div className="border-t border-slate-900 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-400 text-[11px]">
           <div className="text-center md:text-left space-y-0.5">
-            <div className="font-medium text-slate-300">
-              © {new Date().getFullYear()} Koala Lo Tiene SRL • CUIT 30-71458921-3 • Río Negro y Neuquén
+            <div className="font-medium text-slate-300 flex items-center gap-1.5 flex-wrap justify-center md:justify-start">
+              <span>LP SRL</span>
+              <a 
+                href="https://ventaslp.com/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="font-bold text-white hover:text-orange-400 underline decoration-orange-500/60 underline-offset-2 transition-colors"
+              >
+                https://ventaslp.com/
+              </a>
+              <span>• CUIT 30-59986913-8 • Río Negro y Neuquén</span>
             </div>
             <div className="text-slate-500">
               Fabricación en General Roca • Atención en locales y envíos a todo el Alto Valle

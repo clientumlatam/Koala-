@@ -823,7 +823,12 @@ export const InstitutionalPageModal: React.FC<InstitutionalPageModalProps> = ({
           {page === 'terminos' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between text-xs text-slate-500 pb-2 border-b border-slate-200">
-                <span>Koala Lo Tiene SRL · CUIT 30-71458921-3</span>
+                <span>
+                  <a href="https://ventaslp.com/" target="_blank" rel="noopener noreferrer" className="font-bold text-orange-600 hover:underline">
+                    LP SRL (ventaslp.com)
+                  </a>
+                  {' '}· CUIT 30-59986913-8 · Río Negro y Neuquén
+                </span>
                 <span>Actualización: {TERMINOS_CONDICIONES_TEXT.lastUpdated}</span>
               </div>
               <div className="space-y-4">
