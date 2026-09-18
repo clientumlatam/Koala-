@@ -109,6 +109,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
   currentBranch,
   onSelectBranch,
   hasCartItems = false,
+  cartItems = [],
   products = PRODUCTS_CATALOG,
   loyaltyProfile = null,
   onAddToCart,

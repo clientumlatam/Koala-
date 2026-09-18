@@ -77,66 +77,80 @@ app.get(["/api/health", "/health"], (_req, res) => {
   });
 });
 
-// ICXN ERP Inventory Status
-app.get(["/api/erp/inventory-status", "/erp/inventory-status"], (_req, res) => {
-  res.json({
-    status: "connected",
-    lastSync: new Date().toISOString(),
-    system: "ICXN ERP Engine (Conexión Global - https://icxn.com.ar/)",
-    gatewayUrl: "https://api.icxn.com.ar/v1",
-    cuit: "30-71458921-3",
-    syncIntervalSec: 15,
-    branches: [
-      { id: "roca", code: "DEP-01", name: "General Roca (Av. Roca 1350)", status: "online", latencyMs: 18 },
-      { id: "neuquen", code: "DEP-02", name: "Neuquén Capital (Mitre 678)", status: "online", latencyMs: 22 }
-    ]
-  });
-});
-
-// Dedicated ICXN ERP Endpoints
-app.get(["/api/erp/icxn/status", "/erp/icxn/status"], (_req, res) => {
-  res.json({
-    success: true,
-    erpName: "ICXN ERP (Conexión Global)",
-    erpWebsite: "https://icxn.com.ar/",
-    connectionState: "ESTABLISHED",
-    apiGateway: "https://api.icxn.com.ar/v1/koala",
-    cuit: "30-71458921-3",
-    depots: {
-      roca: { code: "DEP-01", status: "SYNCED", stockItems: 4820 },
-      neuquen: { code: "DEP-02", status: "SYNCED", stockItems: 3950 }
-    },
-    syncMode: "REALTIME_SOCKET_PLUS_POLLING",
-    lastPulse: new Date().toISOString()
-  });
-});
-
-app.post(["/api/erp/icxn/sync", "/erp/icxn/sync"], (req, res) => {
-  const { items, sourceSystem } = req.body;
-  res.json({
-    success: true,
-    erp: "ICXN ERP",
-    processedCount: Array.isArray(items) ? items.length : 1420,
-    timestamp: new Date().toISOString(),
-    message: "Sincronización completa con ICXN ERP (General Roca y Neuquén)."
-  });
-});
-
-app.post(["/api/erp/inventory-sync", "/erp/inventory-sync"], (req, res) => {
-  const { items } = req.body;
-  if (!items || !Array.isArray(items)) {
-    res.status(400).json({ error: "Formato inválido. 'items' debe ser un array de artículos." });
-    return;
+// ICXN ERP Status & Inventory (fusiona los antiguos endpoints
+// "inventory-status" e "icxn/status" en una sola fuente de verdad)
+app.get(
+  [
+    "/api/erp/inventory-status",
+    "/erp/inventory-status",
+    "/api/erp/icxn/status",
+    "/erp/icxn/status",
+  ],
+  (_req, res) => {
+    const now = new Date().toISOString();
+    res.json({
+      success: true,
+      status: "connected",
+      connectionState: "ESTABLISHED",
+      erpName: "ICXN ERP (Conexión Global)",
+      system: "ICXN ERP Engine (Conexión Global - https://icxn.com.ar/)",
+      erpWebsite: "https://icxn.com.ar/",
+      gatewayUrl: "https://api.icxn.com.ar/v1",
+      apiGateway: "https://api.icxn.com.ar/v1/koala",
+      cuit: "30-71458921-3",
+      syncIntervalSec: 15,
+      syncMode: "REALTIME_SOCKET_PLUS_POLLING",
+      lastSync: now,
+      lastPulse: now,
+      branches: [
+        {
+          id: "roca",
+          code: "DEP-01",
+          name: "General Roca (Av. Roca 1350)",
+          status: "online",
+          latencyMs: 18,
+          stockItems: 4820,
+        },
+        {
+          id: "neuquen",
+          code: "DEP-02",
+          name: "Neuquén Capital (Mitre 678)",
+          status: "online",
+          latencyMs: 22,
+          stockItems: 3950,
+        },
+      ],
+    });
   }
+);
 
-  res.json({
-    success: true,
-    erp: "ICXN ERP",
-    processedCount: items.length,
-    timestamp: new Date().toISOString(),
-    message: `Sincronización procesada correctamente con ICXN ERP: ${items.length} artículos actualizados en sucursales Roca y Neuquén.`
-  });
-});
+// ICXN ERP Sync (fusiona los antiguos endpoints "icxn/sync" e
+// "inventory-sync": valida el payload y devuelve el mensaje más completo)
+app.post(
+  [
+    "/api/erp/icxn/sync",
+    "/erp/icxn/sync",
+    "/api/erp/inventory-sync",
+    "/erp/inventory-sync",
+  ],
+  (req, res) => {
+    const { items, sourceSystem } = req.body;
+
+    if (!items || !Array.isArray(items)) {
+      res.status(400).json({ error: "Formato inválido. 'items' debe ser un array de artículos." });
+      return;
+    }
+
+    res.json({
+      success: true,
+      erp: "ICXN ERP",
+      sourceSystem: sourceSystem || "koala-web",
+      processedCount: items.length,
+      timestamp: new Date().toISOString(),
+      message: `Sincronización procesada correctamente con ICXN ERP: ${items.length} artículos actualizados en sucursales Roca y Neuquén.`,
+    });
+  }
+);
 
 app.post(["/api/erp/orders", "/erp/orders"], (req, res) => {
   const { orderId } = req.body;
