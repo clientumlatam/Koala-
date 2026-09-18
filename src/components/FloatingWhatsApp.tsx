@@ -30,7 +30,7 @@ import {
   RefreshCw,
   Check
 } from 'lucide-react';
-import { BranchInfo, ProductInventoryRecord, Product, LoyaltyProfile } from '../types';
+import { BranchInfo, ProductInventoryRecord, Product, LoyaltyProfile, CartItem } from '../types';
 import { KoalaLogo } from './KoalaLogo';
 import { TechnicalExpertModal } from './TechnicalExpertModal';
 import { checkStoreStatus, formatCurrency } from '../utils/helpers';
@@ -43,12 +43,20 @@ interface FloatingWhatsAppProps {
   onUpdateStock?: (productId: string, branch: 'roca' | 'neuquen', newStock: number) => void;
   onSelectBranch?: (branchId: 'roca' | 'neuquen') => void;
   hasCartItems?: boolean;
+  cartItems?: CartItem[];
   products?: Product[];
   loyaltyProfile?: LoyaltyProfile | null;
   onAddToCart?: (product: Product, quantity: number, isWholesale: boolean) => void;
 }
 
 const QUICK_PROMPTS = [
+  {
+    id: 'cart-suggestions',
+    icon: Sparkles,
+    label: 'Analizar Mi Carrito',
+    desc: 'Motor IA: Sugerencias complementarias para tu compra',
+    text: 'Hola! Qué productos complementarios me sugieren para los artículos que ya tengo en mi carrito?'
+  },
   {
     id: 'mayorista',
     icon: Package,
@@ -424,23 +432,56 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
       setIsTyping(false);
 
       let reply = '';
+      let matchedProds: Product[] = [];
+
       switch (prompt.id) {
+        case 'cart-suggestions':
+          if (cartItems && cartItems.length > 0) {
+            const cartCategories = Array.from(new Set(cartItems.map(item => item.product.category)));
+            const cartSubcategories = Array.from(new Set(cartItems.map(item => item.product.subcategory)));
+            
+            // AI Suggestion Logic based on cart contents
+            reply = `¡Hola! Analizando tu carrito actual, notamos que llevás artículos de ${cartCategories.join(' y ')}. Para complementar tu compra, nuestro motor de IA te sugiere estos productos relacionados en ${activeBranchData.name}:`;
+            
+            const catalog = products.length > 0 ? products : PRODUCTS_CATALOG;
+            const suggestions = catalog.filter(p => {
+              // Complementary logic
+              if (cartCategories.includes('cotillon') && p.category === 'reposteria') return true;
+              if (cartCategories.includes('reposteria') && p.category === 'descartables') return true;
+              if (cartCategories.includes('polietileno') && p.category === 'envases') return true;
+              if (cartCategories.includes('envases') && p.category === 'polietileno') return true;
+              
+              // If none of the specific rules match, suggest from the same or related categories, but not items already in cart
+              return cartCategories.includes(p.category) && !cartItems.some(ci => ci.product.id === p.id);
+            });
+            
+            matchedProds = suggestions.slice(0, 5);
+            if (matchedProds.length === 0) {
+                // fallback
+                matchedProds = catalog.filter(p => !cartItems.some(ci => ci.product.id === p.id)).slice(0, 5);
+            }
+          } else {
+            reply = '¡Hola! Parece que tu carrito está vacío. Agregá algunos productos y te sugeriré los mejores complementos.';
+          }
+          break;
         case 'mayorista':
           reply = `¡Hola! Somos fabricantes de polietileno (LP SRL) con venta directa por bulto cerrado, bobinas y film stretch desde nuestra casa central en Av. Roca 1350. Contamos con precios mayoristas escalonados y despacho a todo el Alto Valle. ¿Qué medidas o volúmenes precisás cotizar?`;
+          matchedProds = matchCategoryAndProducts(prompt.text);
           break;
         case 'cotillon':
           reply = `¡Hola! Tenemos surtido completo de cotillón temático, globos R12, repostería Mapsa Cuber y vajilla descartable en nuestras sucursales de General Roca y Neuquén Capital (Mitre 678). Mirá las opciones del catálogo disponibles en la tarjeta desplegable:`;
+          matchedProds = matchCategoryAndProducts(prompt.text);
           break;
         case 'envios':
           reply = `¡Hola! Realizamos entregas programadas en General Roca, Allen, Cipolletti, Neuquén y Plottier. También podés retirar sin costo en mostrador de Roca o Neuquén. ¿A qué localidad sería la entrega?`;
+          matchedProds = matchCategoryAndProducts(prompt.text);
           break;
         case 'asesor':
         default:
           reply = `¡Hola! Un asesor comercial de ${activeBranchData.name} recibió tu consulta y está en línea. Podés continuar por aquí o escribirnos directo al WhatsApp oficial (${activeBranchData.whatsappDisplay}) para atención prioritaria.`;
+          matchedProds = matchCategoryAndProducts(prompt.text);
           break;
       }
-
-      const matchedProds = matchCategoryAndProducts(prompt.text);
 
       const replyNow = new Date();
       const replyTimeStr = replyNow.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
@@ -470,6 +511,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
 
     const lowerMsg = finalMsg.toLowerCase();
     const isStockQuery = lowerMsg.includes('stock') || lowerMsg.includes('disponib') || lowerMsg.includes('icxn') || lowerMsg.includes('deposito') || lowerMsg.includes('hay ') || lowerMsg.includes('quedan');
+    const isRecommendationQuery = lowerMsg.includes('sugerenc') || lowerMsg.includes('recomenda') || lowerMsg.includes('complement') || lowerMsg.includes('qué más') || lowerMsg.includes('que mas') || lowerMsg.includes('ia');
 
     const userItem: ChatMessageItem = {
       id: `usr-${Date.now()}`,
@@ -495,10 +537,27 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
       const replyNow = new Date();
       const replyTimeStr = replyNow.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
-      const matchedProds = matchCategoryAndProducts(finalMsg);
+      let matchedProds = matchCategoryAndProducts(finalMsg);
       let replyText = `¡Recibido! Un asesor de ${activeBranchData.name} está revisando tu mensaje. Para enviarnos audios, fotos o cerrar tu pedido al instante, también podés derivar la charla a nuestro WhatsApp oficial.`;
 
-      if (matchedProds.length > 0) {
+      if (isRecommendationQuery && cartItems && cartItems.length > 0) {
+        const cartCategories = Array.from(new Set(cartItems.map(item => item.product.category)));
+        replyText = `¡Hola! Analizando tu carrito actual, notamos que llevás artículos de ${cartCategories.join(' y ')}. Para complementar tu compra, nuestro motor de IA te sugiere estos productos relacionados en ${activeBranchData.name}:`;
+        
+        const catalog = products.length > 0 ? products : PRODUCTS_CATALOG;
+        const suggestions = catalog.filter(p => {
+          if (cartCategories.includes('cotillon') && p.category === 'reposteria') return true;
+          if (cartCategories.includes('reposteria') && p.category === 'descartables') return true;
+          if (cartCategories.includes('polietileno') && p.category === 'envases') return true;
+          if (cartCategories.includes('envases') && p.category === 'polietileno') return true;
+          return cartCategories.includes(p.category) && !cartItems.some(ci => ci.product.id === p.id);
+        });
+        
+        matchedProds = suggestions.slice(0, 5);
+        if (matchedProds.length === 0) {
+            matchedProds = catalog.filter(p => !cartItems.some(ci => ci.product.id === p.id)).slice(0, 5);
+        }
+      } else if (matchedProds.length > 0) {
         replyText = `¡Excelente! Encontramos opciones para tu consulta en el catálogo de ${activeBranchData.name}. Podés agregar productos al carrito directamente desde las tarjetas desplegables:`;
       }
 
@@ -1120,7 +1179,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                   </div>
 
                   <div className="grid grid-cols-2 gap-1.5 pt-0.5">
-                    {QUICK_PROMPTS.map((p) => (
+                    {QUICK_PROMPTS.filter(p => p.id !== 'cart-suggestions' || hasCartItems).map((p) => (
                       <button
                         key={p.id}
                         type="button"
@@ -1172,7 +1231,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
 
                   {/* Quick Prompts List */}
                   <div className="space-y-1.5">
-                    {QUICK_PROMPTS.map((prompt) => {
+                    {QUICK_PROMPTS.filter(p => p.id !== 'cart-suggestions' || hasCartItems).map((prompt) => {
                       const Icon = prompt.icon;
                       return (
                         <button

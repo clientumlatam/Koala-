@@ -49,6 +49,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   const [showTransferModal, setShowTransferModal] = React.useState(false);
   const [transferRequestedSuccess, setTransferRequestedSuccess] = React.useState(false);
+  const [showLightbox, setShowLightbox] = React.useState(false);
 
   // Sync with global wholesale mode if changed
   React.useEffect(() => {
@@ -127,7 +128,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md hover:border-orange-300 transition-all flex flex-col justify-between overflow-hidden group">
+    <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-xl hover:-translate-y-1 hover:shadow-orange-900/5 hover:border-orange-300 transition-all duration-300 flex flex-col justify-between overflow-hidden group">
+      {/* Product Image */}
+      <div className="relative w-full pt-[75%] bg-slate-100 overflow-hidden border-b border-slate-100">
+        {product.image ? (
+          <img 
+            src={product.image} 
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
+            onClick={() => setShowLightbox(true)}
+            loading="lazy"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-slate-300">
+            <Package className="w-12 h-12" />
+          </div>
+        )}
+      </div>
+
       {/* Top Card Body */}
       <div className="p-4 sm:p-5 space-y-3">
         {/* Badges Bar */}
@@ -171,22 +189,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
 
-
-
-        {/* Product Category & Name */}
+        {/* Product Name */}
         <div>
-          <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">
-            {product.subcategory}
-          </span>
           <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2">
             {product.name}
           </h3>
         </div>
-
-        {/* Description */}
-        <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
-          {product.description}
-        </p>
 
         {/* Wholesale Progress Indicator */}
         {isWholesaleEligible && product.wholesaleMinPack && (
@@ -199,213 +207,46 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <Tag className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
               <span className="truncate">
                 {quantity >= product.wholesaleMinPack || isWholesaleMode
-                  ? '¡Precio mayorista aplicado (Bulto cerrado)!'
-                  : `Faltan ${Math.max(0, product.wholesaleMinPack - quantity)} unidades para precio mayorista (Mín: ${product.wholesaleMinPack} u.)`}
+                  ? '¡Precio mayorista aplicado!'
+                  : `Faltan ${Math.max(0, product.wholesaleMinPack - quantity)} unidades para precio mayorista`}
               </span>
             </div>
-            {product.wholesalePrice && (
-              <span className="font-extrabold text-emerald-700 shrink-0">
-                {formatCurrency(product.wholesalePrice)} c/u
-              </span>
-            )}
           </div>
         )}
 
-        {/* Multi-Branch Stock Availability Badges & Status */}
-        <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 space-y-1.5 text-xs">
-          {/* Global Multi-Branch Status Pill */}
-          {hasStockBothBranches ? (
-            <div className="flex items-center gap-1.5 text-[10.5px] font-extrabold text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-md">
-              <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
-              <span>Stock disponible en ambas sucursales (Roca y Neuquén)</span>
-            </div>
-          ) : requiresInterbranchTransfer ? (
-            <div className="flex items-center gap-1.5 text-[10.5px] font-extrabold text-indigo-900 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-md">
-              <ArrowRightLeft className="w-3 h-3 text-indigo-600 shrink-0" />
-              <span>Disponible en {alternateBranchName} — Requiere consulta de traspaso (24h)</span>
-            </div>
-          ) : null}
-
-          {/* Breakdown per branch */}
-          <div className="flex items-center justify-between font-semibold text-[11px] text-slate-600">
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-orange-600" />
-              <span>Stock en General Roca:</span>
-            </span>
-            <span className={`font-bold ${stockRoca > 15 ? 'text-emerald-700' : stockRoca > 0 ? 'text-amber-700' : 'text-rose-600'}`}>
-              {stockRoca > 0 ? `${stockRoca} u. (Disponible)` : '0 u. (Sin stock)'}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between font-semibold text-[11px] text-slate-600">
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3 h-3 text-blue-600" />
-              <span>Stock en Neuquén:</span>
-            </span>
-            <span className={`font-bold ${stockNeuquen > 10 ? 'text-emerald-700' : stockNeuquen > 0 ? 'text-amber-700' : 'text-rose-600'}`}>
-              {stockNeuquen > 0 ? `${stockNeuquen} u. (Disponible)` : '0 u. (Sin stock)'}
-            </span>
-          </div>
-
-          {/* Real-Time Out of Stock & Inter-Branch Transfer Triggers */}
-          {requiresInterbranchTransfer ? (
-            <div className="pt-1">
-              <button
-                type="button"
-                onClick={() => setShowTransferModal(true)}
-                className="w-full py-1.5 px-2.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-300 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-              >
-                <ArrowRightLeft className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Solicitar traspaso inter-sucursal (24h)</span>
-              </button>
-            </div>
-          ) : isOutOfStockInActiveBranch ? (
-            <div className="pt-1">
-              <button
-                type="button"
-                onClick={() => setShowNotifyModal(true)}
-                className="w-full py-1.5 px-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-              >
-                <BellRing className="w-3.5 h-3.5 text-amber-600" />
-                <span>Avisarme cuando haya stock</span>
-              </button>
-            </div>
-          ) : null}
-        </div>
-
-        {/* Dual Pricing Display: Minorista vs. Mayorista / Bulto */}
+        {/* Dual Pricing Display */}
         <div className="bg-gradient-to-br from-slate-50 to-orange-50/40 p-2.5 rounded-xl border border-slate-200/90 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <div>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Precio Minorista</span>
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Minorista</span>
               <span className="font-black text-slate-900 text-sm">
                 {formatCurrency(product.price)}
               </span>
-              <span className="text-[10px] text-slate-400 block font-medium">por {product.unit}</span>
             </div>
 
             {product.wholesalePrice ? (
               <div className="text-right">
-                <span className="text-[10px] text-emerald-700 font-black uppercase tracking-wider block">Precio por Bulto / Mayorista</span>
+                <span className="text-[10px] text-emerald-700 font-black uppercase tracking-wider block">Mayorista</span>
                 <span className="font-black text-emerald-700 text-sm">
                   {formatCurrency(product.wholesalePrice)}
                 </span>
                 <span className="text-[10px] text-emerald-600 block font-semibold">
-                  (Mín. {product.wholesaleMinPack} bultos)
+                  (Mín. {product.wholesaleMinPack} u.)
                 </span>
               </div>
             ) : (
               <div className="text-right">
                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Venta Mayorista</span>
-                <span className="text-xs text-slate-500 font-semibold">Consultar por bulto</span>
+                <span className="text-xs text-slate-500 font-semibold">Consultar</span>
               </div>
             )}
           </div>
-
-        {/* Wholesale Mode Switcher Button & Real-time Budget Progress */}
-          {isWholesaleEligible && product.wholesaleMinPack && (
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => {
-                  const newMode = !isWholesaleMode;
-                  setIsWholesaleMode(newMode);
-                  if (newMode && product.wholesaleMinPack && quantity < product.wholesaleMinPack) {
-                    setQuantity(product.wholesaleMinPack);
-                  }
-                }}
-                className={`w-full text-left px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all border flex items-center justify-between cursor-pointer ${
-                  isWholesaleMode 
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs' 
-                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                }`}
-              >
-                <div className="flex items-center gap-1.5">
-                  <Layers className={`w-3.5 h-3.5 ${isWholesaleMode ? 'text-white' : 'text-emerald-600'}`} />
-                  <span>Modo Mayorista ({product.wholesaleMinPack}+ un.)</span>
-                </div>
-                <span className={`px-1.5 py-0.5 rounded text-[9.5px] uppercase font-black tracking-wide ${
-                  isWholesaleMode ? 'bg-white text-emerald-800' : 'bg-emerald-100 text-emerald-800'
-                }`}>
-                  {isWholesaleMode ? 'Aplicado' : 'Comprar Bulto'}
-                </span>
-              </button>
-
-              {/* Real-time Budget & Minimum Pack Progress Component */}
-              <div className={`p-2.5 rounded-xl border text-xs transition-all ${
-                quantity >= product.wholesaleMinPack
-                  ? 'bg-emerald-500/15 border-emerald-500 text-emerald-950 dark:text-emerald-200'
-                  : 'bg-amber-500/10 border-amber-300 text-slate-800'
-              }`}>
-                {quantity >= product.wholesaleMinPack ? (
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between font-extrabold text-[11px] text-emerald-800">
-                      <span className="flex items-center gap-1">
-                        <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>¡Precio Mayorista Desbloqueado!</span>
-                      </span>
-                      <span className="bg-emerald-600 text-white text-[10px] px-1.5 py-0.2 rounded font-black">
-                        -{wholesaleSavingsPercent}% OFF
-                      </span>
-                    </div>
-                    
-                    <div className="w-full bg-emerald-200 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-emerald-600 h-full rounded-full w-full animate-pulse"></div>
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] pt-0.5">
-                      <span className="text-slate-600 font-medium">
-                        Presupuesto: <strong className="text-emerald-700 font-black">{formatCurrency(quantity * (product.wholesalePrice || product.price))}</strong>
-                      </span>
-                      <span className="text-emerald-700 font-extrabold">
-                        Ahorro: {formatCurrency((product.price - (product.wholesalePrice || product.price)) * quantity)}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-bold text-slate-700">
-                        Te faltan <strong className="text-amber-700 font-black">{product.wholesaleMinPack - quantity} {product.unit}</strong> para bulto mayorista
-                      </span>
-                      <span className="text-[10px] font-black text-slate-500">
-                        {quantity}/{product.wholesaleMinPack}
-                      </span>
-                    </div>
-
-                    <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                      <div 
-                        className="bg-amber-500 h-full rounded-full transition-all duration-300"
-                        style={{ width: `${Math.min(100, Math.round((quantity / product.wholesaleMinPack) * 100))}%` }}
-                      ></div>
-                    </div>
-
-                    <div className="flex items-center justify-between text-[10.5px] pt-0.5">
-                      <span className="text-slate-500">
-                        Desbloqueá <strong className="text-emerald-700">{formatCurrency(product.wholesalePrice || 0)}/u.</strong>
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setQuantity(product.wholesaleMinPack || 1);
-                          setIsWholesaleMode(true);
-                        }}
-                        className="text-[10.5px] font-extrabold text-orange-600 hover:text-orange-700 underline underline-offset-2 cursor-pointer"
-                      >
-                        + Completar {product.wholesaleMinPack} un. (Ahorrá {formatCurrency((product.price - (product.wholesalePrice || product.price)) * (product.wholesaleMinPack || 1))})
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Financing & Installment breakdown */}
+        {/* Financing breakdown */}
         <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50/70 border border-emerald-200/60 text-[11px] text-emerald-900 font-semibold">
           <CreditCard className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-          <span>3 cuotas fijas de <strong className="text-emerald-800 font-extrabold">{formatCurrency(installment3Price)}</strong> o con Mercado Pago</span>
+          <span>3 cuotas de <strong className="text-emerald-800 font-extrabold">{formatCurrency(installment3Price)}</strong> o Mercado Pago</span>
         </div>
       </div>
 
@@ -635,6 +476,33 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
       )}
+      {/* Image Lightbox Modal */}
+      {showLightbox && product.image && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/90 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+          onClick={() => setShowLightbox(false)}
+        >
+          <div className="relative max-w-4xl w-full max-h-[90vh] flex items-center justify-center">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowLightbox(false);
+              }}
+              className="absolute -top-12 right-0 p-2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-colors cursor-pointer backdrop-blur-md"
+              aria-label="Cerrar imagen"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img 
+              src={product.image} 
+              alt={product.name}
+              className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

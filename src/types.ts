@@ -1,10 +1,6 @@
 export type BranchId = 
   | 'roca' 
-  | 'neuquen' 
-  | 'neuquen-centro' 
-  | 'neuquen-alto-comahue' 
-  | 'neuquen-oeste' 
-  | 'neuquen-mayorista';
+  | 'neuquen';
 
 export interface BranchInfo {
   id: BranchId;

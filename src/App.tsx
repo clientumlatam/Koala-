@@ -826,6 +826,7 @@ export default function App() {
         onUpdateStock={handleUpdateBranchStock}
         onSelectBranch={handleSelectBranch}
         hasCartItems={cartItems.length > 0}
+        cartItems={cartItems}
         products={inventory}
         loyaltyProfile={loyaltyProfile}
         onAddToCart={handleAddToCart}
