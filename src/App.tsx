@@ -55,6 +55,16 @@ export default function App() {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
       if (
+        path === '/docs' ||
+        path === '/dossier' ||
+        path === '/propuesta' ||
+        hash === '#docs' ||
+        hash === '#dossier' ||
+        hash === '#propuesta'
+      ) {
+        return '/docs';
+      }
+      if (
         path === '/admin' || 
         path === '/erp' || 
         path === '/panel' || 
@@ -71,11 +81,7 @@ export default function App() {
   const navigateTo = (path: string) => {
     setCurrentPath(path);
     if (typeof window !== 'undefined') {
-      if (path === '/admin') {
-        window.history.pushState({}, '', '/admin');
-      } else {
-        window.history.pushState({}, '', '/');
-      }
+      window.history.pushState({}, '', path);
     }
   };
 
@@ -84,6 +90,15 @@ export default function App() {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.toLowerCase();
       if (
+        path === '/docs' ||
+        path === '/dossier' ||
+        path === '/propuesta' ||
+        hash === '#docs' ||
+        hash === '#dossier' ||
+        hash === '#propuesta'
+      ) {
+        setCurrentPath('/docs');
+      } else if (
         path === '/admin' || 
         path === '/erp' || 
         path === '/panel' || 
@@ -617,6 +632,7 @@ export default function App() {
         onOpenLoyaltyModal={() => setLoyaltyOpen(true)}
         loyaltyProfile={loyaltyProfile}
         onScrollToSection={scrollToSection}
+        onOpenDossier={() => navigateTo('/dossier')}
       />
 
       {/* Main Page Content */}
@@ -653,6 +669,13 @@ export default function App() {
         branches={STORES_DATA}
         onScrollToSection={scrollToSection}
         onOpenLoyaltyModal={() => setLoyaltyOpen(true)}
+        onOpenAdmin={() => {
+          if (currentUser) {
+            navigateTo('/admin');
+          } else {
+            setLoginOpen(true);
+          }
+        }}
       />
 
       {/* Interactive E-Commerce & Loyalty Checkout Modal */}

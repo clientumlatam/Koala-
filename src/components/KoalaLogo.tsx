@@ -127,11 +127,11 @@ export const KoalaLogo: React.FC<KoalaLogoProps> = ({
           />
         </div>
         {withTagline && (
-          <div className="hidden sm:flex flex-col text-left">
-            <span className="text-[11px] font-bold text-orange-600 uppercase tracking-wider">
+          <div className="hidden md:flex flex-col text-left whitespace-nowrap leading-tight pl-1 border-l border-slate-200">
+            <span className="text-[11px] font-extrabold text-orange-600 uppercase tracking-wide whitespace-nowrap">
               Casa Central & Fábrica
             </span>
-            <span className="text-[10px] text-slate-400 font-medium">
+            <span className="text-[10px] text-slate-500 font-medium whitespace-nowrap">
               Río Negro y Neuquén
             </span>
           </div>

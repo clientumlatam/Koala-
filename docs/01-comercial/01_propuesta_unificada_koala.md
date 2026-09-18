@@ -8,7 +8,7 @@
 **Expansión de ventas online — e-commerce + SEO + automatización**
 
 * **Cliente**: Koala Cotillón (LP SRL — Mikhail Murekian)
-* **Fecha**: Mayo / Julio 2026
+* **Fecha**: Septiembre 2026
 * **Duración estimada Etapa 1**: ~15–17 días
 * **Ubicaciones**: General Roca (Av. Roca 1350) y Neuquén Capital (Mitre 678)
 
@@ -60,7 +60,7 @@ El principal dolor de Koala Cotillón es la baja visibilidad y conversión en ca
 
 * **Cliente**: Koala Ferretería y Corralón
 * **Sucursales**: 4 — Zona Oeste, Neuquén Capital
-* **Fecha**: Mayo 2026
+* **Fecha**: Septiembre 2026
 
 ### Diagnóstico
 Koala Ferretería y Corralón cuenta con 4 sucursales activas, presencia en Instagram/Facebook y atención por WhatsApp Business. La atención manual genera demoras, presupuestos sin seguimiento y promociones no segmentadas.
@@ -81,7 +81,19 @@ Koala Ferretería y Corralón cuenta con 4 sucursales activas, presencia en Inst
 ---
 
 ## ¿Por qué Clientum?
-* **Precios en ARS y soporte local en Patagonia** (General Roca y Alto Valle).
-* **Sin dependencia de plataformas extranjeras**: tecnología propia y flexible.
-* **Stack probado**: WhatsApp API, agentes IA, sincronización ERP e e-commerce de alta velocidad.
-* **Soporte y mantenimiento continuo** garantizado los 365 días del año con respuesta < 4 hs.
+* **Precios en ARS y soporte local en Patagonia**: Equipo basado en General Roca. Soporte y mantenimiento continuo garantizado los 365 días del año con respuesta < 4 hs.
+* **Tecnología propia y flexible**: Sin dependencia de plataformas extranjeras. Stack probado: WhatsApp API, agentes IA, sincronización ERP e e-commerce de alta velocidad.
+* **Stack probado en producción**: WhatsApp API oficial (Cloud API Meta), agentes IA con MCP, sincronización ERP-ecommerce, WooCommerce/PrestaShop con integraciones propias.
+* **Trazabilidad y control**: Panel de administración con monitor de sincronización ERP, hub de stock, API tester y auditoría completa de todas las operaciones.
+
+---
+
+## Condiciones y Próximos Pasos
+
+1. **Revisión de la propuesta**: Mikhail y equipo LP SRL revisan el alcance de las 3 etapas, los valores y las condiciones.
+2. **Firma del documento**: Firma formal de esta propuesta comercial como constancia de inicio de proyecto.
+3. **Acreditación del anticipo**: Acreditación del anticipo correspondiente (50% del pack elegido o 100% Etapa 1).
+4. **Kickoff y reunión de inicio**: Reunión de inicio para relevamiento de ERP actual, accesos y cronograma detallado.
+5. **Entrega Etapa 1 (~15–17 días)**: E-commerce operativo con catálogo completo, SEO activo y Google Business Profile configurado.
+
+*Esta propuesta comercial tiene una validez de 15 días corridos desde su emisión. Los valores no incluyen IVA. El inicio formal del proyecto queda sujeto a la firma de este documento y a la acreditación del anticipo correspondiente.*

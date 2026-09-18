@@ -33,6 +33,7 @@ interface NavbarProps {
   onOpenLoyaltyModal: () => void;
   loyaltyProfile?: LoyaltyProfile | null;
   onScrollToSection: (sectionId: string) => void;
+  onOpenDossier?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -48,6 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenLoyaltyModal,
   loyaltyProfile,
   onScrollToSection,
+  onOpenDossier,
 }) => {
   const [showBranchMenu, setShowBranchMenu] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -75,117 +77,129 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, [cartCount]);
 
   return (
-    <header className="sticky top-0 z-40 bg-white shadow-sm border-b border-slate-200">
+    <header className="sticky top-0 z-40 bg-white shadow-xs border-b border-slate-200">
       {/* Top Announcement Bar */}
-      <div className="bg-slate-950 text-slate-200 text-xs py-2 px-4">
-        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
-          {/* Status badge */}
-          <div className="flex items-center gap-2">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${status.badgeColor}`}>
-              <span className={`w-2 h-2 rounded-full ${status.isOpen ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+      <div className="bg-slate-950 text-slate-300 text-xs py-1.5 px-4 border-b border-slate-900">
+        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-y-1 gap-x-4">
+          {/* Status badge & Hours */}
+          <div className="flex items-center gap-2 text-[11px]">
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-semibold border ${status.badgeColor}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${status.isOpen ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'}`} />
               {status.statusText}
             </span>
-            <span className="hidden sm:inline text-slate-400">|</span>
-            <span className="hidden sm:inline text-slate-300 flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
-              {status.nextChangeText}
+            <span className="text-slate-600">•</span>
+            <span className="text-slate-300 flex items-center gap-1">
+              <Clock className="w-3 h-3 text-amber-400" />
+              <span>{status.nextChangeText}</span>
+            </span>
+            <span className="hidden lg:inline text-slate-600">•</span>
+            <span className="hidden lg:inline text-slate-400">
+              Casa Central en Gral. Roca & Salón Neuquén Capital
             </span>
           </div>
 
-          {/* Quick contact and Loyalty Callout */}
-          <div className="flex items-center gap-3 text-slate-300">
-            <button
-              onClick={onOpenLoyaltyModal}
-              className="px-2.5 py-0.5 rounded-md bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white transition-all font-black text-[11px] flex items-center gap-1.5 shadow-xs cursor-pointer animate-pulse"
-              title="Programa de Fidelidad: Puntos y Tarjeta Digital de Sellos"
-            >
-              <Gift className="w-3.5 h-3.5 text-amber-200" />
-              <span>🎁 Club Koala: Puntos y Tarjeta Digital</span>
-            </button>
-            <span className="text-slate-700">•</span>
+          {/* Quick contact and utility links */}
+          <div className="flex items-center gap-3 text-[11px] text-slate-300">
             <a 
               href={`https://wa.me/${currentBranch.whatsapp}`} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-center gap-1 hover:text-emerald-400 transition-colors font-medium"
+              className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors font-semibold"
             >
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400/20" />
-              <span>WhatsApp {currentBranch.city}: <strong className="text-white">{currentBranch.whatsappFormatted}</strong></span>
+              <MessageCircle className="w-3.5 h-3.5 fill-emerald-400/20" />
+              <span>WhatsApp {currentBranch.city}: <strong className="text-white font-bold">{currentBranch.whatsappFormatted}</strong></span>
             </a>
-            <span className="hidden md:inline text-slate-700">•</span>
+            <span className="hidden sm:inline text-slate-700">•</span>
             <a 
               href={`tel:${currentBranch.phone.replace(/\D/g, '')}`}
-              className="hidden md:flex items-center gap-1 hover:text-orange-400 transition-colors"
+              className="hidden sm:flex items-center gap-1 hover:text-orange-400 transition-colors"
             >
-              <Phone className="w-3.5 h-3.5 text-orange-400" />
-              <span>Tel: {currentBranch.phone}</span>
+              <Phone className="w-3 h-3 text-slate-400" />
+              <span>{currentBranch.phone}</span>
             </a>
+            <span className="hidden md:inline text-slate-700">•</span>
+            <button
+              onClick={onOpenLoyaltyModal}
+              className="hidden md:flex items-center gap-1 text-amber-400 hover:text-amber-300 font-semibold transition-colors cursor-pointer"
+            >
+              <Gift className="w-3 h-3" />
+              <span>Club Puntos</span>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-18">
           {/* Brand Logo */}
-          <div className="flex items-center gap-3 cursor-pointer py-1" onClick={() => onScrollToSection('hero')}>
+          <div 
+            className="flex items-center gap-3 cursor-pointer py-1 shrink-0" 
+            onClick={() => onScrollToSection('hero')}
+            title="Koala Lo Tiene - Inicio"
+          >
             <KoalaLogo size="md" withTagline={true} />
-            <div className="hidden xl:block pl-2 border-l border-slate-200">
-              <span className="text-[11px] font-semibold text-slate-500 block leading-tight">
-                Polietileno • Descartables • Cotillón • Repostería
-              </span>
-              <span className="text-[10px] text-emerald-600 font-bold">
-                Atención en Roca y Neuquén
-              </span>
-            </div>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-700">
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-semibold text-slate-700">
             <button 
               onClick={() => onScrollToSection('catalog')} 
-              className="hover:text-orange-600 transition-colors cursor-pointer"
+              className="hover:text-orange-600 transition-colors cursor-pointer whitespace-nowrap"
             >
-              Catálogo de Productos
+              Catálogo
             </button>
             <button 
               onClick={() => onScrollToSection('wholesale')} 
-              className="hover:text-orange-600 transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="hover:text-orange-600 transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
             >
-              <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700 text-xs font-bold">
-                Mayorista
+              <span>Mayorista</span>
+              <span className="px-1.5 py-0.5 rounded-md bg-orange-100 text-orange-700 text-[10px] font-extrabold uppercase tracking-wide">
+                Bulto
               </span>
-              Venta por Bulto
             </button>
             <button 
               onClick={() => onScrollToSection('locations')} 
-              className="hover:text-orange-600 transition-colors flex items-center gap-1 cursor-pointer"
+              className="hover:text-orange-600 transition-colors flex items-center gap-1 cursor-pointer whitespace-nowrap"
             >
-              <MapPin className="w-4 h-4 text-slate-400" />
-              Locales y Mapas
+              <MapPin className="w-3.5 h-3.5 text-slate-400" />
+              <span>Sucursales</span>
             </button>
             <button 
               onClick={onOpenLoyaltyModal} 
-              className="hover:text-orange-600 transition-colors flex items-center gap-1.5 text-orange-700 font-bold cursor-pointer"
+              className="hover:text-orange-600 transition-colors flex items-center gap-1 text-orange-600 font-bold cursor-pointer whitespace-nowrap"
             >
-              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-              <span>Club Koala Puntos</span>
+              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <span>Club Koala</span>
+            </button>
+            <button
+              onClick={() => {
+                if (onOpenDossier) {
+                  onOpenDossier();
+                } else {
+                  window.history.pushState({}, '', '/dossier');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }
+              }}
+              className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-orange-50 text-slate-700 hover:text-orange-600 border border-slate-200/80 text-xs font-bold transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap"
+              title="Ver Dossier Oficial y Propuesta 2026"
+            >
+              <span>📄 Dossier</span>
             </button>
           </nav>
 
           {/* Right Action Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
             {/* Branch Switcher Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setShowBranchMenu(!showBranchMenu)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold transition-all cursor-pointer whitespace-nowrap"
                 title="Cambiar sucursal activa"
               >
-                <Building2 className="w-4 h-4 text-orange-600" />
-                <span className="hidden sm:inline">{currentBranch.city}</span>
-                <span className="sm:hidden">{currentBranch.id.toUpperCase()}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                <Building2 className="w-3.5 h-3.5 text-orange-600 shrink-0" />
+                <span>{currentBranch.city}</span>
+                <ChevronDown className="w-3 h-3 text-slate-500 shrink-0" />
               </button>
 
               {showBranchMenu && (
@@ -222,15 +236,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Loyalty Club Profile Button */}
             <button
               onClick={onOpenLoyaltyModal}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-extrabold transition-all cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300/80 text-amber-950 text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shadow-2xs"
               title="Mi Cuenta Club Koala: Puntos y Tarjeta Digital"
             >
-              <Award className="w-4 h-4 text-amber-600" />
-              <span className="hidden xl:inline">
+              <Award className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span>
                 {loyaltyProfile ? `${loyaltyProfile.pointsBalance} pts` : 'Club Koala'}
               </span>
               {loyaltyProfile && (
-                <span className="px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 text-[10px] font-black">
+                <span className="px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 text-[10px] font-black shrink-0">
                   {loyaltyProfile.punchCardStamps}/6
                 </span>
               )}
@@ -239,11 +253,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* AI Assistant Button */}
             <button
               onClick={onOpenAi}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold shadow-sm shadow-orange-500/20 transition-all transform hover:-translate-y-0.5 cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold shadow-xs shadow-orange-500/20 transition-all cursor-pointer whitespace-nowrap"
+              title="Abrir Asesor de Compras Inteligente"
             >
-              <Sparkles className="w-4 h-4 text-amber-200 animate-pulse" />
-              <span className="hidden sm:inline">Asesor AI Koala</span>
-              <span className="sm:hidden">AI</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-200 shrink-0" />
+              <span className="whitespace-nowrap">Asesor AI</span>
             </button>
 
             {/* Cart Button */}
@@ -260,7 +274,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   : {}
               }
               transition={{ duration: 0.65, ease: 'easeOut' }}
-              className="relative p-2.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-md flex items-center justify-center cursor-pointer"
+              className="relative p-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-sm flex items-center justify-center cursor-pointer shrink-0"
               aria-label="Ver Carrito de Compras"
             >
               <AnimatePresence>
@@ -275,7 +289,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </AnimatePresence>
 
-              <ShoppingCart className="w-5 h-5" />
+              <ShoppingCart className="w-4.5 h-4.5" />
 
               {cartCount > 0 && (
                 <motion.span
@@ -283,7 +297,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   initial={{ scale: 0.4, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                  className="absolute -top-1.5 -right-1.5 bg-orange-600 text-white font-extrabold text-[11px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm"
+                  className="absolute -top-1.5 -right-1.5 bg-orange-600 text-white font-black text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs"
                 >
                   {cartCount}
                 </motion.span>
@@ -308,19 +322,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             {currentUser && (
               <button
                 onClick={onOpenAdmin}
-                className="hidden xl:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800 text-slate-200 text-[11px] font-bold border border-slate-700 cursor-pointer"
+                className="hidden xl:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800 text-slate-200 text-[11px] font-bold border border-slate-700 cursor-pointer whitespace-nowrap"
                 title="Panel de Administración Staff"
               >
-                <span>🔒 {currentUser.name.split(' ')[0]}</span>
+                <span>🔒 Staff</span>
               </button>
             )}
 
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100"
+              className="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 cursor-pointer"
+              aria-label="Abrir menú"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
@@ -366,6 +381,31 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             📍 Sucursales (Roca / Neuquén)
           </button>
+          <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+            <button
+              onClick={() => {
+                if (onOpenDossier) {
+                  onOpenDossier();
+                } else {
+                  window.history.pushState({}, '', '/dossier');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }
+                setMobileMenuOpen(false);
+              }}
+              className="flex-1 py-2 px-3 rounded-lg bg-slate-100 text-slate-800 font-bold text-xs text-center"
+            >
+              📄 Dossier / Propuesta
+            </button>
+            <button
+              onClick={() => {
+                onOpenAdmin();
+                setMobileMenuOpen(false);
+              }}
+              className="flex-1 py-2 px-3 rounded-lg bg-slate-900 text-white font-bold text-xs text-center"
+            >
+              🔒 Panel Admin & ERP
+            </button>
+          </div>
         </div>
       )}
     </header>

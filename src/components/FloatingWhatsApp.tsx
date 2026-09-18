@@ -63,6 +63,17 @@ const QUICK_PROMPTS = [
   }
 ];
 
+const CHAT_STORAGE_KEY = 'koala_whatsapp_chat_history_v1';
+
+export interface ChatMessageItem {
+  id: string;
+  sender: 'user' | 'agent';
+  text: string;
+  time: string;
+  actionUrl?: string;
+  actionLabel?: string;
+}
+
 export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({ 
   currentBranch,
   onSelectBranch,
@@ -74,15 +85,57 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
     currentBranch.id === 'neuquen' ? 'neuquen' : 'roca'
   );
   const [message, setMessage] = useState('');
-  const [chatHistory, setChatHistory] = useState<Array<{
-    id: string;
-    sender: 'user' | 'agent';
-    text: string;
-    time: string;
-  }>>([]);
+  
+  // Persistencia de sesión utilizando localStorage
+  const [chatHistory, setChatHistory] = useState<ChatMessageItem[]>(() => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      }
+    } catch (err) {
+      console.warn('Error reading chat history from localStorage:', err);
+    }
+    return [];
+  });
+
+  const [isTyping, setIsTyping] = useState(false);
   const [resetAlert, setResetAlert] = useState(false);
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
   const [hasUserActed, setHasUserActed] = useState(false);
+
+  const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const chatBottomRef = React.useRef<HTMLDivElement | null>(null);
+
+  // Guardar historial en localStorage ante cada cambio
+  React.useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chatHistory));
+      }
+    } catch (err) {
+      console.warn('Error saving chat history to localStorage:', err);
+    }
+  }, [chatHistory]);
+
+  // Limpieza de timeouts al desmontar
+  React.useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Auto-scroll al final del chat cuando cambia el historial o el estado de tipeo
+  React.useEffect(() => {
+    if (isOpen) {
+      chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatHistory, isTyping, isOpen]);
 
   // Reset interactions and collapsed state when chat opens or closes
   React.useEffect(() => {
@@ -92,11 +145,22 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
     }
   }, [isOpen]);
 
-  // Reiniciar estado del input y el historial de mensajes de la sesión
+  // Reiniciar estado del input y el historial de mensajes de la sesión en memoria y localStorage
   const handleResetChat = () => {
     setHasUserActed(true);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    setIsTyping(false);
     setMessage('');
     setChatHistory([]);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem(CHAT_STORAGE_KEY);
+      }
+    } catch (err) {
+      console.warn('Error clearing localStorage:', err);
+    }
     setResetAlert(true);
     setTimeout(() => {
       setResetAlert(false);
@@ -151,34 +215,105 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
     }
   };
 
-  const handleSend = (textToSend?: string) => {
+  // Manejo de clic en QUICK_PROMPTS con indicador de tipeo dinámico
+  const handleQuickPromptClick = (prompt: typeof QUICK_PROMPTS[number]) => {
     setHasUserActed(true);
-    const finalMsg = textToSend || message || 'Hola Koala Lo Tiene! Quisiera hacer una consulta desde su tienda online.';
-    
-    // Registrar mensaje en el historial de sesión
     const now = new Date();
     const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
-    const userItem = {
+    // Mensaje del usuario agregado inmediatamente
+    const userItem: ChatMessageItem = {
       id: `usr-${Date.now()}`,
-      sender: 'user' as const,
+      sender: 'user',
+      text: prompt.text,
+      time: timeStr
+    };
+
+    setChatHistory((prev) => [...prev, userItem]);
+
+    // Activamos el indicador visual 'está escribiendo...'
+    setIsTyping(true);
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Respuesta dinámica simulada del asesor luego de una breve pausa
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsTyping(false);
+
+      let reply = '';
+      switch (prompt.id) {
+        case 'mayorista':
+          reply = `¡Hola! Somos fabricantes de polietileno (LP SRL) con venta directa por bulto cerrado, bobinas y film stretch desde nuestra casa central en Av. Roca 1350. Contamos con precios mayoristas escalonados y despacho a todo el Alto Valle. ¿Qué medidas o volúmenes precisás cotizar?`;
+          break;
+        case 'cotillon':
+          reply = `¡Hola! Tenemos surtido completo de cotillón temático, globos R12, repostería Mapsa Cuber y vajilla descartable en nuestras sucursales de General Roca y Neuquén Capital (Mitre 678). ¿Para qué fecha o temática es tu festejo?`;
+          break;
+        case 'envios':
+          reply = `¡Hola! Realizamos entregas programadas en General Roca, Allen, Cipolletti, Neuquén y Plottier. También podés retirar sin costo en mostrador de Roca o Neuquén. ¿A qué localidad sería la entrega?`;
+          break;
+        case 'asesor':
+        default:
+          reply = `¡Hola! Un asesor comercial de ${activeBranchData.name} recibió tu consulta y está en línea. Podés continuar por aquí o escribirnos directo al WhatsApp oficial (${activeBranchData.whatsappDisplay}) para atención prioritaria.`;
+          break;
+      }
+
+      const replyNow = new Date();
+      const replyTimeStr = replyNow.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+      const agentItem: ChatMessageItem = {
+        id: `agt-${Date.now()}`,
+        sender: 'agent',
+        text: reply,
+        time: replyTimeStr,
+        actionUrl: `https://wa.me/${activeBranchData.whatsappNum}?text=${encodeURIComponent(prompt.text)}`,
+        actionLabel: `Chatear al WhatsApp de ${selectedBranchId === 'neuquen' ? 'Neuquén' : 'Roca'}`
+      };
+
+      setChatHistory((prev) => [...prev, agentItem]);
+    }, 1150);
+  };
+
+  const handleSend = (textToSend?: string) => {
+    setHasUserActed(true);
+    const finalMsg = textToSend || message.trim();
+    if (!finalMsg) return;
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+    const userItem: ChatMessageItem = {
+      id: `usr-${Date.now()}`,
+      sender: 'user',
       text: finalMsg,
       time: timeStr
     };
 
-    const agentItem = {
-      id: `agt-${Date.now() + 1}`,
-      sender: 'agent' as const,
-      text: `¡Consulta enviada al WhatsApp oficial de ${activeBranchData.name}! Un asesor continuará tu atención en la aplicación.`,
-      time: timeStr
-    };
-
-    setChatHistory(prev => [...prev, userItem, agentItem]);
+    setChatHistory((prev) => [...prev, userItem]);
     setMessage('');
+    setIsTyping(true);
 
-    const encoded = encodeURIComponent(finalMsg);
-    const url = `https://wa.me/${activeBranchData.whatsappNum}?text=${encoded}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsTyping(false);
+      const replyNow = new Date();
+      const replyTimeStr = replyNow.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+      const agentItem: ChatMessageItem = {
+        id: `agt-${Date.now()}`,
+        sender: 'agent',
+        text: `¡Recibido! Un asesor de ${activeBranchData.name} está revisando tu mensaje. Para enviarnos audios, fotos o cerrar tu pedido al instante, también podés derivar la charla a nuestro WhatsApp oficial.`,
+        time: replyTimeStr,
+        actionUrl: `https://wa.me/${activeBranchData.whatsappNum}?text=${encodeURIComponent(finalMsg)}`,
+        actionLabel: 'Abrir en WhatsApp Oficial'
+      };
+
+      setChatHistory((prev) => [...prev, agentItem]);
+    }, 1100);
   };
 
   return (
@@ -403,13 +538,55 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                             : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-tl-xs shadow-xs'
                         }`}
                       >
-                        {item.text}
+                        <p>{item.text}</p>
+                        {item.actionUrl && (
+                          <div className="mt-2 pt-2 border-t border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between gap-2">
+                            <a
+                              href={item.actionUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[10px] shadow-2xs transition-colors"
+                            >
+                              <MessageCircle className="w-3 h-3 fill-white" />
+                              <span>{item.actionLabel || 'Continuar en WhatsApp'}</span>
+                              <ExternalLink className="w-2.5 h-2.5 opacity-80" />
+                            </a>
+                            <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold">Oficial</span>
+                          </div>
+                        )}
                       </div>
                       <span className="text-[9px] text-slate-400 mt-0.5 px-1">
                         {item.time}
                       </span>
                     </div>
                   ))}
+
+                  {/* Componente visual 'está escribiendo...' */}
+                  <AnimatePresence>
+                    {isTyping && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 5, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 3, scale: 0.96 }}
+                        transition={{ duration: 0.18 }}
+                        className="flex flex-col items-start"
+                      >
+                        <div className="flex items-center gap-2 p-2.5 px-3 rounded-2xl rounded-tl-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs text-xs text-slate-600 dark:text-slate-300">
+                          <div className="flex items-center gap-1 px-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                          </div>
+                          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                            Asesor Koala está escribiendo...
+                          </span>
+                        </div>
+                        <span className="text-[9px] text-slate-400 mt-0.5 px-1">
+                          En línea
+                        </span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   <div className="pt-2 border-t border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between">
                     <span className="text-[10px] text-slate-400">¿Otra consulta rápida?</span>
@@ -429,7 +606,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                       <button
                         key={p.id}
                         type="button"
-                        onClick={() => handleSend(p.text)}
+                        onClick={() => handleQuickPromptClick(p)}
                         className="p-1.5 rounded-lg bg-white dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-200 dark:border-slate-700 text-left text-[10px] font-medium text-slate-700 dark:text-slate-200 truncate cursor-pointer transition-colors"
                       >
                         {p.label}
@@ -448,6 +625,33 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                     </p>
                   </div>
 
+                  {/* Componente visual 'está escribiendo...' en estado inicial si se activa */}
+                  <AnimatePresence>
+                    {isTyping && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 5, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 3, scale: 0.96 }}
+                        transition={{ duration: 0.18 }}
+                        className="flex flex-col items-start"
+                      >
+                        <div className="flex items-center gap-2 p-2.5 px-3 rounded-2xl rounded-tl-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs text-xs text-slate-600 dark:text-slate-300">
+                          <div className="flex items-center gap-1 px-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                          </div>
+                          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                            Asesor Koala está escribiendo...
+                          </span>
+                        </div>
+                        <span className="text-[9px] text-slate-400 mt-0.5 px-1">
+                          En línea
+                        </span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   {/* Quick Prompts List */}
                   <div className="space-y-1.5">
                     {QUICK_PROMPTS.map((prompt) => {
@@ -456,7 +660,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                         <button
                           key={prompt.id}
                           type="button"
-                          onClick={() => handleSend(prompt.text)}
+                          onClick={() => handleQuickPromptClick(prompt)}
                           className="w-full text-left p-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all flex items-center justify-between group cursor-pointer"
                         >
                           <div className="flex items-center gap-2.5">
@@ -479,6 +683,9 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                   </div>
                 </>
               )}
+
+              {/* Referencia invisible para auto-scroll suave */}
+              <div ref={chatBottomRef} />
             </div>
 
             {/* Custom Input & Direct Action */}

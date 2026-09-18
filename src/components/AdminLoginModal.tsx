@@ -34,7 +34,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   isStandalonePage = false,
   onNavigateToStore,
 }) => {
-  const [email, setEmail] = useState('gonzalo@koalalotiene.com.ar');
+  const [email, setEmail] = useState('admin@koalalotiene.com.ar');
   const [password, setPassword] = useState('admin');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

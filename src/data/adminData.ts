@@ -14,8 +14,8 @@ import { PRODUCTS_CATALOG } from './products';
 export const INITIAL_EMPLOYEES: EmployeeUser[] = [
   {
     id: 'emp-1',
-    name: 'Gonzalo Koala (Gerencia)',
-    email: 'gonzalo@koalalotiene.com.ar',
+    name: 'Administración General / Gerencia',
+    email: 'admin@koalalotiene.com.ar',
     password: 'admin',
     role: 'admin',
     branchId: 'todas',
@@ -24,8 +24,8 @@ export const INITIAL_EMPLOYEES: EmployeeUser[] = [
   },
   {
     id: 'emp-2',
-    name: 'Carolina Varela',
-    email: 'carolina.ventas@koalalotiene.com.ar',
+    name: 'Ventas Roca (Sucursal Central)',
+    email: 'ventas.roca@koalalotiene.com.ar',
     password: 'ventasroca',
     role: 'ventas',
     branchId: 'roca',
@@ -34,8 +34,8 @@ export const INITIAL_EMPLOYEES: EmployeeUser[] = [
   },
   {
     id: 'emp-3',
-    name: 'Roberto Gómez (Depósito)',
-    email: 'roberto.deposito@koalalotiene.com.ar',
+    name: 'Depósito & Logística (DEP-01)',
+    email: 'deposito.roca@koalalotiene.com.ar',
     password: 'deposito',
     role: 'deposito',
     branchId: 'roca',
@@ -44,8 +44,8 @@ export const INITIAL_EMPLOYEES: EmployeeUser[] = [
   },
   {
     id: 'emp-4',
-    name: 'Martín Neuquén (Ventas Nqn)',
-    email: 'martin.nqn@koalalotiene.com.ar',
+    name: 'Ventas Neuquén (Salón Mitre)',
+    email: 'ventas.neuquen@koalalotiene.com.ar',
     password: 'ventasnqn',
     role: 'ventas',
     branchId: 'neuquen',
@@ -54,8 +54,8 @@ export const INITIAL_EMPLOYEES: EmployeeUser[] = [
   },
   {
     id: 'emp-5',
-    name: 'Lucía Fernández (Administración)',
-    email: 'lucia.facturacion@koalalotiene.com.ar',
+    name: 'Facturación & ERP Central',
+    email: 'facturacion@koalalotiene.com.ar',
     password: 'facturacion',
     role: 'facturacion',
     branchId: 'todas',
@@ -160,7 +160,7 @@ export const INITIAL_TRANSFERS: StockTransferOrder[] = [
     fromBranch: 'roca',
     toBranch: 'neuquen',
     status: 'en_transito',
-    authorizedBy: 'Gonzalo Koala (Gerencia)',
+    authorizedBy: 'Gerencia de Operaciones',
     items: [
       { productId: 'film-stretch-virgen-50cm', productName: 'Film Stretch Cristal Virgen 50cm', sku: 'KOA-POL-101', quantity: 30 },
       { productId: 'bolsa-camiseta-40x50', productName: 'Bolsas Camiseta Reforzadas 40x50', sku: 'KOA-POL-102', quantity: 50 },
@@ -197,7 +197,7 @@ export const INITIAL_QUOTES: QuoteRecord[] = [
     ],
     totalAmount: 98500,
     status: 'en_preparacion',
-    assignedEmployee: 'Carolina Varela',
+    assignedEmployee: 'Ventas Roca (Sucursal Central)',
     erpSyncId: 'ERP-DOC-2026-991',
   },
   {
@@ -208,14 +208,14 @@ export const INITIAL_QUOTES: QuoteRecord[] = [
     branchId: 'neuquen',
     deliveryType: 'retiro',
     paymentMethod: 'efectivo',
-    notes: 'Retiran por el local de Perticone en horario de la tarde.',
+    notes: 'Retiran por el local de Mitre en horario de la tarde.',
     items: [
       { product: PRODUCTS_CATALOG[2], quantity: 8, isWholesale: true },
       { product: PRODUCTS_CATALOG[3], quantity: 15, isWholesale: true },
     ],
     totalAmount: 64200,
     status: 'nueva',
-    assignedEmployee: 'Martín Neuquén',
+    assignedEmployee: 'Ventas Neuquén (Salón Mitre)',
   },
   {
     id: 'COT-8841',
@@ -233,7 +233,7 @@ export const INITIAL_QUOTES: QuoteRecord[] = [
     ],
     totalAmount: 145000,
     status: 'facturado_erp',
-    assignedEmployee: 'Lucía Fernández',
+    assignedEmployee: 'Facturación & ERP Central',
     erpSyncId: 'ERP-DOC-2026-988',
   },
 ];

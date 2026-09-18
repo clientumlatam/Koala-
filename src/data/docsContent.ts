@@ -22,12 +22,13 @@ export const DOCUMENTATION_DATA: DocItem[] = [
     subtitle: 'Plan de Transformación Digital Omnicanal en 3 Etapas',
     badge: 'Propuesta Oficial',
     lastUpdated: 'Septiembre 2026',
-    readTime: '6 min',
-    summary: 'Documento integral que contempla los dos perfiles de negocio de Koala: Cotillón / Descartables (LP SRL) y Ferretería / Corralón (4 sucursales Neuquén).',
+    readTime: '7 min',
+    summary: 'Documento integral oficial (16 págs.) que contempla los dos perfiles de negocio de Koala: Cotillón / Descartables (LP SRL) y Ferretería / Corralón (4 sucursales Neuquén), con desglose de inversión, condiciones y próximos pasos.',
     content: `
 # Propuesta Comercial Unificada — Clientum × KOALA
 **Plan de Transformación Digital Omnicanal**
 *Dos perfiles de negocio, una propuesta integral: Cotillón / Descartables y Ferretería / Corralón.*
+*General Roca, Río Negro, Argentina · Septiembre 2026*
 
 ---
 
@@ -35,35 +36,48 @@ export const DOCUMENTATION_DATA: DocItem[] = [
 **Expansión de ventas online — e-commerce + SEO + automatización**
 
 * **Cliente**: Koala Cotillón (LP SRL — Mikhail Murekian)
+* **Fecha**: Septiembre 2026
 * **Duración estimada Etapa 1**: ~15–17 días
 * **Ubicaciones**: General Roca (Av. Roca 1350) y Neuquén Capital (Mitre 678)
 
 ### Diagnóstico de Situación
-El principal dolor de Koala Cotillón es la baja visibilidad y conversión en canales digitales. Quien busca cotillón, globos, polietileno o descartables en Google no encuentra a Koala entre los primeros resultados.
+El principal dolor de Koala Cotillón es la baja visibilidad y conversión en canales digitales. Quien busca cotillón, globos, polietileno o descartables en Google en el Alto Valle no encuentra a Koala entre los primeros resultados. Las ventas online no reflejan la capacidad real del negocio.
 * Ausencia de posicionamiento orgánico en buscadores (SEO).
 * Sin e-commerce propio con catálogo actualizado en tiempo real.
 * Atención a consultas online sin automatización — cuellos de botella en horarios pico.
-* Canales sociales activos (Instagram, Facebook) sin integración al flujo de ventas.
+* Canales sociales activos (Instagram, Facebook) sin integración fluida al flujo de ventas.
 
-### Plan de Implementación en 3 Etapas
-1. **Etapa 1 — E-commerce + Catálogo + SEO Orgánico (~15–17 días)**:
+### Plan de Implementación Modular en 3 Etapas
+1. **Etapa 1 — E-commerce + Catálogo íntegro + SEO Orgánico (~15–17 días)**:
    - Sitio web con e-commerce completo y catálogo íntegro de productos (descartables, polietileno, repostería, cotillón).
    - Fotos, descripciones y categorías cargadas para todos los artículos.
    - Stock sincronizado y actualizado automáticamente.
-   - Estrategia SEO orgánico (palabras clave regionales).
-   - Optimización técnica on-page y alta en Google Business Profile.
+   - Estrategia SEO orgánico con palabras clave (cotillón, globos, descartables, polietileno).
+   - Optimización técnica on-page para aparecer primero en búsquedas relevantes de Roca y Neuquén.
+   - Configuración Google Business Profile y alta en directorios locales.
 
 2. **Etapa 2 — Integración con ERP (A convenir según ERP)**:
    - Conexión bidireccional entre el sistema de gestión y el e-commerce.
-   - Precios, stock y productos actualizados automáticamente desde el ERP.
+   - Precios, stock y productos actualizados automáticamente desde el sistema de gestión.
    - **Reserva atómica de stock en tiempo real**: prevención de quiebres por ventas simultáneas (mostrador físico vs. carrito web).
-   - Órdenes web que impactan directamente en el ERP sin intervención manual.
+   - Órdenes web que impactan directamente en el ERP sin intervención manual ni doble carga.
 
-3. **Etapa 3 — Bot Web + Bot WhatsApp (A convenir)**:
-   - Chatbot integrado en la página web para atención 24/7.
-   - Derivación automática hacia WhatsApp Business.
-   - Bot de WhatsApp con mensajes predefinidos y flujos de calificación.
-   - Servidor MCP para consultar datos de stock y precios verídicos en tiempo real.
+3. **Etapa 3 — Bot Web + Bot WhatsApp con IA (A convenir)**:
+   - Chatbot integrado en la página web para atención inmediata de consultas 24/7.
+   - Derivación automática desde el bot web hacia WhatsApp Business del local correspondiente.
+   - Bot de WhatsApp con mensajes predefinidos y flujos de calificación para acompañar y cerrar operaciones.
+   - Servidor MCP para consultar inventario real en vivo sin alucinaciones de precios ni stock.
+   - Integrado con Instagram y Facebook como canales de entrada adicionales.
+
+### Estructura de Inversión — Koala Cotillón
+| Concepto | Setup (ARS) | Mensual (ARS) | Condición |
+| :--- | :--- | :--- | :--- |
+| **Etapa 1 — E-commerce + SEO** | $ 518.000 (o a definir) | $ 104.000 / $ 133.200 | Pago al inicio |
+| **Etapa 2 — Integración ERP** | $ 414.400 (o a convenir) | $ 86.000 / $ 111.000 | A convenir según ERP |
+| **Etapa 3 — Bots Web + WhatsApp** | $ 187.600 (o a convenir) | $ 77.000 / $ 66.600 | Al inicio de la etapa |
+| **PACK COMPLETO SUGERIDO** | **$ 1.120.000** | **$ 267.000 / $ 310.800** | Anticipo 50% al iniciar |
+
+*Validez: 15 días corridos. Los valores no incluyen IVA.*
 
 ---
 
@@ -72,20 +86,42 @@ El principal dolor de Koala Cotillón es la baja visibilidad y conversión en ca
 
 * **Cliente**: Koala Ferretería y Corralón
 * **Sucursales**: 4 — Zona Oeste, Neuquén Capital
+* **Fecha**: Septiembre 2026
 
-### Resumen de Etapas y Precios
-* **Etapa 1 — Tienda Online (WooCommerce / Web)**: $ 518.000 setup · $ 133.200/mes
-* **Etapa 2 — Sincronización con ERP (4 sucursales)**: $ 414.400 setup · $ 111.000/mes
-* **Etapa 3 — Broadcast y Redes Sociales**: $ 177.600 setup · $ 66.600/mes
-* **PACK COMPLETO (Ahorro $266.400 setup)**: **$ 1.110.000** setup · **$ 310.800**/mes
+### Diagnóstico
+Koala Ferretería y Corralón cuenta con 4 sucursales activas en Neuquén Capital, presencia en Instagram/Facebook y atención por WhatsApp Business. La atención manual genera demoras, presupuestos sin seguimiento y promociones no segmentadas. No disponen de tienda online que refleje stock unificado en tiempo real entre sucursales.
+
+### Resumen de Etapas y Precios — Ferretería
+| Concepto | Setup (ARS) | Mensual (ARS) | Condición |
+| :--- | :--- | :--- | :--- |
+| **Etapa 1 — Tienda Online (WooCommerce / Web)** | $ 518.000 | $ 133.200 | Pago al inicio |
+| **Etapa 2 — Sincronización con ERP (4 sucursales)** | $ 414.400 | $ 111.000 | A convenir |
+| **Etapa 3 — Broadcast y Redes Sociales** | $ 177.600 | $ 66.600 | Al inicio etapa |
+| **PACK COMPLETO (Ahorro $266.400 setup)** | **$ 1.110.000** | **$ 310.800** | Anticipo 50% |
+
+### Detalle por Etapa
+* **Etapa 1**: Catálogo completo con pagos integrados (tarjeta, transferencia, cuotas), pedidos derivados automáticamente por WhatsApp al vendedor correspondiente, panel de stock y órdenes multi-sucursal.
+* **Etapa 2**: Stock en tiempo real entre las 4 sucursales, precios sincronizados automáticamente sin intervención manual, alertas automáticas de quiebre crítico.
+* **Etapa 3**: Promociones masivas segmentadas por WhatsApp, captura de leads desde Facebook e Instagram, derivación directa al vendedor de la sucursal correspondiente.
 
 ---
 
 ## ¿Por qué Clientum?
-* **Precios en ARS y soporte local en Patagonia** (General Roca y Alto Valle).
-* **Sin dependencia de plataformas extranjeras**: tecnología propia y flexible.
-* **Stack probado**: WhatsApp API, agentes IA, sincronización ERP e e-commerce de alta velocidad.
-* **Soporte y mantenimiento continuo** garantizado con respuesta menor a 4 horas.
+* **Precios en ARS y soporte local**: Equipo basado en General Roca (Patagonia). Soporte y mantenimiento garantizado 365 días, respuesta menor a 4 horas.
+* **Tecnología propia y flexible**: Sin dependencia de plataformas extranjeras. Stack probado: WhatsApp API, agentes IA, sincronización ERP y e-commerce de alta velocidad.
+* **Stack probado en producción**: WhatsApp API oficial (Cloud API Meta), agentes IA con MCP, sincronización ERP-ecommerce, WooCommerce/PrestaShop con integraciones propias.
+* **Trazabilidad y control**: Panel de administración con monitor de sincronización ERP, hub de stock, API tester y auditoría completa de todas las operaciones.
+
+---
+
+## Condiciones y Próximos Pasos
+1. **Revisión de la propuesta**: Mikhail y equipo LP SRL revisan el alcance de las 3 etapas, los valores y las condiciones.
+2. **Firma del documento**: Firma formal de esta propuesta comercial como constancia de inicio de proyecto.
+3. **Acreditación del anticipo**: Acreditación del anticipo correspondiente (50% del pack elegido o 100% Etapa 1).
+4. **Kickoff y reunión de inicio**: Reunión de inicio para relevamiento de ERP actual, accesos y cronograma detallado.
+5. **Entrega Etapa 1 (~15–17 días)**: E-commerce operativo con catálogo completo, SEO activo y Google Business Profile configurado.
+
+*Esta propuesta comercial tiene una validez de 15 días corridos desde su emisión. Los valores no incluyen IVA. El inicio formal del proyecto queda sujeto a la firma de este documento y a la acreditación del anticipo correspondiente.*
     `
   },
   {
@@ -195,6 +231,65 @@ Utilizá el botón superior para copiar el texto con formato directamente a tu c
 ## 3. Prioridad 3: Posicionamiento Orgánico (SEO)
 * **Dolor**: Quien busca en Google en el Alto Valle no encuentra a Koala primero.
 * **Solución**: SEO on-page, datos estructurados Schema.org y Google Business Profile en General Roca y Neuquén.
+    `
+  },
+  {
+    id: 'resumen-ejecutivo',
+    category: 'comercial',
+    categoryLabel: '01. Comercial & Propuestas',
+    title: 'Resumen Ejecutivo — Transformación Omnicanal Koala',
+    subtitle: 'Pilares estratégicos, 3 etapas y beneficios medibles para el negocio',
+    badge: 'Ejecutivo',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '4 min',
+    summary: 'Síntesis ejecutiva de la visión general, las 3 etapas de implementación (E-Commerce+SEO, ERP y Bots) y los beneficios medibles para LP SRL.',
+    content: `
+# Resumen Ejecutivo del Proyecto — Koala Lo Tiene & Clientum
+*Transformación Digital Omnicanal · General Roca y Neuquén Capital*
+
+---
+
+## 1. Visión General del Proyecto
+
+Koala Lo Tiene es un referente indiscutido en la distribución de artículos de cotillón, repostería, descartables y polietileno en el Alto Valle. El objetivo de este proyecto es dotar a la empresa de una **infraestructura omnicanal de alta gama** que combine:
+1. Una tienda e-commerce optimizada para motores de búsqueda (SEO local).
+2. Sincronización bidireccional con su sistema de gestión (ERP actual o nuevo).
+3. Automatización de ventas y atención 24/7 mediante bots en Web y WhatsApp.
+
+---
+
+## 2. Las 3 Etapas de Implementación
+
+### Etapa 1: E-Commerce + Catálogo Completo + SEO Orgánico (~15–17 días)
+* **Alcance**: 
+  - Desarrollo de plataforma web transaccional con diseño adaptativo mobile-first.
+  - Carga y optimización de más de 30 categorías de productos con fotografías profesionales sobre fondo blanco.
+  - Optimización SEO on-page orientada a términos clave (*cotillón en General Roca, descartables en Neuquén, bolsas de polietileno mayorista, velas y repostería*).
+  - Alta y optimización de Google Business Profile para ambas sucursales.
+
+### Etapa 2: Integración con ERP (Sincronización Bidireccional)
+* **Alcance**:
+  - Conexión con el software de gestión actual de Koala (Tango Software, Flexxus, Bejerman o nuevo ERP).
+  - Sincronización automática de listas de precios (Mayorista y Minorista).
+  - Control de stock multi-sucursal en tiempo real (**Depósito General Roca DEP-01** vs **Salón Neuquén Capital DEP-02**).
+  - Inyección automática de pedidos web en el ERP sin doble carga administrativa.
+  - **Reserva atómica preventiva de 15 minutos** para erradicar quiebres por venta simultánea mostrador vs. online.
+
+### Etapa 3: Bot Web + Bot WhatsApp + Alertas de Stock
+* **Alcance**:
+  - Asistente virtual inteligente integrado en el sitio web y WhatsApp Business.
+  - Derivación automática de clientes con carritos prearmados hacia el equipo de ventas.
+  - Servidor MCP para consultas de stock y precios sin alucinaciones.
+  - Panel de control operativo con seguimiento de pedidos y estados de pago.
+
+---
+
+## 3. Beneficios Esperados para el Negocio
+
+* **Captura de Demanda Insatisfecha**: Clientes del Alto Valle que buscan productos en Google y terminan comprando en la competencia o en plataformas foráneas.
+* **Reducción de Carga Operativa**: Eliminación de la toma de pedidos manual por WhatsApp; el carrito estructura la compra y el ERP descuenta el stock automáticamente.
+* **Fidelización Comercial**: Sistema de listas diferenciadas y beneficios para reposteros, gastronómicos y comercios mayoristas.
+* **Trazabilidad Logística**: Visibilidad inmediata del estado de los pedidos y de los traspasos de mercadería entre General Roca y Neuquén.
     `
   },
   {
