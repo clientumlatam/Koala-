@@ -14,7 +14,9 @@ import {
   Zap,
   Gift,
   Award,
-  Star
+  Star,
+  Mic,
+  AudioLines
 } from 'lucide-react';
 import { BranchId, BranchInfo, EmployeeUser, LoyaltyProfile } from '../types';
 import { checkStoreStatus } from '../utils/helpers';
@@ -29,6 +31,7 @@ interface NavbarProps {
   currentUser?: EmployeeUser | null;
   onOpenCart: () => void;
   onOpenAi?: () => void;
+  onOpenAudioTranscriber?: () => void;
   onOpenAdmin: () => void;
   onOpenLogin: () => void;
   onOpenLoyaltyModal: () => void;
@@ -46,6 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentUser,
   onOpenCart,
   onOpenAi,
+  onOpenAudioTranscriber,
   onOpenAdmin,
   onOpenLogin,
   onOpenLoyaltyModal,
@@ -242,7 +246,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           </div>
                         </div>
                         <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
-                          5 Puntos de Venta
+                          2 Sucursales (Río Negro & Neuquén)
                         </span>
                       </div>
 
@@ -285,10 +289,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                         ))}
                       </div>
 
-                      {/* Neuquén Capital Section (4 branches) */}
+                      {/* Neuquén Capital Section */}
                       <div className="px-3 pt-2">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-2">
-                          Neuquén Capital (4 Sucursales Comerciales)
+                          Neuquén Capital (Salón Comercial & Depósito)
                         </span>
                         <div className="space-y-1 mt-1 max-h-60 overflow-y-auto pr-1">
                           {allBranches.filter(b => b.id !== 'roca').map(b => (
@@ -347,6 +351,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Audio Transcribe Feature Button (gemini-3.5-transcribe) */}
+            {onOpenAudioTranscriber && (
+              <button
+                onClick={onOpenAudioTranscriber}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-950 text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shadow-2xs group"
+                title="Transcribir Audio con Micrófono (gemini-3.5-transcribe)"
+              >
+                <div className="p-1 rounded-lg bg-orange-600 text-white group-hover:scale-110 transition-transform">
+                  <Mic className="w-3.5 h-3.5" />
+                </div>
+                <span className="hidden md:inline">Transcribir Audio</span>
+                <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-orange-200/80 text-orange-900 font-bold hidden xl:inline">
+                  IA
+                </span>
+              </button>
+            )}
 
             {/* Loyalty Club Profile Button */}
             <button
@@ -438,6 +459,24 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-2.5">
+          {onOpenAudioTranscriber && (
+            <button
+              onClick={() => {
+                onOpenAudioTranscriber();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full text-left py-2 font-bold text-orange-600 flex items-center justify-between bg-orange-50/80 px-3 rounded-xl border border-orange-200"
+            >
+              <span className="flex items-center gap-2">
+                <Mic className="w-4 h-4 text-orange-600" />
+                <span>Transcribir Audio (Micrófono)</span>
+              </span>
+              <span className="text-[10px] bg-orange-200/80 text-orange-900 px-2 py-0.5 rounded-full font-bold">
+                gemini-3.5-transcribe
+              </span>
+            </button>
+          )}
+
           <button
             onClick={() => {
               onScrollToSection('catalog');

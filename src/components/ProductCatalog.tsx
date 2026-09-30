@@ -14,7 +14,11 @@ import {
   Cake,
   SprayCan,
   BookOpen,
-  Coffee
+  Coffee,
+  Mic,
+  Square,
+  RefreshCw,
+  AudioLines
 } from 'lucide-react';
 import { CategoryId, CategoryInfo, Product, BranchInfo, ProductInventoryRecord } from '../types';
 import { ProductCard } from './ProductCard';
@@ -33,6 +37,8 @@ interface ProductCatalogProps {
   globalWholesaleMode?: boolean;
   onToggleWholesaleMode?: () => void;
   onOpenInstagramBio?: () => void;
+  externalSearchQuery?: string;
+  onOpenTranscriber?: () => void;
 }
 
 export const ProductCatalog: React.FC<ProductCatalogProps> = ({
@@ -47,12 +53,84 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   globalWholesaleMode = false,
   onToggleWholesaleMode,
   onOpenInstagramBio,
+  externalSearchQuery,
+  onOpenTranscriber,
 }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchGlobally, setSearchGlobally] = React.useState(true);
   const [filterManufacturer, setFilterManufacturer] = React.useState(false);
   const [filterWholesale, setFilterWholesale] = React.useState(false);
   const [filterBestSeller, setFilterBestSeller] = React.useState(false);
+
+  // Sync external search query if provided (e.g. from Audio Transcriber Modal)
+  React.useEffect(() => {
+    if (externalSearchQuery !== undefined) {
+      setSearchQuery(externalSearchQuery);
+    }
+  }, [externalSearchQuery]);
+
+  const [isRecordingVoice, setIsRecordingVoice] = React.useState(false);
+  const [isTranscribingVoice, setIsTranscribingVoice] = React.useState(false);
+  const voiceRecorderRef = React.useRef<MediaRecorder | null>(null);
+  const voiceChunksRef = React.useRef<Blob[]>([]);
+
+  const handleToggleVoiceSearch = async () => {
+    if (onOpenTranscriber) {
+      onOpenTranscriber();
+      return;
+    }
+    if (isRecordingVoice) {
+      if (voiceRecorderRef.current && voiceRecorderRef.current.state !== 'inactive') {
+        voiceRecorderRef.current.stop();
+      }
+      setIsRecordingVoice(false);
+      return;
+    }
+
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) return;
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      voiceRecorderRef.current = recorder;
+      voiceChunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) voiceChunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(voiceChunksRef.current, { type: 'audio/webm' });
+        setIsTranscribingVoice(true);
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = async () => {
+          try {
+            const base64Audio = reader.result as string;
+            const res = await fetch('/api/transcribe-audio', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ audioData: base64Audio }),
+            });
+            const data = await res.json();
+            if (data.text) {
+              setSearchQuery(data.text);
+            }
+          } catch (e) {
+            console.error('Voice search error:', e);
+          } finally {
+            setIsTranscribingVoice(false);
+          }
+        };
+      };
+
+      recorder.start();
+      setIsRecordingVoice(true);
+    } catch (e) {
+      console.error(e);
+      setIsRecordingVoice(false);
+    }
+  };
 
 
   // Filter products logic
@@ -130,24 +208,53 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
 
         {/* Global Search Bar */}
         <div className="relative w-full md:w-96">
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600 dark:text-orange-400" />
+          <div className="relative flex items-center">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600 dark:text-orange-400 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscador global: producto, bolsa, vasitos, cotillón..."
-              className="w-full pl-10 pr-10 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all shadow-xs placeholder:text-slate-400 dark:placeholder:text-slate-500"
+              className="w-full pl-10 pr-20 py-2.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all shadow-xs placeholder:text-slate-400 dark:placeholder:text-slate-500"
             />
-            {searchQuery && (
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  title="Limpiar búsqueda"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
               <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                title="Limpiar búsqueda"
+                type="button"
+                onClick={handleToggleVoiceSearch}
+                disabled={isTranscribingVoice}
+                className={`p-1.5 rounded-xl transition-all cursor-pointer ${
+                  isRecordingVoice
+                    ? 'bg-rose-600 text-white animate-pulse'
+                    : isTranscribingVoice
+                    ? 'text-orange-600 animate-spin'
+                    : 'text-slate-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-slate-700'
+                }`}
+                title={
+                  isRecordingVoice
+                    ? 'Detener grabación de voz'
+                    : isTranscribingVoice
+                    ? 'Transcribiendo con gemini-3.5-transcribe...'
+                    : 'Buscar por voz (transcribe con gemini-3.5-transcribe)'
+                }
               >
-                <X className="w-4 h-4" />
+                {isRecordingVoice ? (
+                  <Square className="w-3.5 h-3.5 fill-white" />
+                ) : isTranscribingVoice ? (
+                  <RefreshCw className="w-3.5 h-3.5" />
+                ) : (
+                  <Mic className="w-3.5 h-3.5" />
+                )}
               </button>
-            )}
+            </div>
           </div>
 
           {searchQuery.trim() !== '' && (

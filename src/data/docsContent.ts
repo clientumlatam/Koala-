@@ -20,17 +20,16 @@ export const DOCUMENTATION_DATA: DocItem[] = [
     id: 'propuesta-unificada',
     category: 'comercial',
     categoryLabel: '01. Comercial & Propuestas',
-    title: 'Propuesta Comercial — Koala Cotillón & Descartables',
-    subtitle: 'Plan de Transformación Digital Omnicanal en 3 Etapas (LP SRL)',
-    badge: 'Exclusivo Soporte Clientum',
+    title: 'Propuesta Comercial — Cuadro Comparativo (3 Opciones)',
+    subtitle: 'Matriz de Inversión y Comparativa de Alternativas (LP SRL)',
     lastUpdated: 'Septiembre 2026',
     readTime: '5 min',
     requiresClientumSupport: true,
     restrictedToRole: ['backend'],
-    summary: 'Documento integral oficial para Koala Cotillón, Descartables y Polietileno (LP SRL — Mikhail Murekian) en General Roca y Neuquén Capital, con desglose de inversión, condiciones y próximos pasos.',
+    summary: 'Matriz comparativa de las 3 alternativas de inversión para Koala Cotillón (LP SRL — Mikhail Murekian): Opción 1 Inicial ($1.120.000), Opción 2 Intermedia ($2.785.000) y Opción 3 Mercado Actual ($4.450.000).',
     content: `
-# Propuesta Comercial — Clientum × KOALA
-**Plan de Transformación Digital Omnicanal**
+# Propuesta Comercial — Clientum × KOALA (Cuadro Comparativo)
+**Plan de Transformación Digital Omnicanal — 3 Opciones de Inversión**
 *Koala Cotillón, Descartables, Repostería y Polietileno (LP SRL)*
 *General Roca, Río Negro y Neuquén Capital, Argentina · Septiembre 2026*
 
@@ -52,34 +51,38 @@ El principal dolor de Koala Cotillón es la baja visibilidad y conversión en ca
 * Canales sociales activos (Instagram, Facebook) sin integración fluida al flujo de ventas.
 
 ### Plan de Implementación Modular en 3 Etapas
-1. **Etapa 1 — E-commerce + Catálogo íntegro + SEO Orgánico (~15–17 días)**:
-   - Sitio web con e-commerce completo y catálogo íntegro de productos (descartables, polietileno, repostería, cotillón).
-   - Fotos, descripciones y categorías cargadas para todos los artículos.
-   - Stock sincronizado y actualizado automáticamente.
-   - Estrategia SEO orgánico con palabras clave (cotillón, globos, descartables, polietileno).
-   - Optimización técnica on-page para aparecer primero en búsquedas relevantes de Roca y Neuquén.
-   - Configuración Google Business Profile y alta en directorios locales.
+1. **Etapa 1 — E-commerce + Catálogo íntegro + SEO Orgánico (~15–17 días)**
+2. **Etapa 2 — Integración con ERP (Reserva Atómica de Stock)**
+3. **Etapa 3 — Bot Web + Bot WhatsApp con IA & Servidor MCP**
 
-2. **Etapa 2 — Integración con ERP (A convenir según ERP)**:
-   - Conexión bidireccional entre el sistema de gestión y el e-commerce.
-   - Precios, stock y productos actualizados automáticamente desde el sistema de gestión.
-   - **Reserva atómica de stock en tiempo real**: prevención de quiebres por ventas simultáneas (mostrador físico vs. carrito web).
-   - Órdenes web que impactan directamente en el ERP sin intervención manual ni doble carga.
+### Estructura de Inversión — Comparativa de 3 Alternativas
 
-3. **Etapa 3 — Bot Web + Bot WhatsApp con IA (A convenir)**:
-   - Chatbot integrado en la página web para atención inmediata de consultas 24/7.
-   - Derivación automática desde el bot web hacia WhatsApp Business del local correspondiente.
-   - Bot de WhatsApp con mensajes predefinidos y flujos de calificación para acompañar y cerrar operaciones.
-   - Servidor MCP para consultar inventario real en vivo sin alucinaciones de precios ni stock.
-   - Integrado con Instagram y Facebook como canales de entrada adicionales.
+| Concepto / Etapa | Opción 1: Inicial (Base) | Opción 2: Intermedia (Medio) | Opción 3: Mercado Actual (Premium) | Condición Comercial |
+| :--- | :--- | :--- | :--- | :--- |
+| **Etapa 1 — E-commerce + SEO** | $ 518.000 | $ 1.334.000 | $ 2.150.000 | Pago al inicio |
+| *(Abono Mensual Etapa 1)* | *$ 104.000 / $ 133.200* | *$ 242.000 / $ 296.600* | *$ 380.000 / $ 460.000* | Mensual |
+| **Etapa 2 — Integración ERP** | $ 414.400 | $ 1.032.200 | $ 1.650.000 | A convenir según ERP |
+| *(Abono Mensual Etapa 2)* | *$ 86.000 / $ 111.000* | *$ 203.000 / $ 250.500* | *$ 320.000 / $ 390.000* | Mensual |
+| **Etapa 3 — Bots Web + WhatsApp** | $ 187.600 | $ 668.800 | $ 1.150.000 | Al inicio de la etapa |
+| *(Abono Mensual Etapa 3)* | *$ 77.000 / $ 66.600* | *$ 183.500 / $ 208.300* | *$ 290.000 / $ 350.000* | Mensual |
+| **PACK COMPLETO SUGERIDO** | **$ 1.120.000** | **$ 2.785.000** | **$ 4.450.000** | **Anticipo 50% al iniciar** |
+| *(Abono Mensual Pack Completo)* | **$ 267.000 / $ 310.800** | **$ 578.500 / $ 680.400** | **$ 890.000 / $ 1.050.000** | **Mensual** |
 
-### Estructura de Inversión — Koala Cotillón
-| Concepto | Setup (ARS) | Mensual (ARS) | Condición |
-| :--- | :--- | :--- | :--- |
-| **Etapa 1 — E-commerce + SEO** | $ 518.000 (o a definir) | $ 104.000 / $ 133.200 | Pago al inicio |
-| **Etapa 2 — Integración ERP** | $ 414.400 (o a convenir) | $ 86.000 / $ 111.000 | A convenir según ERP |
-| **Etapa 3 — Bots Web + WhatsApp** | $ 187.600 (o a convenir) | $ 77.000 / $ 66.600 | Al inicio de la etapa |
-| **PACK COMPLETO SUGERIDO** | **$ 1.120.000** | **$ 267.000 / $ 310.800** | Anticipo 50% al iniciar |
+#### Desglose de Opciones de Inversión:
+1. **Opción 1 — Inversión Inicial (Valores Base Históricos)**:
+   - **Setup Pack Completo**: **$ 1.120.000 ARS**
+   - **Mantenimiento Mensual**: **$ 267.000 ARS** (Soporte Básico) / **$ 310.800 ARS** (Soporte SLA Prioritario).
+   - *Ideal para arranque ágil con presupuesto reducido.*
+
+2. **Opción 2 — Inversión Intermedia (Valores Equilibrados)**:
+   - **Setup Pack Completo**: **$ 2.785.000 ARS**
+   - **Mantenimiento Mensual**: **$ 578.500 ARS** (Soporte Estándar) / **$ 680.400 ARS** (Soporte Proactivo con Monitoreo).
+   - *Punto medio óptimo equilibrando inversión inicial y profundidad de alcance.*
+
+3. **Opción 3 — Mercado Actual (Escala Completa & Módulos Avanzados)**:
+   - **Setup Pack Completo**: **$ 4.450.000 ARS**
+   - **Mantenimiento Mensual**: **$ 890.000 ARS** (Mantenimiento Integral) / **$ 1.050.000 ARS** (Soporte Premium 24/7 con Servidor MCP Dedicado).
+   - *Infraestructura completa de alto rendimiento para máxima demanda regional.*
 
 *Validez: 15 días corridos. Los valores no incluyen IVA.*
 
@@ -90,18 +93,124 @@ El principal dolor de Koala Cotillón es la baja visibilidad y conversión en ca
 * **Tecnología propia y flexible**: Sin dependencia de plataformas extranjeras. Stack probado: WhatsApp API, agentes IA, sincronización ERP y e-commerce de alta velocidad.
 * **Stack probado en producción**: WhatsApp API oficial (Cloud API Meta), agentes IA con MCP, sincronización ERP-ecommerce, WooCommerce/PrestaShop con integraciones propias.
 * **Trazabilidad y control**: Panel de administración con monitor de sincronización ERP, hub de stock, API tester y auditoría completa de todas las operaciones.
+`
+  },
+  {
+    id: 'propuesta-1-inicial',
+    category: 'comercial',
+    categoryLabel: '01. Comercial & Propuestas',
+    title: 'Propuesta 1 — Plan Inicial ($ 1.120.000 ARS)',
+    subtitle: 'Esquema de Arranque Ágil en 3 Etapas con Inversión Base',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '4 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Propuesta comercial independiente orientada al presupuesto de arranque base ($ 1.120.000 ARS Pack Completo), priorizando tiempo de salida rápido e inversión inicial accesible.',
+    content: `
+# Propuesta Comercial 1 — Plan Inicial (Base)
+**Clientum × KOALA Cotillón & Descartables (LP SRL)**
+*General Roca, Río Negro y Neuquén Capital · Septiembre 2026*
 
 ---
 
-## Condiciones y Próximos Pasos
-1. **Revisión de la propuesta**: Mikhail y equipo LP SRL revisan el alcance de las 3 etapas, los valores y las condiciones.
-2. **Firma del documento**: Firma formal de esta propuesta comercial como constancia de inicio de proyecto.
-3. **Acreditación del anticipo**: Acreditación del anticipo correspondiente (50% del pack elegido o 100% Etapa 1).
-4. **Kickoff y reunión de inicio**: Reunión de inicio para relevamiento de ERP actual, accesos y cronograma detallado.
-5. **Entrega Etapa 1 (~15–17 días)**: E-commerce operativo con catálogo completo, SEO activo y Google Business Profile configurado.
+## Resumen del Plan Inicial
+Esta propuesta está diseñada para un **despliegue rápido y eficiente** con foco en la relación costo-beneficio de arranque. Permite poner en funcionamiento el canal e-commerce, el posicionamiento orgánico en el Alto Valle y la infraestructura básica para integraciones.
 
-*Esta propuesta comercial tiene una validez de 15 días corridos desde su emisión. Los valores no incluyen IVA. El inicio formal del proyecto queda sujeto a la firma de este documento y a la acreditación del anticipo correspondiente.*
-    `
+### Estructura de Inversión — Opción 1: Inicial
+
+| Concepto / Etapa | Setup (ARS) | Mantenimiento Mensual (ARS) | Condición Comercial |
+| :--- | :--- | :--- | :--- |
+| **Etapa 1 — E-commerce + SEO Orgánico** | $ 518.000 | $ 104.000 / $ 133.200 | Pago al inicio |
+| **Etapa 2 — Integración con ERP** | $ 414.400 | $ 86.000 / $ 111.000 | A convenir según ERP |
+| **Etapa 3 — Bot Web + WhatsApp con IA** | $ 187.600 | $ 77.000 / $ 66.600 | Al inicio de la etapa |
+| **PACK COMPLETO (3 ETAPAS)** | **$ 1.120.000** | **$ 267.000 / $ 310.800** | **Anticipo 50% al iniciar** |
+
+#### Características Incluidas en la Opción 1:
+- **E-commerce Básico / Intermedio**: Carga de categorías principales de cotillón, descartables, repostería y polietileno.
+- **SEO Geolocalizado**: Optimización inicial para General Roca y Neuquén.
+- **Reserva de Stock**: Protocolo básico de prevención de sobreventas.
+- **Abono de Mantenimiento**: $ 267.000/mes (Soporte Estándar) o $ 310.800/mes (Soporte con SLA Prioritario).
+
+*Validez: 15 días corridos. Los valores no incluyen IVA.*
+`
+  },
+  {
+    id: 'propuesta-2-intermedia',
+    category: 'comercial',
+    categoryLabel: '01. Comercial & Propuestas',
+    title: 'Propuesta 2 — Plan Intermedio ($ 2.785.000 ARS)',
+    subtitle: 'Esquema Equilibrado Recomendado (Valores Medio)',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '4 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Propuesta comercial independiente con valores en el punto medio exacto ($ 2.785.000 ARS Pack Completo). Equilibra inversión inicial con capacidades extendidas de automatización.',
+    content: `
+# Propuesta Comercial 2 — Plan Intermedio (Punto Medio) ⭐
+**Clientum × KOALA Cotillón & Descartables (LP SRL)**
+*General Roca, Río Negro y Neuquén Capital · Septiembre 2026*
+
+---
+
+## Resumen del Plan Intermedio (Recomendado)
+Esta propuesta representa el **punto medio óptimo de inversión**. Amplía la capacidad de carga del catálogo completo de productos de Koala, acelera la sincronización de stock con el ERP y añade monitoreo proactivo para el bot de WhatsApp.
+
+### Estructura de Inversión — Opción 2: Intermedia (Medio)
+
+| Concepto / Etapa | Setup (ARS) | Mantenimiento Mensual (ARS) | Condición Comercial |
+| :--- | :--- | :--- | :--- |
+| **Etapa 1 — E-commerce + SEO Avanzado** | $ 1.334.000 | $ 242.000 / $ 296.600 | Pago al inicio |
+| **Etapa 2 — Integración ERP Bidireccional** | $ 1.032.200 | $ 203.000 / $ 250.500 | A convenir según ERP |
+| **Etapa 3 — Bot Web + WhatsApp + MCP** | $ 668.800 | $ 183.500 / $ 208.300 | Al inicio de la etapa |
+| **PACK COMPLETO (3 ETAPAS)** | **$ 2.785.000** | **$ 578.500 / $ 680.400** | **Anticipo 50% al iniciar** |
+
+#### Características Incluidas en la Opción 2:
+- **Catálogo Íntegro Extendido**: Sincronización continua de miles de SKUs de descartables, polietileno y cotillón.
+- **Reserva Atómica Temporal**: Bloqueo de stock en tiempo real (15 min) para evitar quiebres mostrador vs. web.
+- **Asistente IA WhatsApp con MCP**: Consulta de precios y stock en vivo sin alucinaciones.
+- **Abono de Mantenimiento**: $ 578.500/mes (Soporte Estándar) o $ 680.400/mes (Soporte Proactivo Integral).
+
+*Validez: 15 días corridos. Los valores no incluyen IVA.*
+`
+  },
+  {
+    id: 'propuesta-3-mercado',
+    category: 'comercial',
+    categoryLabel: '01. Comercial & Propuestas',
+    title: 'Propuesta 3 — Plan Mercado Actual ($ 4.450.000 ARS)',
+    subtitle: 'Esquema de Escala Completa con Módulos Avanzados 24/7',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '5 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Propuesta comercial independiente basada en tarifas actuales de mercado completo ($ 4.450.000 ARS Pack Completo), con infraestructura dedicada y máxima disponibilidad.',
+    content: `
+# Propuesta Comercial 3 — Plan Mercado Actual (Premium)
+**Clientum × KOALA Cotillón & Descartables (LP SRL)**
+*General Roca, Río Negro y Neuquén Capital · Septiembre 2026*
+
+---
+
+## Resumen del Plan Mercado Actual (Escala Completa)
+Esta propuesta contempla la **implementación de máxima capacidad tecnológica**, orientada a negocios con alto volumen de transacciones simultáneas y necesidad de disponibilidad crítica 24/7.
+
+### Estructura de Inversión — Opción 3: Mercado Actual (Premium)
+
+| Concepto / Etapa | Setup (ARS) | Mantenimiento Mensual (ARS) | Condición Comercial |
+| :--- | :--- | :--- | :--- |
+| **Etapa 1 — E-commerce + SEO Full Escala** | $ 2.150.000 | $ 380.000 / $ 460.000 | Pago al inicio |
+| **Etapa 2 — Integración ERP Atómica 100%** | $ 1.650.000 | $ 320.000 / $ 390.000 | A convenir según ERP |
+| **Etapa 3 — Bot Web + WhatsApp + MCP Dedicado** | $ 1.150.000 | $ 290.000 / $ 350.000 | Al inicio de la etapa |
+| **PACK COMPLETO (3 ETAPAS)** | **$ 4.450.000** | **$ 890.000 / $ 1.050.000** | **Anticipo 50% al iniciar** |
+
+#### Características Incluidas en la Opción 3:
+- **Infraestructura de Alta Disponibilidad**: Servidor propio MCP dedicado para consulta instantánea de stock.
+- **Atención Multicanal Automatizada**: Integración de WhatsApp Business API, Instagram Direct y Facebook Messenger.
+- **SLA Garantizado 24/7**: Equipo técnico de respuesta inmediata (< 2 horas) y mantenimiento continuo.
+- **Abono de Mantenimiento**: $ 890.000/mes (Soporte Premium) o $ 1.050.000/mes (Soporte Misión Crítica 24/7).
+
+*Validez: 15 días corridos. Los valores no incluyen IVA.*
+`
   },
   {
     id: 'email-mikhail',
@@ -109,7 +218,6 @@ El principal dolor de Koala Cotillón es la baja visibilidad y conversión en ca
     categoryLabel: '01. Comercial & Propuestas',
     title: 'Plantilla de Email — Mikhail Murekian (LP SRL)',
     subtitle: 'Correo formal de presentación de la propuesta de 3 etapas',
-    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '3 min',
     requiresClientumSupport: true,
@@ -165,7 +273,6 @@ Utilizá el botón superior para copiar el texto con formato directamente a tu c
     categoryLabel: '01. Comercial & Propuestas',
     title: 'Puntos de Dolor: Redes Sociales → E-Commerce → ERP',
     subtitle: 'Diagnóstico exhaustivo y cadena de valor priorizada',
-    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '5 min',
     requiresClientumSupport: true,
@@ -222,7 +329,6 @@ Utilizá el botón superior para copiar el texto con formato directamente a tu c
     categoryLabel: '01. Comercial & Propuestas',
     title: 'Resumen Ejecutivo — Transformación Omnicanal Koala',
     subtitle: 'Pilares estratégicos, 3 etapas y beneficios medibles para el negocio',
-    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '4 min',
     requiresClientumSupport: true,
@@ -313,8 +419,8 @@ Koala Lo Tiene es un referente indiscutido en la distribución de artículos de 
     {
       "sku": "POL-BOL-CAM-4050",
       "name": "Bolsa Camiseta Blanca 40x50 cm",
-      "price": 4200,
-      "wholesalePrice": 3650,
+      "price": 14500,
+      "wholesalePrice": 11800,
       "stockRoca": 450,
       "stockNeuquen": 120
     }
@@ -346,7 +452,6 @@ Koala Lo Tiene es un referente indiscutido en la distribución de artículos de 
     categoryLabel: '02. Técnico & ERP',
     title: 'Respuestas Técnicas para Mikhail Murekian',
     subtitle: 'Argumentación para videollamada: Reserva atómica, Evolution API y MCP',
-    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '6 min',
     requiresClientumSupport: true,
@@ -388,12 +493,438 @@ MCP es el estándar que le da "ojos y herramientas en vivo" al modelo de IA. En 
     `
   },
   {
+    id: 'respuestas-consultas-milton',
+    category: 'tecnico',
+    categoryLabel: '02. Respuestas a Consultas de Milton (Tienda Web Koalas)',
+    title: 'Respuestas a Consultas de Milton — Tienda Web Koalas',
+    subtitle: 'Stock en 0s, Logística de Fletes & Zonas, Chatbot Híbrido y Captación Local Google',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '6 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Respuestas organizadas y detalladas para responder a las 6 consultas clave de Milton sobre la propuesta de la tienda web de Koalas: actualización de stock en 0 seg, impacto del ingreso de mercadería, cálculo de flete y entregas sin cargo, esquema híbrido Chatbot vs WhatsApp, captación de clientes más allá de redes y delimitación de ventas por radio geográfico.',
+    copyableText: `Respuestas Organizadas para Milton — Tienda Web Koalas:
+
+1. ACTUALIZACIÓN DEL STOCK EN LA PÁGINA:
+El stock se actualiza de forma automática e instantánea (en 0 segundos) en la base de datos central cada vez que un cliente confirma una compra. Si el negocio realiza ventas por mostrador o canales externos, la conexión por API/Webhooks entre el sistema de gestión (ERP/depósito) y la tienda web sincroniza las existencias de manera inmediata.
+
+2. IMPACTO DEL INGRESO DE MERCADERÍA AL STOCK:
+El impacto es inmediato en cuestión de segundos en el momento exacto en que el encargado de depósito o compras registra la entrada cargando cantidades, importando el remito o escaneando el código de barras/QR. Los productos que figuraban como agotados vuelven a mostrarse automáticamente como disponibles para la compra online sin requerir acciones manuales adicionales.
+
+3. CÁLCULO DEL COSTO DE FLETE Y ENTREGAS SIN CARGO:
+• Se calcula mediante operadores logísticos integrados (como Andreani, Correo Argentino, OCA, etc.) ingresando el Código Postal en el carrito para consultar la API de transporte según peso, volumen y distancia kilométrica, o mediante logística propia con tarifas prefijadas por zonas o radios en kilómetros (ej. 5 km o 10 km).
+• Las entregas sin cargo se pueden configurar por cercanía geográfica (ej. radio de hasta 3 km), por monto mínimo de compra para elevar el ticket promedio, o mediante retiro en punto de entrega (Pick-up) sin costo.
+
+4. CONSULTAS TÉCNICAS (CHATBOT VS. WHATSAPP):
+Se implementa un esquema híbrido que cuenta con un chatbot web operativo 24/7 para responder preguntas frecuentes y dudas técnicas estándar, además de incluir un botón en cada ficha de producto para derivar directamente a WhatsApp con un mensaje preconfigurado del modelo consultado, o transferir la conversación desde el bot si el cliente requiere atención personalizada.
+
+5. CAPTACIÓN DE CLIENTES MÁS ALLÁ DE LAS REDES SOCIALES:
+Se logra a través de búsqueda orgánica en Google (SEO) optimizada para motores de búsqueda, Google Mi Negocio / Google Maps para búsquedas locales, anuncios en Google Ads y Google Shopping, campañas de email y WhatsApp a clientes recurrentes, y códigos QR físicos en el empaque para incentivar recompras.
+
+6. BÚSQUEDA EN NAVEGADORES CON RADIO DE VENTAS DELIMITADO:
+Sí, es totalmente posible. Se logra configurando el área de servicio específica en la ficha de Google para priorizar resultados de cercanía, mediante publicidad geosegmentada por radio en kilómetros en Google Ads (para que solo vean los anuncios las personas dentro de la zona de cobertura), y utilizando un validador de Código Postal directamente en la web.`,
+    content: `
+# Respuestas a las Consultas de Milton — Tienda Web Koalas
+**Documento Técnico & Operativo para Milton (LP SRL / Koala Lo Tiene)**
+*Septiembre 2026 · Clientum × Koalas*
+
+---
+
+### Resumen Ejecutivo
+A continuación se presenta la información organizada y detallada para responder con solidez a cada una de las consultas planteadas por **Milton** acerca del funcionamiento técnico, la sincronización de inventarios, la logística y la estrategia de captación comercial de la tienda web de **Koalas**.
+
+---
+
+### 1. Actualización del Stock en la Página
+* **Velocidad y Tiempo Real**: El stock se actualiza de forma automática e **instantánea (en 0 segundos)** en la base de datos central cada vez que un cliente confirma y abona una compra en la plataforma web.
+* **Integración Omnicanal (Mostrador vs. Online)**: Si el negocio realiza ventas presenciales por mostrador en General Roca (Av. Roca 1350) o Neuquén Capital (Mitre 678), o a través de canales externos (Mercado Libre, distribuidores), la conexión bidireccional por **API/Webhooks** entre el sistema de gestión (**ICXN ERP / Depósito**) y la tienda web sincroniza las existencias de manera inmediata.
+* **Prevención de Sobreventas**: Se activa el bloqueo de reserva atómica temporal al entrar en checkout, imposibilitando que dos compradores adquieran la misma última unidad.
+
+---
+
+### 2. Impacto del Ingreso de Mercadería al Stock
+* **Impacto en Segundos**: El impacto es inmediato en cuestión de segundos en el momento exacto en que el encargado de depósito o compras registra la entrada de mercadería.
+* **Mecanismos de Carga Compatibles**:
+  - Carga manual de cantidades en sistema ERP.
+  - Importación automática de remitos electrónicos o archivos XML/Excel de proveedores.
+  - Escaneo de código de barras / QR físico con pistola lectora o celular en la recepción de pallets.
+* **Habilitación Automática**: Los productos que figuraban con etiqueta de *"Agotado"* o sin stock en la tienda vuelven a mostrarse automáticamente como disponibles para la compra online, sin requerir ninguna acción manual adicional ni recarga de página por parte de los administradores.
+
+---
+
+### 3. Cálculo del Costo de Flete y Entregas Sin Cargo
+* **Cálculo Dinámico por Operadores Logísticos**:
+  - Integración nativa por API con empresas de correo y transporte (Andreani, Correo Argentino, OCA, Encomiendas de Línea).
+  - El cliente ingresa su **Código Postal** en el carrito; la API calcula el valor exacto en tiempo real según peso, volumen cúbico y distancia kilométrica.
+* **Logística Propia con Tarifas Prefijadas**:
+  - Tarifas escalonadas según zonas o radios en kilómetros (ej. Zona 1: Radio 5 km en General Roca o Neuquén Centro; Zona 2: Radio 10 km a Allen, Cervantes, Cipolletti, Plottier).
+* **Entregas Sin Cargo (Envío Gratis) & Pick-up**:
+  - **Por cercanía geográfica**: Configuración de entrega bonificada para clientes ubicados en un radio de hasta 3 km de la sucursal de despacho.
+  - **Por ticket mínimo**: Configuración de umbral de compra (ej. compras superiores a $45.000) para incentivar el aumento del ticket promedio.
+  - **Retiro en Tienda (Pick-up)**: Opción gratuita 100% disponible tanto en Casa Central (Av. Roca 1350) como en Neuquén (Mitre 678) con notificación de paquete listo para retirar.
+
+---
+
+### 4. Consultas Técnicas: Esquema Híbrido (Chatbot vs. WhatsApp)
+* **Arquitectura Híbrida 24/7**:
+  - **Chatbot Web Inteligente**: Operativo 24/7 en la tienda online para evacuar preguntas frecuentes, verificar stock disponible, orientar en micrones/medidas de polietileno, horarios de sucursal y costos estimados de envío.
+  - **Botón Directo a WhatsApp por Producto**: Cada ficha de producto y el carrito incluyen un botón directo que abre una conversación de WhatsApp con un mensaje preconfigurado que indica el código de producto, nombre y sucursal consultada.
+  - **Transferencia Fluida a Humano**: Si la consulta del cliente en el chatbot requiere atención técnica especializada o negociación mayorista, el bot transfiere la conversación automáticamente al WhatsApp del asesor comercial de la sucursal correspondiente.
+
+---
+
+### 5. Captación de Clientes Más Allá de las Redes Sociales
+* **Búsqueda Orgánica en Google (SEO Local & E-Commerce)**: Optimización técnica on-page y Schema.org estructurado para posicionar en búsquedas clave ("bolsas de polietileno Roca", "descartables Neuquén", "cotillón mayorista Alto Valle").
+* **Google Mi Negocio / Google Maps**: Fichas optimizadas con geolocalización, reseñas, fotos de sucursales, horarios actualizados y catálogo de productos visible en Google Search y Maps.
+* **Publicidad en Google Ads & Google Shopping**: Campañas geolocalizadas que muestran los productos con foto y precio a usuarios que buscan activamente comprar en el Alto Valle en ese preciso momento.
+* **Campañas de Recompra (Email & WhatsApp)**: Automatización de mensajes a clientes recurrentes (panaderías, rotiserías, comercios, reposteras) recordando reposición mensual.
+* **Códigos QR Físicos en Empaque**: Incorporación de QR en las bolsas y cajas de entrega de Koalas ("Escaneá y repetí tu pedido con 10% OFF en la web"), transformando cada empaque físico en una recompra digital asegurada.
+
+---
+
+### 6. Búsqueda en Navegadores con Radio de Ventas Delimitado
+* **¿Es posible?**: Sí, es totalmente viable y una de las principales ventajas de esta implementación.
+* **Estrategia en 3 Niveles**:
+  1. **Área de Servicio en Google**: Configuración del radio exacto de servicio en Google Business Profile para que el motor de búsqueda priorice los resultados de Koalas frente a búsquedas realizadas dentro del radio de influencia.
+  2. **Google Ads Geosegmentado**: Campañas de anuncios delimitadas por radio en kilómetros (ej. radio de 15 km a la redonda de cada sucursal), garantizando que el 100% del presupuesto publicitario impacte exclusivamente a personas dentro de la zona de cobertura.
+  3. **Validador de Código Postal en Web**: El carrito valida inmediatamente el código postal del visitante antes de proceder al pago, informándole la disponibilidad de entrega o coordinando envío especial si se encuentra fuera del radio habitual.
+    `
+  },
+  {
+    id: 'plan-implementacion-tiempos-koalas',
+    category: 'comercial',
+    categoryLabel: '01. Planificación & Tiempos (Koalas)',
+    title: 'Planificación de Implementación y Tiempos para Koalas',
+    subtitle: 'Requisitos Técnicos, Fases (10 Días Hábiles), Flujo Operativo y Requerimientos de Inicio',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '6 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Plan detallado de puesta en marcha para Koalas: tiempo estimado de 2 a 5 / 10 días hábiles, integración ERP en 1 a 2 días, configuración logística en 1 día, flujo operativo en 6 pasos y requerimientos de inicio.',
+    copyableText: `Planificación de Implementación y Tiempos para Koalas (Resumen Ejecutivo):
+
+1. REQUISITOS TÉCNICOS Y PLAZOS DE PUESTA EN MARCHA:
+• Tiempo estimado de implementación: El desarrollo, configuración y puesta a punto completa de la tienda web junto con sus integraciones operativas requiere un plazo estimado de 2 a 5 días hábiles, dependiendo de la complejidad del catálogo inicial (cronograma integral de 10 días hábiles para el lanzamiento público oficial).
+• Integración del sistema de gestión (ERP/Depósito): La sincronización por API y Webhooks entre el stock central y la tienda web toma aproximadamente de 1 a 2 días hábiles de pruebas para garantizar que la actualización sea bidireccional y en tiempo real.
+• Configuración logística y pasarelas de pago: La parametrización de operadores logísticos (Andreani, Correo Argentino, etc.), radios de entrega local y medios de pago se completa en 1 día hábil.
+
+2. CRONOGRAMA DE ETAPAS (10 DÍAS HÁBILES):
+• Etapa 1 (Días 1 a 3): Configuración inicial de la plataforma, diseño base, carga de categorías principales y vinculación de los medios de pago y envío.
+• Etapa 2 (Días 4 a 8): Integración con el sistema de gestión/ERP o carga masiva de productos (según corresponda), configuración de radios de entrega/costos de flete y automatización del chatbot/WhatsApp.
+• Etapa 3 (Días 9 a 10): Pruebas integrales de compra, validación de stock en tiempo real y lanzamiento oficial al público.
+
+3. FLUJO OPERATIVO PASO A PASO:
+1. Aprobación y Kick-off: Se confirma el proyecto y se definen los accesos al sistema de gestión actual y redes oficiales.
+2. Desarrollo y Conexión de Stock: Se estructura la tienda web y se establece la conexión automática por API para la actualización de stock en tiempo real (0 segundos de demora tras una compra online o escaneo de ingreso en depósito).
+3. Depósito y Carga de Mercadería: El personal de depósito carga remitos o escanea el ingreso; el impacto en la web es inmediato, reactivando productos agotados sin intervención manual.
+4. Operativa de Compra y Envío: El cliente ingresa su Código Postal en el carrito para cotizar el flete automáticamente por distancia/peso, o el sistema aplica la tarifa fija según el radio en kilómetros delimitado o la regla de envío sin cargo establecida (por monto o cercanía).
+5. Gestión Administrativa y Financiera: El equipo confirma la operación y el depósito prepara el paquete (con opción de generar etiquetas logísticas de forma automatizada).
+6. Entrega al Cliente: El operador logístico o la cadetería propia despacha el producto, cerrando el ciclo comercial.
+
+4. REQUERIMIENTOS PARA INICIAR (QUÉ NECESITAMOS DE USTEDES):
+• Listado de Productos y Stock: Base de datos inicial (en formato Excel o conexión a su sistema actual) con detalle de artículos, precios, descripciones y stock inicial.
+• Información Logística: Definición exacta de la ubicación del local/depósito central, radios de cobertura para entrega propia (si aplica) y tarifas o reglas de envío gratis.
+• Accesos y Canales: Datos de acceso a la pasarela de pagos (Mercado Pago u otros), cuentas de correo asociadas y el número de WhatsApp oficial que se utilizará para la derivación de consultas técnicas.`,
+    content: `
+# Planificación de Implementación y Tiempos para Koalas
+**Documento de Trabajo & Flujo Operativo para Milton y el Equipo de Ventas**
+*Koala Cotillón, Descartables, Repostería y Polietileno (LP SRL)*
+*General Roca y Neuquén Capital · Septiembre 2026*
+
+---
+
+### Introducción
+Para formalizar la propuesta y acelerar la toma de decisiones con el equipo directivo, comercial y operativo de **Koalas**, a continuación se detallan los requerimientos técnicos, los plazos estimados de puesta en marcha, el cronograma modular de trabajo y el flujo operativo paso a paso.
+
+---
+
+### 1. Requisitos Técnicos y Plazos de Puesta en Marcha
+
+* **Tiempo estimado de implementación base:**
+  El desarrollo, configuración y puesta a punto completa de la tienda web junto con sus integraciones operativas requiere un plazo estimado de **2 a 5 días hábiles**, dependiendo de la complejidad y volumen del catálogo inicial de artículos.
+
+* **Integración del sistema de gestión (ERP / Depósito):**
+  La sincronización por **API y Webhooks** entre el stock central y la tienda web toma aproximadamente de **1 a 2 días hábiles** de pruebas para garantizar que la actualización sea 100% bidireccional y en tiempo real.
+
+* **Configuración logística y pasarelas de pago:**
+  La parametrización de operadores logísticos (Andreani, Correo Argentino, OCA, etc.), radios de entrega local y medios de pago se completa en **1 día hábil**.
+
+---
+
+### 2. Fases del Proyecto y Cronograma de Trabajo (10 Días Hábiles)
+
+Para un despliegue integral con pruebas completas de estrés y control de calidad, el proyecto se estructura en un cronograma de **10 días hábiles** a partir de la confirmación y entrega de los accesos iniciales:
+
+| Etapa | Plazo | Actividades y Entregables Clave |
+| :--- | :--- | :--- |
+| **Etapa 1: Base & Pasarelas** | **Días 1 a 3** | Configuración inicial de la plataforma, diseño responsivo adaptado a la identidad de Koalas, estructura de categorías principales y vinculación de pasarelas de pago (Mercado Pago, tarjetas, transferencias) y medios de envío. |
+| **Etapa 2: Integración ERP & Logística** | **Días 4 a 8** | Integración nativa con el sistema de gestión/ERP o carga masiva de productos (según corresponda), configuración de radios de entrega/costos de flete y automatización del chatbot/WhatsApp. |
+| **Etapa 3: QA & Lanzamiento** | **Días 9 a 10** | Pruebas integrales de compra extremo a extremo, validación de stock en tiempo real (0 segundos) y lanzamiento oficial al público. |
+
+---
+
+### 3. Flujo Operativo Paso a Paso (Circuito Completo de la Operación)
+
+El proceso operativo desde que se aprueba el proyecto hasta que el cliente final recibe su pedido sigue un flujo estructurado y predecible:
+
+\`\`\`
+[1. Aprobación & Kick-off]
+          ↓
+[2. Desarrollo & Conexión de Stock (0s)]
+          ↓
+[3. Depósito & Carga de Mercadería (Remitos/QR)]
+          ↓
+[4. Operativa de Compra & Cotización de Envío (CP/Radio)]
+          ↓
+[5. Gestión Administrativa & Etiquetas Logísticas]
+          ↓
+[6. Entrega al Cliente (Correo / Cadetería Propia)]
+\`\`\`
+
+1. **Aprobación y Kick-off:**
+   Se confirma el proyecto y se definen los accesos al sistema de gestión actual, pasarelas de pago y canales oficiales de comunicación.
+
+2. **Desarrollo y Conexión de Stock:**
+   Se estructura la tienda web y se establece la conexión automática por API para la actualización de stock en tiempo real (**0 segundos de demora** tras una compra online o escaneo de ingreso en depósito).
+
+3. **Depósito y Carga de Mercadería:**
+   El personal de depósito carga remitos o escanea el ingreso de pallets; el impacto en la web es inmediato, reactivando productos agotados sin requerir ninguna intervención manual.
+
+4. **Operativa de Compra y Envío:**
+   El cliente ingresa su **Código Postal** en el carrito para cotizar el flete automáticamente por distancia/peso mediante la API de transporte, o el sistema aplica la tarifa fija según el radio en kilómetros delimitado o la regla de entrega sin cargo establecida (por monto o cercanía geográfica).
+
+5. **Gestión Administrativa y Financiera:**
+   El equipo administrativo confirma la operación validada automáticamente; el depósito prepara el paquete con opción de generar etiquetas logísticas de despacho de forma automatizada.
+
+6. **Entrega al Cliente:**
+   El operador logístico integrado o la cadetería propia despacha el producto, cerrando con éxito el ciclo comercial y enviando el seguimiento al cliente.
+
+---
+
+### 4. Requerimientos para Iniciar (Qué Necesitamos de Ustedes)
+
+Para poder avanzar ágilmente con la estructuración técnica y acelerar los tiempos de desarrollo al máximo, requerimos contar con:
+
+* 📋 **Listado de Productos y Stock:**
+  Base de datos inicial (en formato Excel, CSV o credenciales de conexión al sistema ERP actual) con detalle de artículos, códigos/SKU, precios mayoristas y minoristas, descripciones y existencias por sucursal.
+
+* 🚚 **Información Logística & Zonas:**
+  Definición exacta de la ubicación del local y depósito central (General Roca / Neuquén), radios de cobertura para entrega propia en kilómetros (ej. 3 km, 5 km, 10 km) y tarifas o umbrales de compra para envíos sin cargo.
+
+* 🔐 **Accesos y Canales Oficiales:**
+  Datos de acceso a la pasarela de pagos (cuenta de Mercado Pago u otras), cuentas de correo asociadas para notificaciones de ventas y el número de WhatsApp oficial que se utilizará para la derivación directa de consultas comerciales y técnicas.
+    `
+  },
+  {
+    id: 'dns-migracion-cloudflare-koala',
+    category: 'tecnico',
+    categoryLabel: '02. Infraestructura & Dominio (koalalotiene.com.ar)',
+    title: 'Migración DNS a Cloudflare & Vercel — koalalotiene.com.ar',
+    subtitle: 'Tabla de Registros DNS, Correo ICXN, Delegación NIC.ar y Planilla de Seguimiento Excel',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '5 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Planilla técnica integral para la activación del dominio koalalotiene.com.ar: reemplazo de servidores en nic.ar por braelyn y bryce, CNAME de Vercel en DNS only, protección del tráfico SMTP de ICXN en mail y webmail, solicitud de DKIM y descarga de la hoja de cálculo Excel compilada.',
+    copyableText: `Resumen de Zona DNS koalalotiene.com.ar para Cloudflare:
+
+1. REGISTROS DNS A CARGAR EN CLOUDFLARE:
+• Borrar: A y AAAA (@ y www) con IPs proxies viejas de Cloudflare.
+• Agregar CNAME @ (raíz): 16bc395e55b20519.vercel-dns-017.com (DNS only - Gris)
+• Agregar CNAME www: 16bc395e55b20519.vercel-dns-017.com (DNS only - Gris)
+• Editar CNAME mail: icxn-lp.dvrdns.org (DNS only - Gris) [OBLIGATORIO para no romper recepción SMTP]
+• Reemplazar CNAME webmail: icxn-lp.dvrdns.org (DNS only - Gris, a confirmar con ICXN)
+• Dejar MX @: 10 mail.koalalotiene.com.ar (DNS only)
+• Dejar TXT @: v=spf1 include:outbound.mailhop.org ?all
+• Dejar TXT _dmarc: v=DMARC1; p=none; rua=mailto:soporte@icxn.com.ar
+• Pedir y Cargar TXT DKIM: selector y clave provistos por soporte@icxn.com.ar
+
+2. SERVIDORES DNS EN NIC.AR:
+• Borrar: nelly.ns.cloudflare.com y zac.ns.cloudflare.com
+• Asignar: braelyn.ns.cloudflare.com y bryce.ns.cloudflare.com
+• Desactivar DNSSEC previo si existe registro DS cargado.
+
+3. MENSAJE PARA SOPORTE ICXN (soporte@icxn.com.ar):
+Hola, estamos migrando el DNS de koalalotiene.com.ar a Cloudflare. Necesitamos confirmar: 1) el destino correcto para webmail y mail, 2) el registro DKIM (selector y valor TXT), y 3) si hay algún otro registro necesario para el correo del dominio. Gracias.`,
+    content: `
+# Migración DNS a Cloudflare & Vercel — koalalotiene.com.ar
+**Planilla Técnica de Registros, Continuidad del Correo ICXN y Delegación en NIC Argentina**
+*Cliente: Koala Cotillón, Descartables, Repostería y Polietileno (LP SRL)*
+*Fecha: Septiembre 2026 · Dominio Oficial: koalalotiene.com.ar*
+
+---
+
+### Diagnóstico de la Zona y Hallazgos Clave
+
+Al analizar el export de zona DNS y los registros actuales del dominio \`koalalotiene.com.ar\`, se desprenden cuatro conclusiones operativas fundamentales:
+
+1. **Exportación de la Zona Nueva**:
+   El export generado pertenece a la zona nueva de Cloudflare, la cual tiene asignados los nameservers **\`braelyn.ns.cloudflare.com\`** y **\`bryce.ns.cloudflare.com\`**. Los nameservers anteriores (\`nelly.ns\` y \`zac.ns\`) pertenecían a una zona previa de Cloudflare cuyos registros reales de origen estaban ocultos detrás del proxy naranja.
+
+2. **El Correo Electrónico es Gestionado por ICXN**:
+   * El registro CNAME \`mail\` apunta al host dinámico **\`icxn-lp.dvrdns.org\`**.
+   * El registro SPF autoriza los envíos mediante **\`outbound.mailhop.org\`**.
+   * El registro DMARC envía los reportes de seguridad a **\`soporte@icxn.com.ar\`**.
+
+3. **Riesgo Crítico de Caída de Correo Evitado**:
+   El registro \`mail\` figuraba con el proxy naranja encendido (\`cf-proxied: true\`). En Cloudflare, **un registro MX jamás debe apuntar a un host proxied**, porque Cloudflare descarta el tráfico SMTP entrante. El registro \`mail\` debe estar estrictamente en modo **DNS only (nube gris)** antes de delegar los servidores en NIC.ar.
+
+4. **Destino Web en Vercel**:
+   La tienda web oficial se sirve a través de la infraestructura global de Vercel. El dominio raíz (\`@\`) y el subdominio (\`www\`) deben configurarse como **CNAME apuntando a \`16bc395e55b20519.vercel-dns-017.com\`** en modo **DNS only**. Cloudflare aplica *CNAME Flattening* automático en la raíz sin romper compatibilidad.
+
+---
+
+### Tabla Definitiva de Registros DNS para Cloudflare
+
+| Acción | Tipo | Nombre | Contenido / Destino | Proxy Cloudflare | Prioridad / TTL |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Borrar** | A y AAAA | \`@\` (raíz) | IPs proxies de Cloudflare (zona anterior) | Eliminar registro | - |
+| **Borrar** | A y AAAA | \`www\` | IPs proxies de Cloudflare (zona anterior) | Eliminar registro | - |
+| **Agregar** | CNAME | \`@\` | \`16bc395e55b20519.vercel-dns-017.com\` | **DNS only (Gris)** | Auto |
+| **Agregar** | CNAME | \`www\` | \`16bc395e55b20519.vercel-dns-017.com\` | **DNS only (Gris)** | Auto |
+| **Editar** | CNAME | \`mail\` | \`icxn-lp.dvrdns.org\` | **DNS only (Gris)** | Auto |
+| **Reemplazar** | CNAME | \`webmail\` | \`icxn-lp.dvrdns.org\` *(a confirmar con ICXN)* | **DNS only (Gris)** | Auto |
+| **Dejar** | MX | \`@\` | \`10 mail.koalalotiene.com.ar\` | **DNS only** | 10 |
+| **Dejar** | TXT | \`@\` | \`v=spf1 include:outbound.mailhop.org ?all\` | **DNS only** | Auto |
+| **Dejar** | TXT | \`_dmarc\` | \`v=DMARC1; p=none; rua=mailto:soporte@icxn.com.ar\` | **DNS only** | Auto |
+| **Pedir** | TXT | Selector DKIM | \`v=DKIM1; k=rsa; p=...\` *(proporcionado por ICXN)* | **DNS only** | Auto |
+
+---
+
+### Cronograma de Migración y Orden de Pasos
+
+1. **Cargar la Tabla en Cloudflare**:
+   Acceder a la zona de \`koalalotiene.com.ar\` en la nueva cuenta de Cloudflare. Eliminar los registros A/AAAA obsoletos de la raíz y www, cargar los CNAME de Vercel y pasar \`mail\` a nube gris (DNS only).
+
+2. **Enviar Consulta a ICXN**:
+   Remitir el mensaje modelo a \`soporte@icxn.com.ar\` solicitando la confirmación de la URL de webmail y el registro DKIM. Si se desea habilitar la web de inmediato, se puede avanzar con los nameservers manteniendo el MX y CNAME mail intactos, completando webmail y DKIM a posteriori.
+
+3. **Desactivar DNSSEC en NIC Argentina (nic.ar)**:
+   Antes de modificar los servidores de nombre, verificar si en el panel de NIC.ar existe un registro DS (DNSSEC). Si figura cargado, **eliminarlo** para evitar que los proveedores de internet bloqueen la resolución del dominio durante la propagación.
+
+4. **Delegar Servidores en NIC Argentina**:
+   Reemplazar \`nelly.ns.cloudflare.com\` y \`zac.ns.cloudflare.com\` por:
+   * **\`braelyn.ns.cloudflare.com\`**
+   * **\`bryce.ns.cloudflare.com\`**
+   Guardar cambios.
+
+5. **Verificación y Salida a Producción en Vercel**:
+   En Cloudflare, presionar el botón **"Check nameservers"**. Una vez que figure en estado **"Active"**, ingresar al panel de Vercel y pulsar **"Refresh"** para \`koalalotiene.com.ar\` y \`www.koalalotiene.com.ar\`. Vercel emitirá el certificado SSL Let's Encrypt de forma automática en pocos minutos.
+
+6. **Prueba de Fuego de Correo**:
+   Enviar un correo desde una cuenta externa (Gmail/Outlook) hacia una casilla institucional del dominio y verificar su recepción en Webmail o cliente de escritorio.
+    `
+  },
+  {
+    id: 'mensaje-milton-respuestas-mikhail',
+    category: 'comercial',
+    categoryLabel: '01. Comunicación & WhatsApp Milton',
+    title: 'Mensaje para Milton (para reenviar a Mikhail)',
+    subtitle: 'Resumen de Stock, Plazos (10 Días Hábiles) y Requerimientos con Advertencia de Sincronización',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '3 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Mensaje listo para reenviar a Mikhail Murekian sobre stock, tiempos de entrega y requerimientos iniciales, junto a la advertencia técnica sobre la frecuencia de sincronización con ICXN.',
+    copyableText: `Milton, ¿cómo andás? Te resumo lo que consultaron sobre la tienda:
+
+Stock: cuando un cliente confirma una compra en la web, el stock se descuenta en el momento, así no se vende dos veces la misma unidad. Las ventas de mostrador y los ingresos de mercadería se sincronizan con el sistema de gestión, y el encargado de depósito los carga desde ahí.
+
+Tiempos: la puesta en marcha lleva 10 días hábiles desde que recibimos los accesos y la información:
+• Días 1 a 3: configuración, diseño base, categorías, medios de pago y envío.
+• Días 4 a 8: carga de productos o integración con el sistema, radios de entrega y fletes, y automatización de WhatsApp.
+• Días 9 a 10: pruebas de compra, validación de stock y lanzamiento.
+
+Lo que necesitamos de ustedes:
+• Listado de productos con precios, descripciones y stock inicial.
+• Ubicación del local o depósito, radios de entrega y reglas de envío gratis.
+• Accesos de Mercado Pago, cuentas de correo y el WhatsApp oficial.
+
+Cualquier duda me avisás.`,
+    content: `
+# Mensaje para Milton (para reenviar a Mikhail)
+**Resumen Comercial y Operativo para la Dirección de Koala (LP SRL)**  
+*Destinatario Intermedio: Milton · Destinatario Final: Mikhail Murekian*
+
+---
+
+### 1. Mensaje Modelo para Copiar y Enviar
+\`\`\`text
+Milton, ¿cómo andás? Te resumo lo que consultaron sobre la tienda:
+
+Stock: cuando un cliente confirma una compra en la web, el stock se descuenta en el momento, así no se vende dos veces la misma unidad. Las ventas de mostrador y los ingresos de mercadería se sincronizan con el sistema de gestión, y el encargado de depósito los carga desde ahí.
+
+Tiempos: la puesta en marcha lleva 10 días hábiles desde que recibimos los accesos y la información:
+• Días 1 a 3: configuración, diseño base, categorías, medios de pago y envío.
+• Días 4 a 8: carga de productos o integración con el sistema, radios de entrega y fletes, y automatización de WhatsApp.
+• Días 9 a 10: pruebas de compra, validación de stock y lanzamiento.
+
+Lo que necesitamos de ustedes:
+• Listado de productos con precios, descripciones y stock inicial.
+• Ubicación del local o depósito, radios de entrega y reglas de envío gratis.
+• Accesos de Mercado Pago, cuentas de correo y el WhatsApp oficial.
+
+Cualquier duda me avisás.
+\`\`\`
+
+---
+
+### 2. Nota Técnica Crítica de Sincronización
+> ⚠️ **Advertencia sobre la sincronización con el sistema de gestión / ICXN:**  
+> Revisá con qué frecuencia se sincroniza el stock con ICXN. En la respuesta inicial se promete "0 segundos", pero si la sincronización con el sistema de gestión es por consultas periódicas (batch cada X minutos) y no por webhooks nativos, el descuento de la venta web es inmediato pero el de mostrador físico no lo será hasta el próximo ciclo de sincronización. Por eso en el borrador comercial final se deja la sincronización sin prometer tiempos irreales en mostrador.
+    `
+  },
+  {
+    id: 'checklist-hoja-calculo-dns',
+    category: 'tecnico',
+    categoryLabel: '02. Infraestructura & Excel DNS',
+    title: 'Checklist de Migración DNS & Hoja de Cálculo (koala-dns-checklist.xlsx)',
+    subtitle: 'Seguimiento de 9 Pasos, 21 Registros, Consulta a ICXN y Plantillas',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '4 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Documentación técnica de la hoja de cálculo koala-dns-checklist.xlsx: 17 tareas de Cloudflare, tabla de consulta a ICXN, 9 pasos operativos y nombres de servidores en NIC Argentina.',
+    copyableText: `Checklist Rápido de Migración DNS (koalalotiene.com.ar):
+1. Cargar y corregir los registros en Cloudflare (mail y webmail en DNS only).
+2. Consultar a soporte@icxn.com.ar destino de webmail y clave DKIM.
+3. Completar webmail y DKIM con la respuesta de ICXN.
+4. Presionar "Continue to activation" en Cloudflare.
+5. Eliminar registro DS (DNSSEC) en NIC Argentina si existe.
+6. Reemplazar nameservers: quitar nelly/zac y poner braelyn.ns.cloudflare.com y bryce.ns.cloudflare.com.
+7. Verificar activación en Cloudflare ("Check nameservers").
+8. Refrescar dominios en Vercel ("Refresh" en @ y www).
+9. Probar correo y webmail desde y hacia casilla del dominio.`,
+    content: `
+# Checklist de Migración DNS & Hoja de Cálculo
+**Control Operativo del Libro \`koala-dns-checklist.xlsx\`**
+
+---
+
+### 1. Las 3 Pestañas del Archivo Excel
+1. **Registros DNS**: Los 21 registros del dominio (17 cambios pendientes en Cloudflare + 4 que se dejan intactos), con cálculo automático de progreso porcentual.
+2. **Pasos**: 9 pasos cronológicos recomendados con responsables y validación, más tabla de nameservers a quitar (\`nelly\` y \`zac\`) y a poner (\`braelyn\` y \`bryce\`).
+3. **Consulta ICXN**: 4 puntos a consultar a \`soporte@icxn.com.ar\` (destino webmail, destino mail, selector DKIM y otros registros).
+
+---
+
+### 2. Mensaje Oficial para ICXN
+\`\`\`text
+Hola, estamos migrando el DNS de koalalotiene.com.ar a Cloudflare. Necesitamos confirmar:
+1) El destino correcto para webmail y mail (¿ambos apuntan a icxn-lp.dvrdns.org?).
+2) El registro DKIM (selector y valor TXT completo para la firma del dominio).
+3) Si hay algún otro registro necesario para el correo del dominio que deba conservarse.
+
+Los registros MX (10 mail.koalalotiene.com.ar) y SPF (v=spf1 include:outbound.mailhop.org -all) ya se encuentran configurados en modo DNS only. Gracias.
+\`\`\`
+    `
+  },
+  {
     id: 'guia-demo-meet',
     category: 'demo',
     categoryLabel: '03. Guión Demo & Ventas',
     title: 'Guión de Demostración en Vivo para Google Meet',
     subtitle: 'Estructura cronometrada paso a paso (15–20 min) para cerrar la venta',
-    badge: 'Exclusivo Soporte Clientum',
     lastUpdated: 'Septiembre 2026',
     readTime: '5 min',
     requiresClientumSupport: true,

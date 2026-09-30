@@ -54,3 +54,29 @@ Este documento contiene los argumentos y la arquitectura técnica para responder
    * **Respuesta del Servidor MCP al Agente**: `{ stockRoca: 18, precioMinorista: 24500, precioMayorista: 21800, sku: "POL-FILM-ALV-1M" }`.
    * **El Agente responde al cliente por WhatsApp en 1.5 segundos**: *"Hola! Sí, disponemos de 18 rollos en nuestra casa central de Av. Roca 1350. El precio por unidad es de $24.500 (o $21.800 llevando más de 5 rollos). ¿Te reservo los 10 rollos para retirar hoy o preferís envío?"*
 4. **Qué servidor se utiliza**: Construimos un servidor MCP propio desarrollado en Node.js/TypeScript con autenticación segura por tokens y permisos de sólo lectura sobre las vistas de catálogo y stock del ERP, garantizando que el modelo nunca pueda alterar registros contables o de producción sin autorización explícita.
+
+---
+
+### Pregunta 4: ¿El stock realmente se actualiza en "0 segundos" en mostrador y web?
+
+1. **En la Tienda Web (Compra Online)**:  
+   El descuento es **estrictamente instantáneo (cero segundos)** en la base de datos central en el momento en que se confirma el pago o checkout. No hay posibilidad de que otro usuario online compre la misma unidad.
+2. **En el Mostrador Físico / Depósito**:  
+   La inmediatez depende del soporte del ERP actual de Koala (LP SRL):
+   * **Escenario Óptimo (Webhooks nativos)**: Si el ERP emite un evento HTTP inmediato ante cada ticket o remito en caja, el impacto en la web es en tiempo real.
+   * **Escenario Estándar (Consultas Batch / Cron)**: Si el ERP no soporta webhooks y opera por sincronización periódica, la tienda consulta cambios cada 2 a 5 minutos.
+3. **Recomendación Operativa para Milton y Mikhail**:  
+   Garantizamos que la tienda web jamás sobrevende unidades y que los ingresos de mercadería por remito/QR reactivan productos de inmediato.
+
+---
+
+### Pregunta 5: ¿La migración DNS a Cloudflare y Vercel puede afectar el correo de Koala?
+
+1. **Diagnóstico**: El correo corporativo está tercerizado con **ICXN** (`icxn-lp.dvrdns.org`).
+2. **Riesgo Mitigado**: En la zona anterior, el CNAME `mail` estaba proxied con nube naranja. Si un registro MX apunta a un host proxied por Cloudflare, el tráfico SMTP entrante se rechaza.
+3. **Solución Implementada**:
+   * El CNAME `mail` y `webmail` se configuran en modo **DNS only (nube gris)**.
+   * El registro MX (`10 mail.koalalotiene.com.ar`) y el SPF (`include:outbound.mailhop.org -all`) quedan intactos.
+   * Se solicita la clave DKIM a ICXN (`soporte@icxn.com.ar`) para asegurar la entregabilidad de los emails.
+   * Rollback garantizado: si hiciera falta, se pueden volver a colocar los nameservers `nelly` y `zac` en nic.ar en cualquier momento.
+

@@ -15,6 +15,7 @@ import { KoalaLogo } from './components/KoalaLogo';
 import { MobileCartBar } from './components/MobileCartBar';
 import { CartToast, CartToastItem } from './components/CartToast';
 import { InstitutionalPageModal, InstitutionalPageType } from './components/InstitutionalPageModal';
+import { AudioTranscriberModal } from './components/AudioTranscriberModal';
 
 import { STORES_DATA, CATEGORIES, PRODUCTS_CATALOG } from './data/products';
 import { DEFAULT_DEMO_LOYALTY_PROFILE } from './data/loyaltyData';
@@ -179,6 +180,8 @@ export default function App() {
   const [institutionalPage, setInstitutionalPage] = React.useState<InstitutionalPageType>('contacto');
   const [cartToast, setCartToast] = React.useState<CartToastItem | null>(null);
   const [isChatOpen, setIsChatOpen] = React.useState(false);
+  const [audioTranscriberOpen, setAudioTranscriberOpen] = React.useState(false);
+  const [catalogSearchText, setCatalogSearchText] = React.useState<string>('');
 
   const handleOpenInstitutional = (page: InstitutionalPageType) => {
     setInstitutionalPage(page);
@@ -208,10 +211,14 @@ export default function App() {
   const [currentUser, setCurrentUser] = React.useState<EmployeeUser | null>(() => {
     try {
       const saved = localStorage.getItem('koala_employee_user');
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed) return parsed;
+      }
+    } catch {}
+    // Default automatically to Soporte Clientum (Backend & Integraciones ERP)
+    const soporteUser = INITIAL_EMPLOYEES.find(e => e.email === 'soporte@clientum.com.ar');
+    return soporteUser || INITIAL_EMPLOYEES[0];
   });
 
   React.useEffect(() => {
@@ -752,6 +759,7 @@ export default function App() {
         onOpenLogin={() => setLoginOpen(true)}
         onOpenLoyaltyModal={() => setLoyaltyOpen(true)}
         loyaltyProfile={loyaltyProfile}
+        onOpenAudioTranscriber={() => setAudioTranscriberOpen(true)}
         onScrollToSection={scrollToSection}
         onOpenDossier={() => navigateTo('/dossier')}
         onOpenInstitutional={handleOpenInstitutional}
@@ -779,6 +787,8 @@ export default function App() {
           cartItemsMap={cartItemsMap}
           onOpenAi={() => setIsChatOpen(true)}
           currentBranch={currentBranch}
+          externalSearchQuery={catalogSearchText}
+          onOpenTranscriber={() => setAudioTranscriberOpen(true)}
         />
 
         {/* Store Locations & Maps Section */}
@@ -862,6 +872,19 @@ export default function App() {
         onAddToCart={handleAddToCart}
         isOpen={isChatOpen}
         onToggleOpen={setIsChatOpen}
+      />
+
+      {/* Voice Audio Transcription Modal (gemini-3.5-transcribe) */}
+      <AudioTranscriberModal
+        isOpen={audioTranscriberOpen}
+        onClose={() => setAudioTranscriberOpen(false)}
+        onApplyTranscriptionToSearch={(text) => {
+          setCatalogSearchText(text);
+          scrollToSection('catalog');
+        }}
+        onApplyTranscriptionToChat={(_text) => {
+          setIsChatOpen(true);
+        }}
       />
 
       {/* Staff & Admin Login Modal */}

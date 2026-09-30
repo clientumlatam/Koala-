@@ -43,6 +43,15 @@ El principal dolor de Koala Cotillón es la baja visibilidad y conversión en ca
 * Flujo de calificación: consulta → presupuesto → venta, sin intervención humana inicial.
 * Integrado con Instagram y Facebook como canales de entrada adicionales.
 
+#### Puesta en Marcha Rápida (10 Días Hábiles) & Activación del Dominio
+* **Cronograma Acelerado (10 Días Hábiles)**:
+  - *Días 1 a 3*: Configuración, diseño base, catálogo prioritario, medios de pago y fletes.
+  - *Días 4 a 8*: Integración con el sistema/ERP o carga masiva, radios de entrega y automatización de WhatsApp.
+  - *Días 9 a 10*: Pruebas integrales de compra, validación de stock y lanzamiento oficial.
+* **Infraestructura de Dominio (`koalalotiene.com.ar`)**:
+  - Dominio principal: `www.koalalotiene.com.ar` alojado en Vercel con redirección 308 desde `@`.
+  - Zona DNS gestionada en Cloudflare (nameservers `braelyn` y `bryce`) con registros en modo DNS only para garantizar la continuidad total del correo corporativo administrado por ICXN (`icxn-lp.dvrdns.org`).
+
 ### Estructura de Inversión — Koala Cotillón
 | Concepto | Setup (ARS) | Mensual (ARS) | Condición |
 | :--- | :--- | :--- | :--- |

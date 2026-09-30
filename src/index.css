@@ -1,1 +1,42 @@
 @import "tailwindcss";
+
+@media print {
+  /* Hide all UI elements except printable area */
+  body * {
+    visibility: hidden;
+  }
+
+  .printable-area,
+  .printable-area * {
+    visibility: visible;
+  }
+
+  .printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Ensure background colors and graphics print correctly */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  /* Hide print buttons during printing */
+  .no-print {
+    display: none !important;
+  }
+}

@@ -32,7 +32,12 @@ import {
   Shirt,
   Utensils,
   Cake,
-  Building2
+  Building2,
+  Mic,
+  Square,
+  Radio,
+  MapPin,
+  Zap
 } from 'lucide-react';
 import { BranchInfo, ProductInventoryRecord, Product, LoyaltyProfile, CartItem } from '../types';
 import { KoalaLogo } from './KoalaLogo';
@@ -56,6 +61,41 @@ interface FloatingWhatsAppProps {
 }
 
 const QUICK_PROMPTS = [
+  {
+    id: 'stock-cero-segundos',
+    icon: Zap,
+    label: '⚡ Stock en 0s & Mostrador',
+    desc: 'Sincronización instantánea web vs ERP y remitos',
+    text: '¿Cómo se actualiza el stock en la página en 0 segundos y cómo impacta el ingreso de mercadería?'
+  },
+  {
+    id: 'fletes-envios-gratis',
+    icon: Truck,
+    label: '🚚 Fletes y Envíos Sin Cargo',
+    desc: 'Cálculo por CP, radio en km y retiro Pick-up',
+    text: '¿Cómo se calcula el costo de flete por código postal y las entregas sin cargo o Pick-up?'
+  },
+  {
+    id: 'esquema-hibrido',
+    icon: Sparkles,
+    label: '🤖 Chatbot 24/7 vs. WhatsApp',
+    desc: 'Asistencia técnica y derivación directa a asesor',
+    text: '¿Cómo funciona el esquema híbrido de chatbot web 24/7 y la derivación a WhatsApp con la ficha de producto?'
+  },
+  {
+    id: 'radio-seo-captacion',
+    icon: MapPin,
+    label: '📍 Radio Geográfico & Google',
+    desc: 'Búsqueda por cercanía, SEO y captación local',
+    text: '¿Es posible delimitar las ventas por radio geográfico y cómo captar clientes más allá de redes sociales?'
+  },
+  {
+    id: 'plan-tiempos-koalas',
+    icon: Clock,
+    label: '📅 Tiempos de Puesta en Marcha (Días)',
+    desc: '2 a 5 / 10 días, flujo operativo en 6 pasos y requisitos',
+    text: '¿Cuáles son los plazos de puesta en marcha, etapas de implementación y el flujo operativo paso a paso para Koalas?'
+  },
   {
     id: 'cumple-30',
     icon: PartyPopper,
@@ -250,6 +290,105 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
   const [hasUserActed, setHasUserActed] = useState(false);
   const [showTechnicalFaq, setShowTechnicalFaq] = useState(false);
   const [expandedFaqId, setExpandedFaqId] = useState<string | null>('micronaje-micras');
+
+  // Audio Transcription with gemini-3.5-transcribe
+  const [isRecordingVoice, setIsRecordingVoice] = useState(false);
+  const [isTranscribingVoice, setIsTranscribingVoice] = useState(false);
+  const [voiceDuration, setVoiceDuration] = useState(0);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const voiceRecorderRef = React.useRef<MediaRecorder | null>(null);
+  const voiceChunksRef = React.useRef<Blob[]>([]);
+  const voiceTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const startVoiceRecording = async () => {
+    setVoiceError(null);
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error('Navegador no compatible con micrófono.');
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      let mimeType = 'audio/webm';
+      if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        mimeType = 'audio/webm;codecs=opus';
+      } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        mimeType = 'audio/mp4';
+      }
+
+      const recorder = new MediaRecorder(stream, { mimeType });
+      voiceRecorderRef.current = recorder;
+      voiceChunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) voiceChunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(voiceChunksRef.current, { type: mimeType });
+        await transcribeVoiceAudio(blob, mimeType);
+      };
+
+      recorder.start(250);
+      setIsRecordingVoice(true);
+      setVoiceDuration(0);
+
+      voiceTimerRef.current = setInterval(() => {
+        setVoiceDuration((d) => d + 1);
+      }, 1000);
+    } catch (err: any) {
+      console.error('Error starting mic:', err);
+      setVoiceError('No se pudo acceder al micrófono.');
+      setIsRecordingVoice(false);
+    }
+  };
+
+  const stopVoiceRecording = () => {
+    if (voiceTimerRef.current) {
+      clearInterval(voiceTimerRef.current);
+      voiceTimerRef.current = null;
+    }
+    if (voiceRecorderRef.current && voiceRecorderRef.current.state !== 'inactive') {
+      voiceRecorderRef.current.stop();
+    }
+    setIsRecordingVoice(false);
+  };
+
+  const transcribeVoiceAudio = async (blob: Blob, mimeType: string) => {
+    setIsTranscribingVoice(true);
+    setVoiceError(null);
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = async () => {
+        try {
+          const base64Audio = reader.result as string;
+          const res = await fetch('/api/transcribe-audio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              audioData: base64Audio,
+              mimeType: mimeType || 'audio/webm',
+            }),
+          });
+          const data = await res.json();
+          if (data.text) {
+            setMessage((prev) => (prev ? `${prev} ${data.text}` : data.text));
+            setHasUserActed(true);
+          } else if (data.fallbackText) {
+            setMessage((prev) => (prev ? `${prev} ${data.fallbackText}` : data.fallbackText));
+            setHasUserActed(true);
+          }
+        } catch (e: any) {
+          console.error('Transcription error:', e);
+          setVoiceError('Error al transcribir');
+        } finally {
+          setIsTranscribingVoice(false);
+        }
+      };
+    } catch (e: any) {
+      setIsTranscribingVoice(false);
+    }
+  };
 
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const chatBottomRef = React.useRef<HTMLDivElement | null>(null);
@@ -607,8 +746,10 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
     setChatHistory((prev) => [...prev, agentItem]);
   };
 
+  const isCartBarActive = hasCartItems || (typeof document !== 'undefined' && !!document.querySelector('.mobile-cart-bar'));
+
   return (
-    <div className={`fixed ${hasCartItems ? 'bottom-20 md:bottom-5' : 'bottom-5'} right-4 sm:right-5 z-40 flex flex-col items-end transition-all duration-300`}>
+    <div className={`fixed ${isCartBarActive ? 'bottom-20 sm:bottom-24 md:bottom-6' : 'bottom-5 sm:bottom-6'} right-4 sm:right-5 z-40 flex flex-col items-end transition-all duration-300 pb-safe mb-safe max-h-[calc(100vh-120px)]`}>
       {/* Floating Dialog / Popup */}
       <AnimatePresence>
         {isOpen && (
@@ -617,7 +758,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="mb-4 w-90 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[85vh]"
+            className="mb-3 w-90 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[calc(100vh-150px)]"
           >
             {/* WhatsApp Header */}
             <div
@@ -750,7 +891,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
             </div>
 
             {/* Branch Selector & Sync Tabs */}
-            <div className="bg-slate-50 dark:bg-slate-850 p-2.5 border-b border-slate-200 dark:border-slate-800 space-y-2">
+            <div className="bg-gradient-to-r from-slate-50 to-emerald-50/40 dark:from-slate-850 dark:to-slate-800 p-3 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
               {/* Loyalty Profile Sincronización Indicator */}
               <div className="flex items-center justify-between text-[10px] bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-xl">
                 <div className="flex items-center gap-1.5 truncate text-emerald-800 dark:text-emerald-300 font-bold">
@@ -770,44 +911,59 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                 )}
               </div>
 
-              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1 flex items-center justify-between">
-                <span>Elegí la sucursal de atención:</span>
-                <span className="text-emerald-600 font-semibold">{activeBranchData.whatsappDisplay}</span>
-              </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleBranchChange('roca')}
-                  className={`py-1.5 px-2.5 rounded-xl text-xs font-bold transition-all text-left flex flex-col cursor-pointer ${
-                    selectedBranchId === 'roca'
-                      ? 'bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-400/30'
-                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <span className="flex items-center gap-1">
-                    <Store className="w-3 h-3" /> General Roca
+              {/* Selector de Filtro Visual de Sucursal en la parte superior */}
+              <div className="space-y-1.5">
+                <div className="text-[11px] font-extrabold text-slate-700 dark:text-slate-200 px-0.5 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Store className="w-3.5 h-3.5 text-emerald-600" />
+                    Sucursal Activa de Consulta:
                   </span>
-                  <span className={`text-[10px] font-normal ${selectedBranchId === 'roca' ? 'text-emerald-100' : 'text-slate-400'}`}>
-                    Av. Roca 1350
+                  <span className="text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full text-[10px] font-black">
+                    {selectedBranchId === 'roca' ? 'Roca (DEP-01)' : 'Neuquén (DEP-02)'}
                   </span>
-                </button>
+                </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleBranchChange('neuquen')}
-                  className={`py-1.5 px-2.5 rounded-xl text-xs font-bold transition-all text-left flex flex-col cursor-pointer ${
-                    selectedBranchId === 'neuquen'
-                      ? 'bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-400/30'
-                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <span className="flex items-center gap-1">
-                    <Store className="w-3 h-3" /> Neuquén Capital
-                  </span>
-                  <span className={`text-[10px] font-normal ${selectedBranchId === 'neuquen' ? 'text-emerald-100' : 'text-slate-400'}`}>
-                    Mitre 678
-                  </span>
-                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleBranchChange('roca')}
+                    className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all text-left flex items-center justify-between cursor-pointer ${
+                      selectedBranchId === 'roca'
+                        ? 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-400/45 scale-[1.01]'
+                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-750'
+                    }`}
+                  >
+                    <div className="flex flex-col truncate">
+                      <span className="flex items-center gap-1 truncate font-extrabold">
+                        <Store className="w-3.5 h-3.5 shrink-0" /> General Roca
+                      </span>
+                      <span className={`text-[10px] font-normal truncate ${selectedBranchId === 'roca' ? 'text-emerald-100' : 'text-slate-400'}`}>
+                        Casa Central & Fábrica
+                      </span>
+                    </div>
+                    {selectedBranchId === 'roca' && <CheckCircle2 className="w-4 h-4 text-white shrink-0 ml-1" />}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleBranchChange('neuquen')}
+                    className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all text-left flex items-center justify-between cursor-pointer ${
+                      selectedBranchId === 'neuquen'
+                        ? 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-400/45 scale-[1.01]'
+                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-750'
+                    }`}
+                  >
+                    <div className="flex flex-col truncate">
+                      <span className="flex items-center gap-1 truncate font-extrabold">
+                        <Store className="w-3.5 h-3.5 shrink-0" /> Neuquén Capital
+                      </span>
+                      <span className={`text-[10px] font-normal truncate ${selectedBranchId === 'neuquen' ? 'text-emerald-100' : 'text-slate-400'}`}>
+                        Salón Comercial (Mitre)
+                      </span>
+                    </div>
+                    {selectedBranchId === 'neuquen' && <CheckCircle2 className="w-4 h-4 text-white shrink-0 ml-1" />}
+                  </button>
+                </div>
               </div>
 
               {/* ICXN ERP Realtime Connection & Technical Specs Controls */}
@@ -1300,6 +1456,38 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
 
             {/* Custom Input & Direct Action */}
             <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+              {/* Voice Recording Active Bar */}
+              {isRecordingVoice && (
+                <div className="mb-2 p-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 flex items-center justify-between text-xs text-rose-700 dark:text-rose-300">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping" />
+                    <span className="font-extrabold">Grabando voz: {voiceDuration}s</span>
+                    <span className="text-[10px] text-slate-500 font-mono">(gemini-3.5-transcribe)</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={stopVoiceRecording}
+                    className="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold text-[11px] hover:bg-rose-500 cursor-pointer flex items-center gap-1"
+                  >
+                    <Square className="w-3 h-3 fill-white" />
+                    <span>Listo</span>
+                  </button>
+                </div>
+              )}
+
+              {isTranscribingVoice && (
+                <div className="mb-2 p-1.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800 flex items-center gap-2 text-xs text-orange-700 dark:text-orange-300">
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Transcribiendo audio con <strong>gemini-3.5-transcribe</strong>...</span>
+                </div>
+              )}
+
+              {voiceError && (
+                <div className="mb-2 text-[11px] text-rose-600 px-1 font-semibold">
+                  ⚠️ {voiceError}
+                </div>
+              )}
+
               <div className="flex items-center gap-2 mb-2">
                 <input
                   type="text"
@@ -1316,6 +1504,22 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                   }}
                   className="flex-1 text-xs px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder:text-slate-400"
                 />
+
+                {/* Microphone Speech to Text Button */}
+                <button
+                  type="button"
+                  onClick={isRecordingVoice ? stopVoiceRecording : startVoiceRecording}
+                  disabled={isTranscribingVoice}
+                  className={`p-2 rounded-xl transition-colors cursor-pointer shrink-0 ${
+                    isRecordingVoice
+                      ? 'bg-rose-600 text-white animate-pulse'
+                      : 'bg-slate-100 dark:bg-slate-800 hover:bg-orange-100 text-slate-700 dark:text-slate-300 hover:text-orange-600 border border-slate-200 dark:border-slate-700'
+                  }`}
+                  title={isRecordingVoice ? "Detener grabación de voz" : "Dictar consulta con el micrófono (gemini-3.5-transcribe)"}
+                >
+                  {isRecordingVoice ? <Square className="w-4 h-4 fill-white" /> : <Mic className="w-4 h-4" />}
+                </button>
+
                 <button
                   type="button"
                   onClick={() => handleSend()}
@@ -1353,33 +1557,50 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Floating Trigger Button - Botón único unificado abajo a la derecha */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/40 flex items-center justify-center relative cursor-pointer group transition-colors"
-        aria-label="Abrir Asesor Inteligente y WhatsApp Oficial de Koala Lo Tiene"
-      >
-        {/* Pulsing rings */}
-        <span className="absolute -inset-1 rounded-full bg-emerald-500 opacity-30 group-hover:opacity-60 animate-ping pointer-events-none" />
-        
-        {isOpen ? (
-          <X className="w-6 h-6 relative z-10" />
-        ) : (
-          <div className="relative z-10 flex items-center justify-center">
-            <MessageCircle className="w-7 h-7 fill-white" />
-            <Sparkles className="w-3.5 h-3.5 text-amber-300 absolute -top-1 -right-1" />
-          </div>
+      {/* Floating Trigger Button & Accessible Close Button */}
+      <div className="flex items-center gap-2">
+        {isOpen && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8, x: 10 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.8, x: 10 }}
+            onClick={() => setIsOpen(false)}
+            className="h-11 px-3.5 rounded-full bg-slate-800 hover:bg-slate-700 text-white shadow-lg flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer border border-slate-700"
+            title="Cerrar chat de WhatsApp"
+            aria-label="Cerrar vista completa de chat"
+          >
+            <X className="w-4 h-4 text-emerald-400" />
+            <span>Cerrar Chat</span>
+          </motion.button>
         )}
 
-        {/* Small badge */}
-        {!isOpen && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full border-2 border-white text-[9px] font-bold flex items-center justify-center text-white">
-            1
-          </span>
-        )}
-      </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/40 flex items-center justify-center relative cursor-pointer group transition-colors"
+          aria-label="Abrir Asesor Inteligente y WhatsApp Oficial de Koala Lo Tiene"
+        >
+          {/* Pulsing rings */}
+          <span className="absolute -inset-1 rounded-full bg-emerald-500 opacity-30 group-hover:opacity-60 animate-ping pointer-events-none" />
+          
+          {isOpen ? (
+            <X className="w-6 h-6 relative z-10" />
+          ) : (
+            <div className="relative z-10 flex items-center justify-center">
+              <MessageCircle className="w-7 h-7 fill-white" />
+              <Sparkles className="w-3.5 h-3.5 text-amber-300 absolute -top-1 -right-1" />
+            </div>
+          )}
+
+          {/* Small badge */}
+          {!isOpen && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full border-2 border-white text-[9px] font-bold flex items-center justify-center text-white">
+              1
+            </span>
+          )}
+        </motion.button>
+      </div>
 
       {/* Technical Specialist Request Popup Modal */}
       <TechnicalExpertModal
