@@ -1,0 +1,114 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------------------
+    // GLOBAL HELPERS & SECURITY PRIMITIVES
+    // ----------------------------------------------------
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'clientumlatam@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // ----------------------------------------------------
+    // SCHEMA VALIDATION HELPERS
+    // ----------------------------------------------------
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'role']) &&
+             data.keys().hasOnly(['uid', 'email', 'displayName', 'role', 'createdAt']) &&
+             data.uid is string && data.uid.size() <= 128 &&
+             data.email is string && data.email.size() <= 256 &&
+             data.role in ['admin', 'operator', 'customer'];
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll(['sku', 'name', 'price', 'stockRoca', 'stockNeuquen']) &&
+             data.keys().hasOnly(['sku', 'erpCode', 'name', 'category', 'price', 'wholesalePrice', 'stockRoca', 'stockNeuquen', 'imageUrl', 'description', 'updatedAt']) &&
+             data.sku is string && data.sku.size() <= 64 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 256 &&
+             data.price is number && data.price >= 0 &&
+             data.stockRoca is number && data.stockRoca >= 0 &&
+             data.stockNeuquen is number && data.stockNeuquen >= 0;
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll(['orderId', 'customerName', 'customerPhone', 'total', 'status']) &&
+             data.keys().hasOnly(['orderId', 'customerName', 'customerEmail', 'customerPhone', 'branch', 'total', 'status', 'reservationToken', 'createdAt']) &&
+             data.orderId is string && data.orderId.size() <= 128 &&
+             data.customerName is string && data.customerName.size() <= 128 &&
+             data.customerPhone is string && data.customerPhone.size() <= 64 &&
+             data.total is number && data.total >= 0 &&
+             data.status in ['pending', 'confirmed', 'processing', 'completed', 'cancelled'];
+    }
+
+    function isValidWebhookEvent(data) {
+      return data.keys().hasAll(['eventId', 'eventType', 'status', 'source']) &&
+             data.keys().hasOnly(['eventId', 'eventType', 'status', 'source', 'payloadJson', 'timestamp']) &&
+             data.eventId is string && data.eventId.size() <= 128 &&
+             data.eventType in ['stock.updated', 'price.changed', 'order.confirmed', 'reservation.failed'] &&
+             data.status in ['SUCCESS', 'WARNING', 'ERROR', 'PENDING'] &&
+             data.source is string && data.source.size() <= 128;
+    }
+
+    // Default Deny Rule
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ----------------------------------------------------
+    // COLLECTION MATCH RULES
+    // ----------------------------------------------------
+
+    // Users Collection
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId) && isValidUser(incoming()) && (incoming().role == 'customer' || isAdmin());
+      allow update: if (isOwner(userId) || isAdmin()) && isValidUser(incoming()) && (incoming().role == existing().role || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Products Collection
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() && isValidProduct(incoming());
+    }
+
+    // Orders Collection
+    match /orders/{orderId} {
+      allow get: if isSignedIn() || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isValidOrder(incoming());
+      allow update: if isAdmin() && isValidOrder(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Webhook Events Log Collection
+    match /webhookEvents/{eventId} {
+      allow read, write: if isAdmin() && isValidWebhookEvent(incoming());
+    }
+  }
+}

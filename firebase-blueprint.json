@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access control and preferences.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email", "description": "User email address" },
+        "displayName": { "type": "string", "description": "Full name of the user" },
+        "role": { "type": "string", "enum": ["admin", "operator", "customer"], "description": "System role for RBAC" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Catalog item with stock mapping per branch (Roca DEP-01 / Neuquén DEP-02).",
+      "type": "object",
+      "properties": {
+        "sku": { "type": "string", "description": "Stock Keeping Unit ID" },
+        "erpCode": { "type": "string", "description": "Internal ICXN ERP code" },
+        "name": { "type": "string", "description": "Product title" },
+        "category": { "type": "string", "description": "Category slug" },
+        "price": { "type": "number", "description": "Retail unit price" },
+        "wholesalePrice": { "type": "number", "description": "Wholesale price" },
+        "stockRoca": { "type": "number", "description": "Stock at General Roca DEP-01" },
+        "stockNeuquen": { "type": "number", "description": "Stock at Neuquén Capital DEP-02" },
+        "imageUrl": { "type": "string", "description": "Product image URL" },
+        "description": { "type": "string", "description": "Detailed description" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sku", "name", "price", "stockRoca", "stockNeuquen"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer e-commerce order with atomic stock reservation details.",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "description": "Public Order ID" },
+        "customerName": { "type": "string", "description": "Customer full name" },
+        "customerEmail": { "type": "string", "format": "email", "description": "Customer email" },
+        "customerPhone": { "type": "string", "description": "WhatsApp contact phone" },
+        "branch": { "type": "string", "enum": ["roca", "neuquen"], "description": "Fulfillment branch" },
+        "total": { "type": "number", "description": "Total order amount in ARS" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "processing", "completed", "cancelled"], "description": "Fulfillment status" },
+        "reservationToken": { "type": "string", "description": "Atomic stock reservation token" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderId", "customerName", "customerPhone", "total", "status"]
+    },
+    "WebhookEvent": {
+      "title": "WebhookEvent",
+      "description": "Real-time ICXN ERP gateway webhook audit event log.",
+      "type": "object",
+      "properties": {
+        "eventId": { "type": "string", "description": "Unique ICXN event ID" },
+        "eventType": { "type": "string", "enum": ["stock.updated", "price.changed", "order.confirmed", "reservation.failed"], "description": "Event classification" },
+        "status": { "type": "string", "enum": ["SUCCESS", "WARNING", "ERROR", "PENDING"], "description": "Processing status" },
+        "source": { "type": "string", "description": "Event origin system" },
+        "payloadJson": { "type": "string", "description": "Raw or sanitized JSON payload string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["eventId", "eventType", "status", "source"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles and RBAC documents."
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Public e-commerce product catalog."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Store orders and checkout records."
+    },
+    "/webhookEvents/{eventId}": {
+      "schema": { "$ref": "#/entities/WebhookEvent" },
+      "description": "ICXN ERP gateway real-time audit log."
+    }
+  }
+}
