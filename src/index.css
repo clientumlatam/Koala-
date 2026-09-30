@@ -1,7 +1,53 @@
 @import "tailwindcss";
 
+/* Global Print Styles for High-Quality PDF & Print Exports */
 @media print {
-  /* Hide all UI elements except printable area */
+  /* Page Setup: A4 with standardized margins */
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm 15mm 15mm;
+  }
+
+  /* Force exact color reproduction for backgrounds & borders */
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Hide all non-printable UI elements */
+  nav,
+  header:not(.print-header),
+  footer:not(.print-footer),
+  aside,
+  button,
+  .no-print,
+  .admin-navbar,
+  .toast,
+  .modal-overlay:not(.printable-modal),
+  .search-bar,
+  .filter-panel,
+  .floating-action-button {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Body & General Typography */
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-size: 10pt !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Printable Container Positioning */
   body * {
     visibility: hidden;
   }
@@ -18,25 +64,162 @@
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: white !important;
-    color: black !important;
-    box-shadow: none !important;
-    border: none !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
   }
 
-  /* Ensure background colors and graphics print correctly */
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+  /* Headings Handling */
+  h1, h2, h3, h4, h5, h6 {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+    margin-top: 12pt !important;
+    margin-bottom: 6pt !important;
   }
 
-  /* Page breaks */
+  h1 { font-size: 18pt !important; }
+  h2 { font-size: 14pt !important; border-bottom: 2px solid #2563eb !important; padding-bottom: 4pt !important; }
+  h3 { font-size: 12pt !important; color: #1e3a8a !important; }
+
+  /* Product Catalog Grid Layout for Print */
+  .catalog-grid,
+  .product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 12pt !important;
+    width: 100% !important;
+  }
+
+  .product-card,
+  .catalog-item {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6pt !important;
+    padding: 8pt !important;
+    background: #ffffff !important;
+  }
+
+  .product-card img,
+  .catalog-item img {
+    max-height: 100pt !important;
+    object-fit: contain !important;
+    margin: 0 auto 6pt auto !important;
+    display: block !important;
+  }
+
+  /* Price Tables & Data Grids */
+  table,
+  .price-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 10pt !important;
+    margin-bottom: 15pt !important;
+    font-size: 9.5pt !important;
+    page-break-inside: auto !important;
+  }
+
+  thead {
+    display: table-header-group !important; /* Repeat header on every page break */
+  }
+
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  th {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    padding: 6pt 8pt !important;
+    border: 1px solid #0f172a !important;
+  }
+
+  td {
+    padding: 5pt 8pt !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #1e293b !important;
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: #f8fafc !important;
+  }
+
+  /* Price Tags & Currency Styling */
+  .price-tag,
+  .price-value {
+    font-weight: 700 !important;
+    color: #166534 !important; /* Dark green for print contrast */
+  }
+
+  .badge,
+  .category-badge {
+    border: 1px solid #cbd5e1 !important;
+    background-color: #f1f5f9 !important;
+    color: #334155 !important;
+    padding: 2pt 6pt !important;
+    font-size: 8pt !important;
+    border-radius: 4pt !important;
+  }
+
+  /* Page Break Helpers */
   .page-break-before {
-    page-break-before: always;
+    break-before: page !important;
+    page-break-before: always !important;
   }
 
-  /* Hide print buttons during printing */
-  .no-print {
-    display: none !important;
+  .page-break-after {
+    break-after: page !important;
+    page-break-after: always !important;
+  }
+
+  .avoid-page-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Official Print Header & Footer */
+  .print-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: 2px solid #0f172a !important;
+    padding-bottom: 8pt !important;
+    margin-bottom: 12pt !important;
+  }
+
+  .print-footer {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    border-top: 1px solid #cbd5e1 !important;
+    padding-top: 4pt !important;
+    font-size: 8pt !important;
+    color: #64748b !important;
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+
+  /* QR Code Print Catalog Footer Rules */
+  .print-only,
+  .print-catalog-footer-container {
+    display: flex !important;
+    visibility: visible !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin-top: 16pt !important;
+    padding-top: 8pt !important;
+    border-top: 2px solid #0f172a !important;
+    background: #ffffff !important;
+  }
+
+  .print-catalog-footer-container svg {
+    max-width: 70px !important;
+    max-height: 70px !important;
   }
 }
+

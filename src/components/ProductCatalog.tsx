@@ -23,6 +23,7 @@ import {
 import { CategoryId, CategoryInfo, Product, BranchInfo, ProductInventoryRecord } from '../types';
 import { ProductCard } from './ProductCard';
 import { KoalaLogo } from './KoalaLogo';
+import { PrintCatalogFooter } from './PrintCatalogFooter';
 import { normalizeSearchText } from '../utils/helpers';
 
 interface ProductCatalogProps {
@@ -488,6 +489,9 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
           </div>
         </div>
       )}
+
+      {/* QR Code Footer for Printed Catalog Materials */}
+      <PrintCatalogFooter />
     </section>
   );
 };

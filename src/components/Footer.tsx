@@ -19,6 +19,7 @@ import {
 import { BranchInfo } from '../types';
 import { KoalaLogo } from './KoalaLogo';
 import { InstitutionalPageType } from './InstitutionalPageModal';
+import { PrintCatalogFooter } from './PrintCatalogFooter';
 
 interface FooterProps {
   branches: BranchInfo[];
@@ -297,6 +298,9 @@ export const Footer: React.FC<FooterProps> = ({
             <span className="text-slate-500 font-medium">koalalotiene.com.ar</span>
           </div>
         </div>
+
+        {/* QR Code Footer for Printed Catalog & Web Page Prints */}
+        <PrintCatalogFooter />
 
       </div>
     </footer>
