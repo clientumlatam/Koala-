@@ -876,6 +876,21 @@ Renderiza el arreglo \`webhookEvents\` con las siguientes columnas:
 - **Status**: \`SUCCESS\` (Verde), \`WARNING\` (Amarillo), \`ERROR\` (Rojo), \`PENDING\` (Azul).
 - **Source**: Origen del evento.
 - **Payload Toggle**: Botón desplegable para inspeccionar el cuerpo JSON completo.
+
+---
+
+## 3. Criterios de Éxito de la Sincronización 0s & Visibilidad para el Personal de Koala
+1. **Criterios Tecnológicos de Éxito**:
+   - **Latencia Target < 1s (< 250 ms)**: Confirmación de venta en mostrador reflejada de inmediato en la tienda web.
+   - **Cero Sobreventa (Zero Over-selling)**: Bloqueo atómico durante checkout online con 100% de efectividad.
+   - **Tasa de Éxito Webhooks > 99.5%**: Mantenimiento de tasa de fallos por debajo de 0.5%.
+   - **Recuperación Autónoma**: Procesamiento del 100% de eventos mediante reintentos exponenciales.
+
+2. **Visibilidad Multidepósito en Tiempo Real (ERP Sync Monitor & Webhook Logs)**:
+   - **Desglose por Nodo Logístico (\`DEP-01\` Roca y \`DEP-02\` Neuquén)**: Cada evento identifica la sucursal de origen de la venta o recepción.
+   - **Semaforización Intuitiva**: Indicadores 🟢 *Operativo (Sincronizado 0s)*, 🟡 *Latencia Alta / Reintentos*, 🔴 *Desconectado*.
+   - **Trazabilidad en Lenguaje Claro**: Contadores en vivo (*Exitosos vs. Reintentos*) para certeza del equipo de depósito.
+   - **Autonomía para el Personal**: Búsqueda por SKU o código de depósito en \`Webhook Logs\` con sello de hora y segundo para auditoría directa sin depender de IT.
 `
   },
   {
@@ -1116,6 +1131,73 @@ FASE 3: QA, SSL Y LANZAMIENTO (Días 9-10)
 * **Paso 3.2 — Prueba de Fuego de Correo SMTP**: Recepción en casillas del dominio.
 * **Paso 3.3 — Pruebas Integrales de Compra**: Compra de prueba y reserva atómica de stock.
 * **Paso 3.4 — Lanzamiento Oficial**: Salida a producción pública.
+`
+  },
+  {
+    id: 'resumen-ejecutivo-whatsapp-sincronizacion-0s',
+    category: 'comercial',
+    categoryLabel: '01. Comunicación Comercial WhatsApp',
+    title: 'Resumen Ejecutivo WhatsApp — Valor Sincronización 0s',
+    subtitle: 'Mensaje Corto Enfocado en el Valor de Negocio para Reenviar a la Dirección de Koala',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '2 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Mensaje ejecutivo ultracorto y formateado para WhatsApp, enfocado en comunicar a Mikhail Murekian y la dirección de Koala los 4 beneficios comerciales clave de la sincronización en tiempo real y reserva atómica de stock.',
+    copyableText: `Mikhail / Equipo de Koala, les comparto un breve resumen del valor de negocio que aporta la actualización técnica de Sincronización en Tiempo Real en la tienda web:
+
+🚀 ¿Qué logra la Sincronización Inmediata para Koala?
+
+1. Cero Sobreventa (Zero Over-selling):
+Eliminamos el riesgo de vender online un producto que acaba de ser comprado en el mostrador o retirado del depósito de Roca o Neuquén.
+
+2. Reserva Atómica en Checkout:
+Al momento en que el cliente entra al proceso de pago en la web, el sistema bloquea automáticamente las unidades en stock. Nadie más puede comprarlas en simultáneo.
+
+3. Confianza de Compra y Mayor Conversión:
+El cliente compra sabiendo que la disponibilidad es 100% real, lo que acelera la decisión de pago y reduce consultas repetitivas a los vendedores por WhatsApp.
+
+4. Operativa Unificada Depósito-E-Commerce:
+Tanto el mostrador como la tienda web leen la misma realidad de inventario, protegiendo la reputación de la marca y eliminando cancelaciones por falta de mercadería.
+
+Quedamos a disposición para cualquier consulta. ¡Avanzamos a paso firme!`,
+    content: `
+# Resumen Ejecutivo de Valor de Negocio: Sincronización en Tiempo Real (0s)
+
+**Mensaje para Reenviar por WhatsApp a la Dirección y Equipo de Koala (LP SRL)**
+*Objetivo: Comunicar el valor comercial y operativo de la reserva atómica de stock e integración ERP instantánea.*
+
+---
+
+## Texto para Copiar y Reenviar por WhatsApp
+
+\`\`\`text
+Mikhail / Equipo de Koala, les comparto un breve resumen del valor de negocio que aporta la actualización técnica de Sincronización en Tiempo Real en la tienda web:
+
+🚀 ¿Qué logra la Sincronización Inmediata para Koala?
+
+1. Cero Sobreventa (Zero Over-selling):
+Eliminamos el riesgo de vender online un producto que acaba de ser comprado en el mostrador o retirado del depósito de Roca o Neuquén.
+
+2. Reserva Atómica en Checkout:
+Al momento en que el cliente entra al proceso de pago en la web, el sistema bloquea automáticamente las unidades en stock. Nadie más puede comprarlas en simultáneo.
+
+3. Confianza de Compra y Mayor Conversión:
+El cliente compra sabiendo que la disponibilidad es 100% real, lo que acelera la decisión de pago y reduce consultas repetitivas a los vendedores por WhatsApp.
+
+4. Operativa Unificada Depósito-E-Commerce:
+Tanto el mostrador como la tienda web leen la misma realidad de inventario, protegiendo la reputación de la marca y eliminando cancelaciones por falta de mercadería.
+
+Quedamos a disposición para cualquier consulta. ¡Avanzamos a paso firme!
+\`\`\`
+
+---
+
+## Puntos Destacados de Impacto Comercial
+
+* **Protección de Marca**: Elimina el costo operativo y reputacional de realizar devoluciones o llamar al cliente para informar que no hay stock disponible.
+* **Reserva Temporal Inteligente**: En el checkout web se otorga un tiempo de ventana de reserva (ej. 15 minutos) que se libera automáticamente si el pago es abandonado.
+* **Escalabilidad Multidepósito**: Preparado para operar sin fricciones con los depósitos \`DEP-01\` (General Roca) y \`DEP-02\` (Neuquén Capital).
 `
   },
   {

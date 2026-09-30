@@ -19,6 +19,7 @@ Este repositorio contiene toda la documentación técnica, comercial y operativa
 │   ├── 06_mensaje_milton_respuestas_mikhail.md               # Mensaje para Milton (para reenviar a Mikhail) con notas de stock
 │   ├── 07_revision_analisis_consistencia_koala.md            # Auditoría de inconsistencias de negocio, 4 ajustes y pendientes
 │   ├── 08_proceso_paso_a_paso_hoja_de_ruta_golive.md         # Master Roadmap paso a paso, matriz de responsabilidades y fases
+│   ├── 09_resumen_ejecutivo_whatsapp_sincronizacion_0s.md    # Resumen WhatsApp de valor de negocio para Sincronización 0s
 │   └── propuesta-cotillon.html                               # Propuesta visual con diseño Clientum (imprimible/PDF)
 │
 ├── 02-tecnico-y-erp/                                         # Arquitectura, DNS, endpoints y respuestas técnicas
@@ -46,6 +47,7 @@ Este repositorio contiene toda la documentación técnica, comercial y operativa
 * [06. Mensaje para Milton (para reenviar a Mikhail)](./01-comercial/06_mensaje_milton_respuestas_mikhail.md): Mensaje resumido para WhatsApp/Email, requerimientos para iniciar y advertencia sobre sincronización de stock con ICXN.
 * [07. Auditoría y Análisis de Consistencia](./01-comercial/07_revision_analisis_consistencia_koala.md): Auditoría completa de los 6 problemas clave de negocio, 4 ajustes en comunicación con Milton, WhatsApp Evolution vs Cloud API y pendientes.
 * [08. Master Roadmap Paso a Paso](./01-comercial/08_proceso_paso_a_paso_hoja_de_ruta_golive.md): Hoja de ruta completa de 10 días hábiles (Fase 0 a Fase 3), checklist de tareas por responsable y matriz de ejecución.
+* [09. Resumen Ejecutivo WhatsApp — Sincronización 0s](./01-comercial/09_resumen_ejecutivo_whatsapp_sincronizacion_0s.md): Mensaje corto enfocado en el valor de negocio de la sincronización en tiempo real para reenviar al equipo de Koala.
 * [Propuesta Visual HTML / PDF](./01-comercial/propuesta-cotillon.html): Archivo web corporativo con diseño Clientum para exportar a PDF o presentar en pantalla.
 
 ---

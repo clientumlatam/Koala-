@@ -122,3 +122,34 @@ Accesible desde las pestañas de configuración y auditoría del panel administr
 ## 5. Auditoría de Inconsistencias de Stock
 
 El tab `Webhook Logs` permite al administrador filtrar eventos por palabra clave (ej. SKU `COT-GLO-R12` o ID de orden `ORD-2026-8819`) para verificar la consistencia exacta en caso de disputas de stock o inventario.
+
+---
+
+## 6. Criterios de Éxito de la Sincronización 0s & Visibilidad Operativa para el Personal de Koala
+
+### 6.1 Criterios Tecnológicos de Éxito
+Para considerar validada y funcional la meta de **"Sincronización 0s"**, la integración debe cumplir simultáneamente los siguientes 4 pilares:
+
+1. **Latencia Extremadamente Baja (< 1000 ms, Target < 250 ms)**:
+   Tiempo transcurrido desde la confirmación de la venta en la caja del mostrador de ICXN (Roca o Neuquén) hasta el impacto reflejado en el catálogo web.
+2. **Cero Sobreventas por Concurrencia (Zero Over-selling)**:
+   Efectividad del 100% en el bloqueo atómico durante el checkout de compra online, impidiendo que dos clientes abonen la misma unidad remanente.
+3. **Tasa de Éxito de Webhooks > 99.5%**:
+   Mantenimiento de tasa de error HTTP en recepción de webhooks por debajo del 0.5% en operación continua.
+4. **Recuperación Autónoma por Reintentos (Zero Data Loss)**:
+   Garantía de procesamiento del 100% de los eventos retenidos en cola tras interrupciones temporales de conectividad.
+
+### 6.2 Visibilidad Multidepósito en Tiempo Real mediante el 'ERP Sync Monitor'
+El componente **ERP Sync Monitor** y el tab **Webhook Logs** dentro del panel de administración (`AdminPanelModal`) han sido diseñados para otorgar certeza absoluta al equipo comercial, de depósito y administración de Koala sobre el stock disponible en ambos nodos logísticos de la empresa: **General Roca (`DEP-01`)** y **Neuquén Capital (`DEP-02`)**:
+
+* **Consolidación y Desglose por Nodo Logístico (`DEP-01` vs `DEP-02`)**:
+  - Cada evento de webhook recibido (`stock.updated`) procesa e identifica explícitamente el identificador `depositId`.
+  - El personal de Koala puede inspeccionar instantáneamente si una actualización de stock proviene de una venta en mostrador de Roca, una recepción de mercadería en Neuquén o una transferencia interna entre depósitos.
+* **Semaforización Intuitiva de Salud**:
+  - 🟢 **Operativo (Sincronizado 0s)**: Confirmación visual inmediata de que el canal online y las cajas físicas de Roca y Neuquén están 100% alineados.
+  - 🟡 **Latencia Alta / Reintentos**: Alerta preventiva temprana en caso de lentitud en la red o demoras en la respuesta de ICXN en cualquiera de los dos depósitos.
+  - 🔴 **Desconectado / Error**: Indicación clara de interrupción para notificar de inmediato al soporte técnico de Clientum.
+* **Trazabilidad en Lenguaje Claro & Auditoría por SKU**:
+  - Muestra contadores en vivo (*X Exitosos / Y Reintentos*) para dar certeza al personal del depósito de que los ingresos de mercadería cargados en el ERP impactaron en la tienda online.
+  - Si un vendedor o encargado de local consulta sobre la disponibilidad de un producto clave en Roca o Neuquén, el personal puede ingresar al tab **Webhook Logs**, filtrar por SKU o código de depósito, y confirmar con sello de hora y segundo el último evento procesado.
+
