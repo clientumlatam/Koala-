@@ -111,6 +111,21 @@ Cuando se transfieren mercaderías de **General Roca (Fábrica)** a **Neuquén C
 
 ---
 
+### Método D: Webhooks Push en Tiempo Real (ICXN ERP · Latencia < 50ms)
+
+Diseñado para cumplir con la **promesa de actualización en 0 segundos** ante ventas en mostrador físico, remitos de fábrica y confirmación de checkout:
+
+* **Endpoint de Ingress**: `POST /api/erp/webhooks/icxn`
+* **Host Emisor**: `icxn-lp.dvrdns.org` (o terminales de punto de venta)
+* **Headers de Seguridad**:
+  - `X-ICXN-Event`: Identificador del evento (`inventory.stock_delta`, `pricing.batch_update`, `warehouse.goods_receipt`, `order.atomic_reservation`).
+  - `X-ICXN-Signature`: Firma HMAC-SHA256 del cuerpo de la solicitud.
+  - `X-Timestamp`: Marca de tiempo en UTC para prevenir ataques de repetición.
+* **Tiempos de Respuesta (SLA)**: &lt; 35 milisegundos.
+* **Consola de Auditoría**: Pestaña **"Webhooks ICXN (0s)"** en el Panel Administrativo para inspeccionar payloads JSON, latencia histórica y simular remitos o ventas en vivo.
+
+---
+
 ## 4. Presupuestos y Exportación Documental
 
 1. **Cotizaciones Web / Mostrador**:

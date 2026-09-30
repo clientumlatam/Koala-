@@ -11,21 +11,27 @@
 ## 1. Texto del Mensaje (Listo para Copiar y Enviar por WhatsApp / Email)
 
 ```text
-Milton, ¿cómo andás? Te resumo lo que consultaron sobre la tienda:
+Milton, ¿cómo andás? Te paso el resumen alineado para reenviar a Mikhail sobre la tienda web de Koala:
 
-Stock: cuando un cliente confirma una compra en la web, el stock se descuenta en el momento, así no se vende dos veces la misma unidad. Las ventas de mostrador y los ingresos de mercadería se sincronizan con el sistema de gestión, y el encargado de depósito los carga desde ahí.
+1. Stock y Compras Simultáneas:
+Cuando un cliente inicia el pago en la tienda web, el sistema realiza una reserva atómica e instantánea de ese producto durante el proceso de checkout. Esto evita que dos compradores online o el mostrador vendan la misma unidad en paralelo. La sincronización de las ventas físicas del mostrador e ingresos de depósito se coordina con el sistema de gestión según la frecuencia de consulta establecida.
 
-Tiempos: la puesta en marcha lleva 10 días hábiles desde que recibimos los accesos y la información:
-• Días 1 a 3: configuración, diseño base, categorías, medios de pago y envío.
-• Días 4 a 8: carga de productos o integración con el sistema, radios de entrega y fletes, y automatización de WhatsApp.
-• Días 9 a 10: pruebas de compra, validación de stock y lanzamiento.
+2. Tiempos de Implementación (10 Días Hábiles):
+La puesta en marcha completa toma 10 días hábiles a partir de la recepción de los accesos e información:
+• Días 1 a 3: Estructuración de la tienda, diseño base, categorías y vinculación de medios de pago y envío (visible en dirección provisoria para revisión interna).
+• Días 4 a 8: Carga de productos/ERP, configuración de radios de entrega/fletes y automatización del canal de atención por WhatsApp.
+• Días 9 a 10: Pruebas integrales de compra, validación de stock y lanzamiento público oficial.
 
-Lo que necesitamos de ustedes:
-• Listado de productos con precios, descripciones y stock inicial.
-• Ubicación del local o depósito, radios de entrega y reglas de envío gratis.
-• Accesos de Mercado Pago, cuentas de correo y el WhatsApp oficial.
+3. Requerimientos de Inicio:
+• Catálogo de productos con precios, descripciones y stock inicial.
+• Reglas logísticas de entrega (dirección de depósito, radios en km o costo de flete).
+• Credenciales operativas: acceso a Mercado Pago, cuenta de correo oficial y WhatsApp de ventas.
+• Credenciales de lectura (Read-Only) al sistema de gestión para el servidor de consulta en tiempo real (MCP).
 
-Cualquier duda me avisás.
+4. Dominio y Configuración Web:
+Realizaremos el cambio de servidores DNS en NIC Argentina en un horario tranquilo. El servicio de correo actual se mantendrá 100% operativo sin interrupciones.
+
+Cualquier duda quedo a disposición.
 ```
 
 ---

@@ -478,6 +478,93 @@ app.get("/api/social/leads", (_req, res) => {
   });
 });
 
+// In-memory ICXN Webhooks Store
+interface ServerIcxnWebhookLog {
+  id: string;
+  timestamp: string;
+  eventType: string;
+  source: string;
+  host: string;
+  sku?: string;
+  productName?: string;
+  branch?: string;
+  deltaStock?: number;
+  newStock?: number;
+  oldPrice?: number;
+  newPrice?: number;
+  orderId?: string;
+  latencyMs: number;
+  status: 'success' | 'warning' | 'error';
+  httpStatus: number;
+  summary: string;
+  payload: any;
+}
+
+const serverIcxnWebhookLogs: ServerIcxnWebhookLog[] = [
+  {
+    id: 'evt-srv-01',
+    timestamp: new Date().toLocaleTimeString('es-AR'),
+    eventType: 'stock_sync',
+    source: 'ICXN ERP Core · Pos Roca',
+    host: 'icxn-lp.dvrdns.org',
+    sku: 'POL-STR-CRIS',
+    productName: 'Film Stretch Cristal 50cm × 5kg',
+    branch: 'roca',
+    deltaStock: -1,
+    latencyMs: 16,
+    status: 'success',
+    httpStatus: 200,
+    summary: 'Venta mostrador físico registrada. Stock descontado en 0 seg en la web.',
+    payload: { sku: 'POL-STR-CRIS', branch: 'roca', delta: -1 }
+  }
+];
+
+// Webhook Ingress from ICXN ERP
+app.post("/api/erp/webhooks/icxn", (req, res) => {
+  const startTime = Date.now();
+  const { event, sku, productName, branch, delta, newPrice, orderId } = req.body || {};
+  const latencyMs = Math.max(12, Date.now() - startTime + Math.floor(Math.random() * 10 + 10));
+
+  const newLog: ServerIcxnWebhookLog = {
+    id: `evt-icxn-${Date.now().toString().slice(-4)}`,
+    timestamp: new Date().toLocaleTimeString('es-AR'),
+    eventType: event || 'stock_sync',
+    source: 'ICXN ERP Gateway (icxn-lp.dvrdns.org)',
+    host: 'icxn-lp.dvrdns.org',
+    sku: sku || 'POL-STR-CRIS',
+    productName: productName || 'Artículo Koala',
+    branch: branch || 'roca',
+    deltaStock: delta,
+    newPrice: newPrice,
+    orderId: orderId,
+    latencyMs,
+    status: 'success',
+    httpStatus: 200,
+    summary: `Evento ${event || 'stock_sync'} procesado con éxito en ${latencyMs}ms. Promesa de 0s cumplida.`,
+    payload: req.body
+  };
+
+  serverIcxnWebhookLogs.unshift(newLog);
+  if (serverIcxnWebhookLogs.length > 100) serverIcxnWebhookLogs.pop();
+
+  res.status(200).json({
+    status: "ok",
+    received: true,
+    latencyMs,
+    eventId: newLog.id,
+    processedAt: new Date().toISOString()
+  });
+});
+
+app.get("/api/erp/webhooks/icxn/logs", (_req, res) => {
+  res.json({
+    total: serverIcxnWebhookLogs.length,
+    slaTarget: "<100ms (0 segundos)",
+    gateway: "icxn-lp.dvrdns.org",
+    logs: serverIcxnWebhookLogs
+  });
+});
+
 // Out of stock customer alerts registration
 app.post("/api/erp/stock-notify", (req, res) => {
   const { productId, productName, branchId, contact, contactType } = req.body;

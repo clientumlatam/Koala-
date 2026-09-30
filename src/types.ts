@@ -110,6 +110,29 @@ export interface ErpWebhookEventRecord {
   retryCount?: number;
 }
 
+export interface IcxnWebhookLogItem {
+  id: string;
+  timestamp: string;
+  eventType: 'stock_sync' | 'price_update' | 'order_confirmation' | 'remito_ingreso' | 'pos_sale' | 'ping';
+  source: string;
+  host: string;
+  sku?: string;
+  productName?: string;
+  branch: BranchId | 'all';
+  deltaStock?: number;
+  newStock?: number;
+  oldPrice?: number;
+  newPrice?: number;
+  orderId?: string;
+  amount?: number;
+  latencyMs: number;
+  status: 'success' | 'warning' | 'error';
+  signatureVerified: boolean;
+  httpStatus: number;
+  summary: string;
+  rawPayload: Record<string, any>;
+}
+
 export interface ErpInvoice {
   id: string;
   quoteId: string;

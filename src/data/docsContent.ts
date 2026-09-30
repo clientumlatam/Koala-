@@ -816,6 +816,69 @@ Al analizar el export de zona DNS y los registros actuales del dominio \`koalalo
     `
   },
   {
+    id: 'monitoreo-webhooks-icxn',
+    category: 'tecnico',
+    categoryLabel: '02. Integración ERP & Webhooks (ICXN)',
+    title: 'Monitoreo de Webhooks ICXN y Sincronización Real-Time',
+    subtitle: 'Auditoría de Eventos, Ticker de Eventos Exitosos/Reintentos y Verificación de Latencia Target < 1s',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '4 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Especificación técnica de la card ERP Sync Monitor y la pestaña Webhook Logs en AdminPanelModal. Monitoreo de latencia < 1s, trazabilidad de eventos stock.updated/order.confirmed, política de reintentos exponenciales y de-duplicación de payloads JSON.',
+    copyableText: `Monitoreo de Webhooks ICXN y Sincronización Real-Time:
+
+1. TABLERO ERP SYNC MONITOR:
+• Muestra live ticker de eventos webhooks procesados exitosamente (200 OK) vs. reintentos (5xx / Timeout).
+• Monitorea la latencia target (< 1s / ~180ms) para garantizar la reserva atómica de stock en checkout online.
+• Muestra el estado del gateway ICXN: Operativo, Latencia Alta o Desconectado.
+
+2. PESTAÑA WEBHOOK LOGS EN ADMIN PANEL:
+• Renderiza la lista webhookEvents en una tabla searchable con filtros por estado (Success, Error, Warning, Pending).
+• Permite inspeccionar el payload JSON completo con un toggle desplegable para debugging de consistencia entre mostrador y web.
+• Permite filtrar por SKU o ID de Orden para auditar movimientos históricos de inventario.
+
+3. REINTENTOS Y TOLERANCIA A FALLOS:
+• Backoff exponencial: 0s, 5s, 30s, 5m ante errores temporales del servidor.
+• Log permanente en el navegador y servidor para diagnóstico rápido del equipo de soporte de Clientum.`,
+    content: `
+# Monitoreo de Webhooks ICXN y Sincronización en Tiempo Real
+
+**Especificación Técnica del Tablero de Monitoreo de Eventos ERP & Audit Trail**
+*Cliente: Koala Cotillón / LP SRL*
+*Sistema de Gestión de Origen: Gateway ICXN ERP*
+*Meta de Latencia Target: < 1 segundo (Reserva "0 Segundos")*
+
+---
+
+## 1. Visión General del Tablero de Monitoreo ICXN
+
+Para garantizar la promesa de reserva de stock atómica e instantánea (evitando sobreventas cruzadas entre mostrador físico y tienda online), la plataforma incorpora en el **Panel de Administración (\`AdminPanelModal\`)** un centro de control de eventos HTTP Webhooks en tiempo real emitidos por el gateway de **ICXN ERP**.
+
+---
+
+## 2. Componentes UI Implementados
+
+### 2.1 Card \`ERP Sync Monitor\` (Dashboard Principal)
+Ubicada en la vista general del panel administrativo, proporciona métricas operativas inmediatas:
+1. **Live Ticker de Eventos**:
+   - **Exitosos (HTTP 200 OK)**: Contador en verde de webhooks procesados correctamente.
+   - **Reintentos / Error (HTTP 5xx / Timeout)**: Contador de eventos fallidos o en retry.
+2. **Indicador de Meta '0 Segundos'**:
+   - Muestra la latencia promedio de respuesta del endpoint \`/api/erp/webhooks/icxn\` (ej. \`180 ms\`).
+3. **Estado de Conexión del Gateway**:
+   - \`Operativo\`: Recepción continua de eventos en los últimos 5 minutos.
+
+### 2.2 Tab \`Webhook Logs\` (\`AdminPanelModal\`)
+Renderiza el arreglo \`webhookEvents\` con las siguientes columnas:
+- **Timestamp**: Fecha y hora con milisegundos.
+- **Event Type**: \`stock.updated\`, \`price.changed\`, \`order.confirmed\`, \`reservation.failed\`.
+- **Status**: \`SUCCESS\` (Verde), \`WARNING\` (Amarillo), \`ERROR\` (Rojo), \`PENDING\` (Azul).
+- **Source**: Origen del evento.
+- **Payload Toggle**: Botón desplegable para inspeccionar el cuerpo JSON completo.
+`
+  },
+  {
     id: 'mensaje-milton-respuestas-mikhail',
     category: 'comercial',
     categoryLabel: '01. Comunicación & WhatsApp Milton',
@@ -826,21 +889,27 @@ Al analizar el export de zona DNS y los registros actuales del dominio \`koalalo
     requiresClientumSupport: true,
     restrictedToRole: ['backend'],
     summary: 'Mensaje listo para reenviar a Mikhail Murekian sobre stock, tiempos de entrega y requerimientos iniciales, junto a la advertencia técnica sobre la frecuencia de sincronización con ICXN.',
-    copyableText: `Milton, ¿cómo andás? Te resumo lo que consultaron sobre la tienda:
+    copyableText: `Milton, ¿cómo andás? Te paso el resumen alineado para reenviar a Mikhail sobre la tienda web de Koala:
 
-Stock: cuando un cliente confirma una compra en la web, el stock se descuenta en el momento, así no se vende dos veces la misma unidad. Las ventas de mostrador y los ingresos de mercadería se sincronizan con el sistema de gestión, y el encargado de depósito los carga desde ahí.
+1. Stock y Compras Simultáneas:
+Cuando un cliente inicia el pago en la tienda web, el sistema realiza una reserva atómica e instantánea de ese producto durante el proceso de checkout. Esto evita que dos compradores online o el mostrador vendan la misma unidad en paralelo. La sincronización de las ventas físicas del mostrador e ingresos de depósito se coordina con el sistema de gestión según la frecuencia de consulta establecida.
 
-Tiempos: la puesta en marcha lleva 10 días hábiles desde que recibimos los accesos y la información:
-• Días 1 a 3: configuración, diseño base, categorías, medios de pago y envío.
-• Días 4 a 8: carga de productos o integración con el sistema, radios de entrega y fletes, y automatización de WhatsApp.
-• Días 9 a 10: pruebas de compra, validación de stock y lanzamiento.
+2. Tiempos de Implementación (10 Días Hábiles):
+La puesta en marcha completa toma 10 días hábiles a partir de la recepción de los accesos e información:
+• Días 1 a 3: Estructuración de la tienda, diseño base, categorías y vinculación de medios de pago y envío (visible en dirección provisoria para revisión interna).
+• Días 4 a 8: Carga de productos/ERP, configuración de radios de entrega/fletes y automatización del canal de atención por WhatsApp.
+• Días 9 a 10: Pruebas integrales de compra, validación de stock y lanzamiento público oficial.
 
-Lo que necesitamos de ustedes:
-• Listado de productos con precios, descripciones y stock inicial.
-• Ubicación del local o depósito, radios de entrega y reglas de envío gratis.
-• Accesos de Mercado Pago, cuentas de correo y el WhatsApp oficial.
+3. Requerimientos de Inicio:
+• Catálogo de productos con precios, descripciones y stock inicial.
+• Reglas logísticas de entrega (dirección de depósito, radios en km o costo de flete).
+• Credenciales operativas: acceso a Mercado Pago, cuenta de correo oficial y WhatsApp de ventas.
+• Credenciales de lectura (Read-Only) al sistema de gestión para el servidor de consulta en tiempo real (MCP).
 
-Cualquier duda me avisás.`,
+4. Dominio y Configuración Web:
+Realizaremos el cambio de servidores DNS en NIC Argentina en un horario tranquilo. El servicio de correo actual se mantendrá 100% operativo sin interrupciones.
+
+Cualquier duda quedo a disposición.`,
     content: `
 # Mensaje para Milton (para reenviar a Mikhail)
 **Resumen Comercial y Operativo para la Dirección de Koala (LP SRL)**  
@@ -850,29 +919,143 @@ Cualquier duda me avisás.`,
 
 ### 1. Mensaje Modelo para Copiar y Enviar
 \`\`\`text
-Milton, ¿cómo andás? Te resumo lo que consultaron sobre la tienda:
+Milton, ¿cómo andás? Te paso el resumen alineado para reenviar a Mikhail sobre la tienda web de Koala:
 
-Stock: cuando un cliente confirma una compra en la web, el stock se descuenta en el momento, así no se vende dos veces la misma unidad. Las ventas de mostrador y los ingresos de mercadería se sincronizan con el sistema de gestión, y el encargado de depósito los carga desde ahí.
+1. Stock y Compras Simultáneas:
+Cuando un cliente inicia el pago en la tienda web, el sistema realiza una reserva atómica e instantánea de ese producto durante el proceso de checkout. Esto evita que dos compradores online o el mostrador vendan la misma unidad en paralelo. La sincronización de las ventas físicas del mostrador e ingresos de depósito se coordina con el sistema de gestión según la frecuencia de consulta establecida.
 
-Tiempos: la puesta en marcha lleva 10 días hábiles desde que recibimos los accesos y la información:
-• Días 1 a 3: configuración, diseño base, categorías, medios de pago y envío.
-• Días 4 a 8: carga de productos o integración con el sistema, radios de entrega y fletes, y automatización de WhatsApp.
-• Días 9 a 10: pruebas de compra, validación de stock y lanzamiento.
+2. Tiempos de Implementación (10 Días Hábiles):
+La puesta en marcha completa toma 10 días hábiles a partir de la recepción de los accesos e información:
+• Días 1 a 3: Estructuración de la tienda, diseño base, categorías y vinculación de medios de pago y envío (visible en dirección provisoria para revisión interna).
+• Días 4 a 8: Carga de productos/ERP, configuración de radios de entrega/fletes y automatización del canal de atención por WhatsApp.
+• Días 9 a 10: Pruebas integrales de compra, validación de stock y lanzamiento público oficial.
 
-Lo que necesitamos de ustedes:
-• Listado de productos con precios, descripciones y stock inicial.
-• Ubicación del local o depósito, radios de entrega y reglas de envío gratis.
-• Accesos de Mercado Pago, cuentas de correo y el WhatsApp oficial.
+3. Requerimientos de Inicio:
+• Catálogo de productos con precios, descripciones y stock inicial.
+• Reglas logísticas de entrega (dirección de depósito, radios en km o costo de flete).
+• Credenciales operativas: acceso a Mercado Pago, cuenta de correo oficial y WhatsApp de ventas.
+• Credenciales de lectura (Read-Only) al sistema de gestión para el servidor de consulta en tiempo real (MCP).
 
-Cualquier duda me avisás.
+4. Dominio y Configuración Web:
+Realizaremos el cambio de servidores DNS en NIC Argentina en un horario tranquilo. El servicio de correo actual se mantendrá 100% operativo sin interrupciones.
+
+Cualquier duda quedo a disposición.
 \`\`\`
 
 ---
 
-### 2. Nota Técnica Crítica de Sincronización
-> ⚠️ **Advertencia sobre la sincronización con el sistema de gestión / ICXN:**  
-> Revisá con qué frecuencia se sincroniza el stock con ICXN. En la respuesta inicial se promete "0 segundos", pero si la sincronización con el sistema de gestión es por consultas periódicas (batch cada X minutos) y no por webhooks nativos, el descuento de la venta web es inmediato pero el de mostrador físico no lo será hasta el próximo ciclo de sincronización. Por eso en el borrador comercial final se deja la sincronización sin prometer tiempos irreales en mostrador.
+### 2. Pautas Clave de Comunicación
+* **Dirección Provisoria**: Usar "dirección provisoria" (en lugar de interna), ya que es un entorno público para revisiones.
+* **Propagación DNS**: Usar "en un horario tranquilo" (evitando "de madrugada" o "corte programado").
+* **Sincronización Transparente**: Explicación honesta de la reserva atómica en checkout web vs la frecuencia de actualización del mostrador físico.
+* **Credenciales MCP**: Solicitud explícita de usuario Read-Only sobre el ERP.
     `
+  },
+  {
+    id: 'revision-analisis-consistencia-koala',
+    category: 'comercial',
+    categoryLabel: '01. Auditoría Comercial & Estrategia',
+    title: 'Auditoría y Análisis de Consistencia Integral (Koala)',
+    subtitle: 'Resolución de los 6 Problemas Principales, 4 Ajustes de Comunicación y Cuadro de Pendientes',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '6 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Auditoría detallada de la propuesta comercial, respuestas a Mikhail, mensaje a Milton y estado real del dominio koalalotiene.com.ar. Resolución de plazos (10 días), stock, Evolution API vs Cloud API, servidor MCP y delegación DNS.',
+    copyableText: `Auditoría y Análisis de Consistencia Integral (Resumen):
+
+1. SEIS PROBLEMAS CLAVE RESUELTOS:
+• Plazos: Estandarización en 10 días hábiles (vista previa en dirección provisoria en 2 a 5 días).
+• Stock: Reserva atómica instantánea en checkout web; aclaración honesta de frecuencia de actualización con el mostrador físico.
+• WhatsApp: Mitigación de Evolution API mediante arquitectura desacoplada y propuesta de WhatsApp Cloud API oficial.
+• Servidor MCP: Requerimiento explícito de usuario Read-Only al ERP para consultas de IA sin alucinaciones.
+• Alcance: Delimitación clara entre la Etapa 1 (Tienda Web) e ítems complementarios (Google Ads, Club Koala, fotos).
+• Dominio: Corrección del estado del dominio koalalotiene.com.ar (delegación pendiente en NIC.ar a braelyn/bryce).
+
+2. CUATRO AJUSTES EN COMUNICACIÓN:
+• "Dirección provisoria" en lugar de "interna".
+• "Horario tranquilo" para la propagación DNS en NIC.ar.
+• Explicación técnica honesta de la sincronización de stock sin excusas.
+• Tono directo y seguro ante consultas sobre ventas en paralelo.`,
+    content: `
+# Auditoría y Análisis de Consistencia Integral — Koala Lo Tiene (LP SRL)
+
+**Análisis de Alineación Comercial, Técnica y Operativa para la Dirección**
+
+---
+
+## 1. Los Seis Problemas Principales Identificados y su Resolución
+
+### 1.1 Plazos de Puesta en Marcha (Estandarización en 10 Días Hábiles)
+Estandarización del cronograma oficial en **10 días hábiles** (Etapa 1: Días 1-3, Etapa 2: Días 4-8, Etapa 3: Días 9-10), aclarando que la dirección provisoria permite revisiones desde el día 2 a 5.
+
+### 1.2 Sincronización de Stock y Reserva Atómica
+El stock se reserva al instante en el checkout web. La actualización con las cajas físicas del mostrador depende de la frecuencia del ERP, comunicado con transparencia.
+
+### 1.3 Evolución API vs. WhatsApp Cloud API Oficial
+Arquitectura modular sobre backend propio: inicio ágil con el canal actual y migración a Cloud API oficial para alto volumen.
+
+### 1.4 Servidor MCP y Acceso a Base de Datos ERP
+Requerimiento formal de credenciales Read-Only sobre la base de datos del ERP para el servidor MCP.
+
+### 1.5 Alcance Prometido vs. Servicios Adicionales
+Clarificación del alcance de la Etapa 1 (E-commerce) marcando pauta publicitaria y fidelización para etapas posteriores.
+
+### 1.6 Estado del Dominio koalalotiene.com.ar
+Actualización de la propuesta especificando la delegación pendiente en NIC Argentina a \`braelyn\` y \`bryce\` en Cloudflare.
+
+---
+
+## 2. Ajustes en la Comunicación con Milton
+1. **Dirección Provisoria**: Cambio de terminología.
+2. **Propagación en Horario Tranquilo**: Explicación transparente de propagación DNS.
+3. **Explicación Honesta de Stock**: Sin justificaciones inventadas.
+4. **Tono Directo**: Respuestas claras a Mikhail.
+`
+  },
+  {
+    id: 'minuta-chat-rafael-gonzalez-icxn-api',
+    category: 'tecnico',
+    categoryLabel: '02. Integración ERP & ICXN API',
+    title: 'Confirmación de API ERP ICXN — Chat con Rafael González',
+    subtitle: 'Transcripción Oficial, Confirmación de Desarrollo a Medida y Estrategia de Entrega OpenAPI',
+    lastUpdated: '30 de Septiembre 2026',
+    readTime: '3 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Registro del intercambio con Rafael González (ICXN). Confirmación de uso de ERP por parte de Koala y disponibilidad de API custom. Estrategia de entrega de especificación OpenAPI ya desarrollada por Clientum.',
+    copyableText: `Confirmación de API ERP ICXN (Rafael González - 30/09/2026):
+
+1. CONFIRMACIÓN DE ERP ICXN:
+• Rafael González confirma que Koala (LP SRL) utiliza activamente el ERP de ICXN.
+• ICXN desarrolla integraciones por API a medida para sus clientes.
+
+2. ESTRATEGIA CLIENTUM:
+• Dado que ICXN prepara la documentación cuando se arma el proyecto, Clientum le entrega de forma proactiva el Manual de Integración OpenAPI (01_manual_integracion_erp.md).
+• Se solicitan credenciales Read-Only para el servidor MCP y recepción de webhooks de stock en /api/erp/webhooks/icxn.`,
+    content: `
+# Confirmación de API ERP ICXN — Chat con Rafael González
+
+**Registro de Intercambio Técnico & Plan de Acción para Integración ERP**
+*Interlocutores: Jonathan (Clientum) y Rafael González (ERP ICXN)*
+*Fecha: 30 de Septiembre de 2026*
+
+---
+
+## 1. Transcripción Oficial del Intercambio
+\`\`\`text
+[18:08, 30/9/2026] Rafael González: Koala esta usando su erp? si
+[18:08, 30/9/2026] Rafael González: Tienen integración por api? si, a pedido de cada cliente
+[18:25, 30/9/2026] Rafael González: tenes alguna documentacion en pdf o algo similar?
+no, se prepara como documentación cuando se arma el proyecto, con los endpoints a publicar o consumir y demás cuestiones. consulto si han indicado algo de LP o Koala y te aviso, seguramente mañana
+\`\`\`
+
+---
+
+## 2. Diagnóstico y Plan de Acción
+1. **ICXN confirma uso de ERP y API custom**: La integración por API existe y se activa por proyecto.
+2. **Acción Proactiva**: Clientum envía la especificación OpenAPI lista para usar (\`01_manual_integracion_erp.md\`), acelerando la publicación de endpoints.
+`
   },
   {
     id: 'checklist-hoja-calculo-dns',
