@@ -18,6 +18,7 @@ Este repositorio contiene toda la documentación técnica, comercial y operativa
 │   ├── 05_plan_implementacion_y_tiempos_koalas.md            # Plan de puesta en marcha en 10 días hábiles y flujo operativo
 │   ├── 06_mensaje_milton_respuestas_mikhail.md               # Mensaje para Milton (para reenviar a Mikhail) con notas de stock
 │   ├── 07_revision_analisis_consistencia_koala.md            # Auditoría de inconsistencias de negocio, 4 ajustes y pendientes
+│   ├── 08_proceso_paso_a_paso_hoja_de_ruta_golive.md         # Master Roadmap paso a paso, matriz de responsabilidades y fases
 │   └── propuesta-cotillon.html                               # Propuesta visual con diseño Clientum (imprimible/PDF)
 │
 ├── 02-tecnico-y-erp/                                         # Arquitectura, DNS, endpoints y respuestas técnicas
@@ -44,6 +45,7 @@ Este repositorio contiene toda la documentación técnica, comercial y operativa
 * [05. Plan de Implementación y Tiempos para Koalas](./01-comercial/05_plan_implementacion_y_tiempos_koalas.md): Cronograma de 10 días hábiles (Etapa 1: Días 1-3, Etapa 2: Días 4-8, Etapa 3: Días 9-10), flujo operativo en 6 pasos y requerimientos de inicio.
 * [06. Mensaje para Milton (para reenviar a Mikhail)](./01-comercial/06_mensaje_milton_respuestas_mikhail.md): Mensaje resumido para WhatsApp/Email, requerimientos para iniciar y advertencia sobre sincronización de stock con ICXN.
 * [07. Auditoría y Análisis de Consistencia](./01-comercial/07_revision_analisis_consistencia_koala.md): Auditoría completa de los 6 problemas clave de negocio, 4 ajustes en comunicación con Milton, WhatsApp Evolution vs Cloud API y pendientes.
+* [08. Master Roadmap Paso a Paso](./01-comercial/08_proceso_paso_a_paso_hoja_de_ruta_golive.md): Hoja de ruta completa de 10 días hábiles (Fase 0 a Fase 3), checklist de tareas por responsable y matriz de ejecución.
 * [Propuesta Visual HTML / PDF](./01-comercial/propuesta-cotillon.html): Archivo web corporativo con diseño Clientum para exportar a PDF o presentar en pantalla.
 
 ---

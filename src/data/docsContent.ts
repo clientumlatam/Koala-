@@ -1058,6 +1058,67 @@ no, se prepara como documentación cuando se arma el proyecto, con los endpoints
 `
   },
   {
+    id: 'proceso-paso-a-paso-hoja-de-ruta-golive',
+    category: 'comercial',
+    categoryLabel: '01. Master Roadmap & Go-Live',
+    title: 'Master Roadmap Paso a Paso — Puesta en Marcha (10 Días)',
+    subtitle: 'Checklist de Fases (Fase 0 a Fase 3), Matriz de Responsabilidades y Ejecución',
+    lastUpdated: 'Septiembre 2026',
+    readTime: '5 min',
+    requiresClientumSupport: true,
+    restrictedToRole: ['backend'],
+    summary: 'Guía paso a paso del proceso completo de implementación: Fase 0 (Cierre y OpenAPI), Fase 1 (Configuración base, DNS y catálogo), Fase 2 (Integración ERP ICXN y logística) y Fase 3 (QA, SSL y lanzamiento público).',
+    copyableText: `Master Roadmap Paso a Paso (10 Días Hábiles):
+
+FASE 0: CIERRE Y ALINEACIÓN (Día 0)
+• Milton reenvía mensaje alineado a Mikhail Murekian.
+• Jonathan envía especificación OpenAPI a Rafael González (ICXN).
+
+FASE 1: CONFIGURACIÓN BASE, DOMINIO Y CATÁLOGO (Días 1-3)
+• Configurar CNAME Vercel en Cloudflare en DNS-only.
+• Reemplazar nameservers en NIC Argentina por braelyn y bryce.
+• Cargar catálogo inicial y Mercado Pago Access Token.
+
+FASE 2: INTEGRACIÓN ERP Y LOGÍSTICA (Días 4-8)
+• Conectar webhooks ICXN (/api/erp/webhooks/icxn) o activar Cron CSV.
+• Parametrizar fletes por CP y radios en km.
+• Probar automatizaciones de WhatsApp.
+
+FASE 3: QA, SSL Y LANZAMIENTO (Días 9-10)
+• Validar SSL en Vercel tras propagación DNS.
+• Prueba de fuego de correo SMTP.
+• Ejecución de compra de prueba y lanzamiento oficial.`,
+    content: `
+# Master Roadmap Paso a Paso — Proceso Completo de Puesta en Marcha
+
+**Guía Operativa de Ejecución para Clientum, Milton, Koala (LP SRL) e ICXN**
+
+---
+
+## 1. El Proceso Completo Paso a Paso
+
+### FASE 0: Cierre Comercial & Alineación Técnica (Hoy / Día 0)
+* **Paso 0.1 — Reenvío del Mensaje Alineado a Milton**: Reenvío del mensaje formal a Mikhail (LP SRL).
+* **Paso 0.2 — Entrega de Especificación OpenAPI a ICXN (Rafael González)**: Entrega de la especificación técnica.
+
+### FASE 1: Configuración Base, Dominio y Carga Inicial (Días 1 a 3)
+* **Paso 1.1 — Limpieza y Configuración DNS en Cloudflare**: CNAME de Vercel y registros MX/mail en DNS only.
+* **Paso 1.2 — Delegación en NIC Argentina (nic.ar)**: Cambio de servidores a \`braelyn\` y \`bryce\`.
+* **Paso 1.3 — Carga de Catálogo Inicial & Credenciales**: Carga masiva de catálogo y Mercado Pago.
+
+### FASE 2: Integración ERP & Logística Territorial (Días 4 a 8)
+* **Paso 2.1 — Conexión con ICXN ERP**: Webhooks en tiempo real o archivo CSV fallback.
+* **Paso 2.2 — Parametrización Logística**: Fletes por Código Postal y envío gratis.
+* **Paso 2.3 — Automatización por WhatsApp**: Bot y derivación de cotizaciones.
+
+### FASE 3: QA, Certificación SSL y Lanzamiento Público (Días 9 a 10)
+* **Paso 3.1 — Validación de SSL Let's Encrypt**: Certificación segura HTTPS en Vercel.
+* **Paso 3.2 — Prueba de Fuego de Correo SMTP**: Recepción en casillas del dominio.
+* **Paso 3.3 — Pruebas Integrales de Compra**: Compra de prueba y reserva atómica de stock.
+* **Paso 3.4 — Lanzamiento Oficial**: Salida a producción pública.
+`
+  },
+  {
     id: 'checklist-hoja-calculo-dns',
     category: 'tecnico',
     categoryLabel: '02. Infraestructura & Excel DNS',
