@@ -8,7 +8,9 @@ function getAllMdFiles(dirPath, arrayOfFiles = []) {
   files.forEach((file) => {
     const fullPath = path.join(dirPath, file);
     if (fs.statSync(fullPath).isDirectory()) {
-      arrayOfFiles = getAllMdFiles(fullPath, arrayOfFiles);
+      if (!file.includes('archivo') && !file.includes('obsoletos')) {
+        arrayOfFiles = getAllMdFiles(fullPath, arrayOfFiles);
+      }
     } else if (file.endsWith('.md')) {
       arrayOfFiles.push(fullPath);
     }

@@ -2,10 +2,10 @@
 
 /* Global Print Styles for High-Quality PDF & Print Exports */
 @media print {
-  /* Page Setup: A4 with standardized margins */
+  /* Page Setup: A4 Portrait with standardized margins */
   @page {
     size: A4 portrait;
-    margin: 12mm 15mm 15mm 15mm;
+    margin: 10mm 12mm 12mm 12mm;
   }
 
   /* Force exact color reproduction for backgrounds & borders */
@@ -24,9 +24,14 @@
   footer:not(.print-footer),
   aside,
   button,
+  a[role="button"],
   .no-print,
   .admin-navbar,
   .toast,
+  .cart-toast,
+  .mobile-cart-bar,
+  .floating-whatsapp,
+  #floating-whatsapp,
   .modal-overlay:not(.printable-modal),
   .search-bar,
   .filter-panel,
@@ -39,8 +44,8 @@
   body {
     background: #ffffff !important;
     color: #0f172a !important;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-    font-size: 10pt !important;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    font-size: 9.5pt !important;
     line-height: 1.4 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -71,23 +76,23 @@
   /* Headings Handling */
   h1, h2, h3, h4, h5, h6 {
     color: #0f172a !important;
-    font-weight: 700 !important;
+    font-weight: 800 !important;
     break-after: avoid !important;
     page-break-after: avoid !important;
-    margin-top: 12pt !important;
-    margin-bottom: 6pt !important;
+    margin-top: 10pt !important;
+    margin-bottom: 5pt !important;
   }
 
-  h1 { font-size: 18pt !important; }
-  h2 { font-size: 14pt !important; border-bottom: 2px solid #2563eb !important; padding-bottom: 4pt !important; }
-  h3 { font-size: 12pt !important; color: #1e3a8a !important; }
+  h1 { font-size: 17pt !important; letter-spacing: -0.02em !important; }
+  h2 { font-size: 13pt !important; border-bottom: 2px solid #2563eb !important; padding-bottom: 3pt !important; }
+  h3 { font-size: 11pt !important; color: #1e3a8a !important; }
 
   /* Product Catalog Grid Layout for Print */
   .catalog-grid,
   .product-grid {
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
-    gap: 12pt !important;
+    gap: 10pt !important;
     width: 100% !important;
   }
 
@@ -103,7 +108,7 @@
 
   .product-card img,
   .catalog-item img {
-    max-height: 100pt !important;
+    max-height: 90pt !important;
     object-fit: contain !important;
     margin: 0 auto 6pt auto !important;
     display: block !important;
@@ -114,9 +119,9 @@
   .price-table {
     width: 100% !important;
     border-collapse: collapse !important;
-    margin-top: 10pt !important;
-    margin-bottom: 15pt !important;
-    font-size: 9.5pt !important;
+    margin-top: 8pt !important;
+    margin-bottom: 12pt !important;
+    font-size: 9pt !important;
     page-break-inside: auto !important;
   }
 
@@ -130,16 +135,19 @@
   }
 
   th {
-    background-color: #1e293b !important;
+    background-color: #0f172a !important;
     color: #ffffff !important;
     font-weight: 700 !important;
     text-align: left !important;
-    padding: 6pt 8pt !important;
+    padding: 5pt 7pt !important;
     border: 1px solid #0f172a !important;
+    text-transform: uppercase !important;
+    font-size: 8pt !important;
+    letter-spacing: 0.03em !important;
   }
 
   td {
-    padding: 5pt 8pt !important;
+    padding: 4.5pt 7pt !important;
     border: 1px solid #e2e8f0 !important;
     color: #1e293b !important;
   }
@@ -151,7 +159,7 @@
   /* Price Tags & Currency Styling */
   .price-tag,
   .price-value {
-    font-weight: 700 !important;
+    font-weight: 800 !important;
     color: #166534 !important; /* Dark green for print contrast */
   }
 
@@ -159,10 +167,12 @@
   .category-badge {
     border: 1px solid #cbd5e1 !important;
     background-color: #f1f5f9 !important;
-    color: #334155 !important;
-    padding: 2pt 6pt !important;
-    font-size: 8pt !important;
-    border-radius: 4pt !important;
+    color: #1e293b !important;
+    padding: 1.5pt 5pt !important;
+    font-size: 7.5pt !important;
+    font-weight: 700 !important;
+    border-radius: 3pt !important;
+    display: inline-block !important;
   }
 
   /* Page Break Helpers */
@@ -198,7 +208,7 @@
     width: 100% !important;
     border-top: 1px solid #cbd5e1 !important;
     padding-top: 4pt !important;
-    font-size: 8pt !important;
+    font-size: 7.5pt !important;
     color: #64748b !important;
     display: flex !important;
     justify-content: space-between !important;
@@ -217,9 +227,10 @@
     background: #ffffff !important;
   }
 
+  .print-catalog-footer-container img,
   .print-catalog-footer-container svg {
-    max-width: 70px !important;
-    max-height: 70px !important;
+    max-width: 76px !important;
+    max-height: 76px !important;
+    object-fit: contain !important;
   }
 }
-

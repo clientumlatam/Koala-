@@ -10,6 +10,13 @@ Este repositorio contiene toda la documentación técnica, comercial y operativa
 /docs/
 ├── README.md                                                 # Este índice maestro
 │
+├── 00-entregables-cliente/                                   # PAQUETE FINAL ORGANIZADO POR DESTINATARIO
+│   ├── README_GUIA_DE_ENVIO.md                               # Guía de despacho paso a paso por canal
+│   ├── 01-mikhail-murekian-direccion/                        # Propuestas, email comercial y resumen WhatsApp
+│   ├── 02-milton-operativo-y-ventas/                         # Roadmap de 10 días y respuestas operativas
+│   ├── 03-rafael-gonzalez-icxn-erp/                          # Manual de API REST, webhooks y minuta de chat
+│   └── 04-sistemas-y-migracion-dns/                          # Planilla de registros DNS y checklist
+│
 ├── 01-comercial/                                             # Propuestas, cartas de oferta y estrategia
 │   ├── 01_propuesta_unificada_koala.md                       # Propuesta integral: Cotillón (LP SRL) + Ferretería
 │   ├── 02_email_propuesta_mikhail.md                         # Plantilla de email comercial para Mikhail Murekian
@@ -31,9 +38,15 @@ Este repositorio contiene toda la documentación técnica, comercial y operativa
 │   ├── 06_monitoreo_webhooks_icxn_y_sincronizacion.md        # Monitoreo de webhooks ICXN, logs de eventos y verificación target 0s
 │   └── 07_minuta_chat_rafael_gonzalez_icxn_api.md            # Confirmación de ERP ICXN, estrategia de API y mensaje para Rafael
 │
-└── 03-presentacion-demo/                                     # Material para reuniones y validación en vivo
-    ├── 01_guia_demo_meet.md                                  # Guión cronometrado paso a paso para Google Meet
-    └── 02_checklist_y_framing_demo.md                        # Checklist pre-demo y pautas de framing
+├── 03-presentacion-demo/                                     # Material para reuniones y validación en vivo
+│   ├── 01_guia_demo_meet.md                                  # Guión cronometrado paso a paso para Google Meet
+│   └── 02_checklist_y_framing_demo.md                        # Checklist pre-demo y pautas de framing
+│
+└── archivo/                                                 # Archivos superseded, borradores previos y notas de trabajo
+    ├── Propuesta_Koala_Clientum_2026.pdf                     # PDF de propuesta comercial inicial no estandarizada
+    ├── koala-mensaje-y-dns.docx                              # Borrador inicial Word de mensajes y registros DNS
+    ├── koala-revision-bundle.docx                            # Borrador inicial Word de revisión de bundle
+    └── WhatsApp Ptt 2026-09-30 at 12.08.07.ogg               # Notas de audio brutas de relevamiento
 ```
 
 ---
@@ -66,3 +79,11 @@ Este repositorio contiene toda la documentación técnica, comercial y operativa
 ## 3. Módulo de Presentación y Demo (`/docs/03-presentacion-demo/`)
 * [01. Guía de Demostración en Google Meet](./03-presentacion-demo/01_guia_demo_meet.md): Estructura de llamada de 15 a 20 minutos con discurso de apertura, navegación guiada y respuestas a objeciones comunes.
 * [02. Checklist Técnico y Framing de la Demo](./03-presentacion-demo/02_checklist_y_framing_demo.md): Reglas de oro sobre cómo presentar el prototipo sin sobrevender integraciones en desarrollo y lista de chequeo de datos reales.
+
+---
+
+## 4. Archivo y Documentos Obsoletos (`/docs/archivo/`)
+Directorio donde se resguardan versiones anteriores, borradores iniciales y audios superseded para mantener limpia la documentación oficial:
+* `Propuesta_Koala_Clientum_2026.pdf`: PDF comercial preliminar antes de la unificación numerada.
+* `koala-mensaje-y-dns.docx` / `koala-revision-bundle.docx`: Documentos Word preliminares superados por la especificación Markdown/PDF oficial.
+* Audios de relevamiento de WhatsApp (`.ogg`).

@@ -18,13 +18,16 @@ import {
   Mic,
   Square,
   RefreshCw,
-  AudioLines
+  AudioLines,
+  Printer,
+  FileText
 } from 'lucide-react';
 import { CategoryId, CategoryInfo, Product, BranchInfo, ProductInventoryRecord } from '../types';
 import { ProductCard } from './ProductCard';
 import { KoalaLogo } from './KoalaLogo';
 import { PrintCatalogFooter } from './PrintCatalogFooter';
 import { normalizeSearchText } from '../utils/helpers';
+import { printProductTable } from '../utils/printCatalog';
 
 interface ProductCatalogProps {
   categories: CategoryInfo[];
@@ -404,6 +407,23 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
             </button>
           )}
 
+          <button
+            onClick={() => {
+              printProductTable({
+                products: filteredProducts,
+                title: searchQuery ? `Resultados de Búsqueda: "${searchQuery}"` : 'Lista Oficial de Precios Koala Lo Tiene',
+                categoryName: selectedCategory === 'all' ? 'Todas las Categorías' : selectedCategory,
+                currentBranch,
+                isWholesale: globalWholesaleMode
+              });
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 dark:bg-slate-700 text-white hover:bg-slate-800 transition-all cursor-pointer shadow-xs border border-slate-700"
+            title="Abrir ventana de impresión y generar PDF profesional de la tabla de productos"
+          >
+            <Printer className="w-3.5 h-3.5 text-orange-400" />
+            <span>Imprimir Tabla PDF</span>
+          </button>
+
           {(filterManufacturer || filterWholesale || filterBestSeller || searchQuery) && (
             <button
               onClick={() => {
@@ -491,7 +511,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
       )}
 
       {/* QR Code Footer for Printed Catalog Materials */}
-      <PrintCatalogFooter />
+      <PrintCatalogFooter currentBranch={currentBranch} />
     </section>
   );
 };

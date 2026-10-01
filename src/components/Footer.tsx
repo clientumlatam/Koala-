@@ -300,7 +300,7 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* QR Code Footer for Printed Catalog & Web Page Prints */}
-        <PrintCatalogFooter />
+        <PrintCatalogFooter currentBranch={branches && branches.length > 0 ? branches[0] : undefined} />
 
       </div>
     </footer>
