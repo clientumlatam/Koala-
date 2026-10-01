@@ -64,31 +64,6 @@ El principal dolor de Koala Cotillón es la baja visibilidad y conversión en ca
 
 ---
 
-## PARTE 2: Koala Ferretería y Corralón
-**Neuquén Capital · 4 sucursales · Digitalización operativa integral**
-
-* **Cliente**: Koala Ferretería y Corralón
-* **Sucursales**: 4 — Zona Oeste, Neuquén Capital
-* **Fecha**: Septiembre 2026
-
-### Diagnóstico
-Koala Ferretería y Corralón cuenta con 4 sucursales activas, presencia en Instagram/Facebook y atención por WhatsApp Business. La atención manual genera demoras, presupuestos sin seguimiento y promociones no segmentadas.
-
-### Resumen de Etapas y Precios
-| Concepto | Setup (ARS) | Mensual (ARS) | Condición |
-| :--- | :--- | :--- | :--- |
-| **Etapa 1 — Tienda Online (WooCommerce / Web)** | $ 518.000 | $ 133.200 | Pago al inicio |
-| **Etapa 2 — Sincronización con ERP (4 sucursales)** | $ 414.400 | $ 111.000 | A convenir |
-| **Etapa 3 — Broadcast y Redes Sociales** | $ 177.600 | $ 66.600 | Al inicio etapa |
-| **PACK COMPLETO (Ahorro $266.400 setup)** | **$ 1.110.000** | **$ 310.800** | Anticipo 50% |
-
-### Detalle por Etapa
-* **Etapa 1**: Catálogo completo, pagos integrados (tarjeta, transferencia, cuotas), pedidos derivados por WhatsApp, panel de stock y órdenes.
-* **Etapa 2**: Stock en tiempo real entre las 4 sucursales, precios sincronizados, alertas automáticas de quiebre crítico.
-* **Etapa 3**: Promociones masivas segmentadas por WhatsApp, captura de leads desde Facebook/Instagram, derivación directa al vendedor.
-
----
-
 ## ¿Por qué Clientum?
 * **Precios en ARS y soporte local en Patagonia**: Equipo basado en General Roca. Soporte y mantenimiento continuo garantizado los 365 días del año con respuesta < 4 hs.
 * **Tecnología propia y flexible**: Sin dependencia de plataformas extranjeras. Stack probado: WhatsApp API, agentes IA, sincronización ERP e e-commerce de alta velocidad.

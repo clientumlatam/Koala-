@@ -40,6 +40,7 @@ import {
   SlidersHorizontal,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
   BookOpen,
   Share2,
   Bot,
@@ -76,6 +77,8 @@ import { McpIntegrationConsole } from './McpIntegrationConsole';
 import { KoalaLogo } from './KoalaLogo';
 import { INITIAL_STOCK_MOVEMENTS } from '../data/adminData';
 import { STORES_DATA } from '../data/products';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 
 
 interface AdminPanelModalProps {
@@ -206,8 +209,83 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   currentBranch,
   onAddToCart,
 }) => {
+  // Role & Permissions matrix dynamic state customizable by Administrators
+  const [rolePermissions, setRolePermissions] = useState<Record<EmployeeRole, string[]>>(() => {
+    try {
+      const saved = localStorage.getItem('koala_role_permissions');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed) return parsed;
+      }
+    } catch {}
+    return {
+      admin: [
+        'dashboard', 'inventory', 'transfers', 'quotes', 'prices_import', 'invoices', 'staff', 'social_commerce', 'erp_config', 'icxn_webhooks'
+      ],
+      ventas: ['dashboard', 'quotes', 'inventory', 'social_commerce', 'invoices'],
+      deposito: ['dashboard', 'inventory', 'transfers', 'icxn_webhooks'],
+      facturacion: ['dashboard', 'quotes', 'invoices', 'prices_import'],
+      proveedor_erp: ['icxn_webhooks', 'webhook_logs', 'sync_health', 'erp_config', 'api_tester', 'inventory', 'csv_cron', 'dashboard'],
+      marketing: ['dashboard', 'social_commerce', 'docs'],
+      backend: [
+        'enterprise_demo', 'sync_health', 'icxn_webhooks', 'webhook_logs', 'mcp_protocol', 'dashboard', 'inventory', 'transfers', 'prices_import', 'quotes', 'invoices', 'staff', 'erp_config', 'csv_cron', 'api_tester', 'social_commerce', 'docs'
+      ]
+    };
+  });
+
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 4500);
+  };
+
+  // Real-time synchronization of permissions matrix with Firebase Firestore
+  React.useEffect(() => {
+    const docRef = doc(db, 'settings', 'role_permissions');
+    
+    // Listen to real-time updates from Firestore
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        // Exclude updatedAt from permissions mapping
+        const { updatedAt, ...permissions } = data;
+        setRolePermissions(permissions as Record<EmployeeRole, string[]>);
+        localStorage.setItem('koala_role_permissions', JSON.stringify(permissions));
+      } else {
+        // Initialize Firebase Firestore with default permissions if document doesn't exist
+        const defaultPermissions = {
+          admin: [
+            'dashboard', 'inventory', 'transfers', 'quotes', 'prices_import', 'invoices', 'staff', 'social_commerce', 'erp_config', 'icxn_webhooks'
+          ],
+          ventas: ['dashboard', 'quotes', 'inventory', 'social_commerce', 'invoices'],
+          deposito: ['dashboard', 'inventory', 'transfers', 'icxn_webhooks'],
+          facturacion: ['dashboard', 'quotes', 'invoices', 'prices_import'],
+          proveedor_erp: ['icxn_webhooks', 'webhook_logs', 'sync_health', 'erp_config', 'api_tester', 'inventory', 'csv_cron', 'dashboard'],
+          marketing: ['dashboard', 'social_commerce', 'docs']
+        };
+        
+        setDoc(docRef, {
+          ...defaultPermissions,
+          updatedAt: new Date().toISOString()
+        }).catch((err) => {
+          console.warn('Failed to bootstrap role permissions in Firestore:', err);
+        });
+      }
+    }, (error) => {
+      console.warn('Firestore subscription failed, falling back to localStorage:', error);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   // Role permissions checker helper available from top of component
-  const canAccess = (tab: string) => checkTabAccess(currentUser.role, tab);
+  const canAccess = (tab: string) => {
+    const userRole = currentUser?.role || 'backend';
+    if (userRole === 'backend') return true; // backend always has all permissions
+    const allowed = rolePermissions[userRole] || [];
+    return allowed.includes(tab);
+  };
   const [activeTab, setActiveTab] = useState<
     'enterprise_demo' | 'sync_health' | 'icxn_webhooks' | 'webhook_logs' | 'docs' | 'social_commerce' | 'mcp_protocol' | 'dashboard' | 'quotes' | 'inventory' | 'transfers' | 'invoices' | 'prices_import' | 'csv_cron' | 'staff' | 'erp_config' | 'api_tester'
   >(() => {
@@ -368,7 +446,19 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     setTimeout(() => setToastMessage(null), 4000);
   };
 
+  const handleProtectedUpdateStock = (productId: string, branch: 'roca' | 'neuquen', newStock: number) => {
+    if (!canAccess('inventory')) {
+      showNotification('⚠️ Error de Autorización: Tu rol no tiene permisos para realizar ajustes o cambios de inventario.');
+      return;
+    }
+    onUpdateStock(productId, branch, newStock);
+  };
+
   const handleManualSync = () => {
+    if (!canAccess('erp_config')) {
+      showNotification('⚠️ Error de Autorización: Tu rol no tiene permisos para sincronizar datos con el ERP.');
+      return;
+    }
     setIsSyncing(true);
     setTimeout(() => {
       onTriggerErpSync();
@@ -379,11 +469,19 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   const handleSaveErpConfig = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canAccess('erp_config')) {
+      showNotification('⚠️ Error de Autorización: Tu rol no tiene permisos para modificar la configuración del ERP.');
+      return;
+    }
     onUpdateErpConfig(editConfig);
     showNotification('Configuración de conexión ERP guardada y verificada.');
   };
 
   const handleApplyBulkPrice = () => {
+    if (!canAccess('prices_import')) {
+      showNotification('⚠️ Error de Autorización: Tu rol no tiene permisos para realizar aumentos masivos de precios.');
+      return;
+    }
     setIsUpdatingPrices(true);
     setTimeout(() => {
       onBulkPriceUpdate(bulkPercent);
@@ -394,6 +492,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   const handleCreateTransferOrder = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canAccess('transfers')) {
+      showNotification('⚠️ Error de Autorización: Tu rol no tiene permisos para generar órdenes de transferencia de stock.');
+      return;
+    }
     if (transferFrom === transferTo) {
       showNotification('La sucursal de origen no puede ser igual a la de destino.');
       return;
@@ -424,9 +526,9 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     onCreateTransfer(newTransfer);
     // Adjust local inventory
     if (transferFrom === 'roca') {
-      onUpdateStock(prod.id, 'roca', Math.max(0, prod.stockRoca - transferQty));
+      handleProtectedUpdateStock(prod.id, 'roca', Math.max(0, prod.stockRoca - transferQty));
     } else {
-      onUpdateStock(prod.id, 'neuquen', Math.max(0, prod.stockNeuquen - transferQty));
+      handleProtectedUpdateStock(prod.id, 'neuquen', Math.max(0, prod.stockNeuquen - transferQty));
     }
 
     setShowNewTransfer(false);
@@ -436,6 +538,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   const handleGenerateInvoiceFromQuote = () => {
     if (!selectedQuoteForInvoice) return;
+    if (!canAccess('invoices')) {
+      showNotification('⚠️ Error de Autorización: Tu rol no tiene permisos para emitir facturas AFIP.');
+      return;
+    }
 
     const netAmount = selectedQuoteForInvoice.totalAmount / 1.21;
     const ivaAmount = selectedQuoteForInvoice.totalAmount - netAmount;
@@ -589,6 +695,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     facturacion: { title: 'Administración y ERP', color: 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-200 dark:border-emerald-800', badge: '🧾 Facturación' },
     backend: { title: 'Soporte Clientum', color: 'bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-800', badge: '🛠️ Soporte Clientum' },
     proveedor_erp: { title: 'Proveedor ERP (ICXN)', color: 'bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-200 dark:border-cyan-800', badge: '🔌 Proveedor ERP ICXN' },
+    marketing: { title: 'Social Commerce & Automatización', color: 'bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-950/80 dark:text-rose-200 dark:border-rose-800', badge: '📲 Social Commerce' },
   };
 
   const statusLabels: Record<QuoteRecord['status'], { label: string; color: string }> = {
@@ -1273,8 +1380,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               currentUser={currentUser}
               erpConfig={erpConfig}
               onUpdateStock={(productId, stockRoca, stockNeuquen) => {
-                onUpdateStock(productId, 'roca', stockRoca);
-                onUpdateStock(productId, 'neuquen', stockNeuquen);
+                handleProtectedUpdateStock(productId, 'roca', stockRoca);
+                handleProtectedUpdateStock(productId, 'neuquen', stockNeuquen);
               }}
               onNavigateToStore={onNavigateToStore}
             />
@@ -1287,7 +1394,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
               erpConfig={erpConfig}
               erpStatus={erpStatus}
               onTriggerErpSync={onTriggerErpSync}
-              onUpdateStock={onUpdateStock}
+              onUpdateStock={handleProtectedUpdateStock}
               onAddStockMovement={handleAddStockMovement}
               quotes={quotes}
             />
@@ -1298,7 +1405,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
             <IcxnWebhookMonitor
               inventory={inventory}
               erpConfig={erpConfig}
-              onUpdateStock={onUpdateStock}
+              onUpdateStock={handleProtectedUpdateStock}
               onUpdateInventoryPrices={onUpdateInventoryPrices}
             />
           )}
@@ -1690,7 +1797,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           {activeTab === 'inventory' && canAccess('inventory') && (
             <StockErpHub
               inventory={inventory}
-              onUpdateStock={onUpdateStock}
+              onUpdateStock={handleProtectedUpdateStock}
               onUpdateInventoryPrices={onUpdateInventoryPrices}
               stockMovements={stockMovements}
               onAddStockMovement={handleAddStockMovement}
@@ -2299,6 +2406,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                         <option value="backend">🛠️ Soporte Clientum</option>
                         <option value="proveedor_erp">🔌 Proveedor ERP (ICXN)</option>
                         <option value="admin">👑 Super Admin / Gerencia</option>
+                        <option value="marketing">📲 Social Commerce & Automatización</option>
                       </select>
                     </div>
 
@@ -2382,6 +2490,118 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Matriz de Gestión de Permisos y Roles de Personal */}
+              <div className="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 space-y-4 shadow-xs">
+                <div className="border-b border-slate-100 dark:border-slate-700/80 pb-3 flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-bold font-fredoka text-slate-900 dark:text-white flex items-center gap-2">
+                      <SlidersHorizontal className="w-4 h-4 text-orange-600" />
+                      <span>Matriz de Gestión de Permisos por Rol</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Asigná o revocá permisos en tiempo real. Los cambios se guardan localmente y limitan el acceso al ERP.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold bg-orange-100 dark:bg-orange-950/60 text-orange-800 dark:text-orange-300 px-2 py-0.5 rounded-full border border-orange-200 dark:border-orange-900">
+                    Control RBAC Live
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40">
+                  <table className="w-full text-xs text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase text-[9px] tracking-wider border-b border-slate-200 dark:border-slate-700">
+                        <th className="p-3">Rol / Nivel de Personal</th>
+                        <th className="p-3 text-center">Dashboard</th>
+                        <th className="p-3 text-center">Inventario</th>
+                        <th className="p-3 text-center">Traspasos</th>
+                        <th className="p-3 text-center">Ajustes Masivos</th>
+                        <th className="p-3 text-center">Cotizaciones</th>
+                        <th className="p-3 text-center">AFIP Facturas</th>
+                        <th className="p-3 text-center">Marketing IG</th>
+                        <th className="p-3 text-center">Config. ERP</th>
+                        <th className="p-3 text-center">Personal</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 dark:divide-slate-700 font-medium">
+                      {(Object.keys(rolePermissions) as EmployeeRole[]).filter(r => r !== 'backend').map((roleKey) => {
+                        const allowed = rolePermissions[roleKey] || [];
+                        const roleInfo = roleLabels[roleKey] || { badge: roleKey, title: roleKey };
+
+                        const permissionsKeys = [
+                          { key: 'dashboard', label: 'Dashboard' },
+                          { key: 'inventory', label: 'Inventario' },
+                          { key: 'transfers', label: 'Traspasos' },
+                          { key: 'prices_import', label: 'Precios' },
+                          { key: 'quotes', label: 'Cotizaciones' },
+                          { key: 'invoices', label: 'Facturas' },
+                          { key: 'social_commerce', label: 'Social' },
+                          { key: 'erp_config', label: 'ERP' },
+                          { key: 'staff', label: 'Staff' }
+                        ];
+
+                        return (
+                          <tr key={roleKey} className="hover:bg-slate-100/50 dark:hover:bg-slate-800/40 transition-colors">
+                            <td className="p-3 whitespace-nowrap">
+                              <div className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <span>{roleInfo.badge}</span>
+                              </div>
+                              <span className="text-[10px] text-slate-500 font-normal">{roleInfo.title}</span>
+                            </td>
+                            {permissionsKeys.map(({ key }) => {
+                              const isChecked = allowed.includes(key);
+                              return (
+                                <td key={key} className="p-3 text-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={async () => {
+                                      // Only admins or support can edit permissions
+                                      if (currentUser.role !== 'admin' && currentUser.role !== 'backend') {
+                                        showToast('⚠️ No tenés permisos de Gerencia para modificar accesos del personal.');
+                                        return;
+                                      }
+
+                                      const rAllowed = rolePermissions[roleKey] || [];
+                                      const updated = rAllowed.includes(key)
+                                        ? rAllowed.filter(p => p !== key)
+                                        : [...rAllowed, key];
+
+                                      const nextPerms = { ...rolePermissions, [roleKey]: updated };
+                                      setRolePermissions(nextPerms);
+
+                                      try {
+                                        const docRef = doc(db, 'settings', 'role_permissions');
+                                        await setDoc(docRef, {
+                                          ...nextPerms,
+                                          updatedAt: new Date().toISOString()
+                                        });
+                                        showToast('✅ ¡Permisos de roles sincronizados con Firebase con éxito!');
+                                      } catch (err) {
+                                        console.error('Failed to save to Firebase:', err);
+                                        showToast('⚠️ Error al guardar en Firebase, se conservará de forma local.');
+                                      }
+                                    }}
+                                    className="w-4 h-4 text-orange-600 focus:ring-orange-500 border-slate-300 rounded cursor-pointer"
+                                  />
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/60 flex items-start gap-2.5 text-xs text-orange-800 dark:text-orange-300">
+                  <AlertTriangle className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
+                  <p>
+                    <strong>Nota de Seguridad:</strong> El rol especial <strong>Soporte Clientum (🛠️)</strong> conserva acceso global irrestricto de depuración y SLA para garantizar asistencia técnica inmediata en General Roca y Neuquén.
+                  </p>
+                </div>
               </div>
             </div>
           )}

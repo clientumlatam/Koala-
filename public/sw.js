@@ -201,3 +201,27 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
+// 5. Background Sync Handler for Offline Quotes & Presupuestos
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-offline-quotes') {
+    event.waitUntil(
+      clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+        for (const client of clientList) {
+          client.postMessage({
+            type: 'SYNC_OFFLINE_QUOTES',
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        // Show push notification when background sync finishes
+        return self.registration.showNotification('🐨 Koala Lo Tiene — Sincronización Offline', {
+          body: '¡Tus presupuestos creados sin conexión fueron sincronizados con éxito!',
+          icon: '/koala-logo.png',
+          badge: '/koala-logo.png',
+          data: { url: '/admin#quotes' },
+        });
+      })
+    );
+  }
+});
+

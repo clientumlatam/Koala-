@@ -49,6 +49,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
     facturacion: { title: 'Administración y ERP', color: 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-200 dark:border-emerald-800', badge: '🧾 Facturación' },
     backend: { title: 'Soporte Clientum', color: 'bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-800', badge: '🛠️ Soporte Clientum' },
     proveedor_erp: { title: 'Proveedor ERP (ICXN)', color: 'bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-200 dark:border-cyan-800', badge: '🔌 Proveedor ERP ICXN' },
+    marketing: { title: 'Social Commerce & Automatización', color: 'bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-950/80 dark:text-rose-200 dark:border-rose-800', badge: '📲 Social Commerce' },
   };
 
   const handleLogin = (e: React.FormEvent) => {

@@ -73,6 +73,16 @@ service cloud.firestore {
              data.source is string && data.source.size() <= 128;
     }
 
+    function isValidSetting(data) {
+      return data.keys().hasAll(['admin', 'ventas', 'deposito', 'facturacion', 'proveedor_erp', 'marketing']) &&
+             data.admin is list &&
+             data.ventas is list &&
+             data.deposito is list &&
+             data.facturacion is list &&
+             data.proveedor_erp is list &&
+             data.marketing is list;
+    }
+
     // Default Deny Rule
     match /{document=**} {
       allow read, write: if false;
@@ -109,6 +119,12 @@ service cloud.firestore {
     // Webhook Events Log Collection
     match /webhookEvents/{eventId} {
       allow read, write: if isAdmin() && isValidWebhookEvent(incoming());
+    }
+
+    // Settings & Permissions Matrix Collection
+    match /settings/{settingId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() && isValidSetting(incoming());
     }
   }
 }

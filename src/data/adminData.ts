@@ -83,6 +83,26 @@ export const INITIAL_EMPLOYEES: EmployeeUser[] = [
     active: true,
     lastLogin: 'Hoy, 17:30 hs',
   },
+  {
+    id: 'emp-8',
+    name: 'Proveedor ERP ICXN',
+    email: 'erp@koalalotiene.com.ar',
+    password: 'erp',
+    role: 'proveedor_erp',
+    branchId: 'todas',
+    active: true,
+    lastLogin: 'Recién registrado',
+  },
+  {
+    id: 'emp-9',
+    name: 'Marketing & Social Commerce',
+    email: 'marketing@koalalotiene.com.ar',
+    password: 'marketing',
+    role: 'marketing',
+    branchId: 'todas',
+    active: true,
+    lastLogin: 'Recién registrado',
+  },
 ];
 
 export const INITIAL_ERP_CONFIG: ErpConnectionConfig = {

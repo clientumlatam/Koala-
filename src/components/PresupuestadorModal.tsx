@@ -29,6 +29,7 @@ import {
 import { BranchInfo, CartItem, OrderQuote, LoyaltyProfile, LoyaltyReward, CompletedOrderReceipt } from '../types';
 import { formatCurrency, buildWhatsAppMessage } from '../utils/helpers';
 import { downloadQuotePDF } from '../utils/pdfExport';
+import { saveQuoteOffline } from '../utils/offlineSync';
 import { KoalaLogo } from './KoalaLogo';
 
 interface PresupuestadorModalProps {
@@ -272,14 +273,16 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
   });
 
   const handleExportPDF = () => {
-    if (cartItems.length === 0) return;
+    if (cartItems.length === 0 && !completedOrder) return;
     try {
       setIsExportingPdf(true);
       const quote = getQuoteData();
       downloadQuotePDF({
-        cartItems,
+        cartItems: completedOrder?.items || cartItems,
         quote,
         currentBranch,
+        isOrderReceipt: checkoutStep === 4,
+        quoteNumber: completedOrder?.orderId,
       });
     } catch (err) {
       console.error('Error al exportar PDF:', err);
@@ -352,6 +355,11 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
 
       setCompletedOrder(receipt);
       setCheckoutStep(4);
+
+      // Save to offline pending queue if currently offline
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        saveQuoteOffline(cartItems, getQuoteData(), currentBranch, totalCalculated);
+      }
 
       // Trigger loyalty points & stamps update
       if (onCompletePurchaseLoyaltyUpdate) {

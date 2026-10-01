@@ -8,6 +8,12 @@ import {
   Sparkles, 
   Layers,
   LayoutGrid,
+  List,
+  Plus,
+  Minus,
+  Check,
+  ShoppingCart,
+  Package,
   PackageCheck,
   UtensilsCrossed,
   PartyPopper,
@@ -20,13 +26,16 @@ import {
   RefreshCw,
   AudioLines,
   Printer,
-  FileText
+  FileText,
+  QrCode,
+  Scan
 } from 'lucide-react';
 import { CategoryId, CategoryInfo, Product, BranchInfo, ProductInventoryRecord } from '../types';
 import { ProductCard } from './ProductCard';
 import { KoalaLogo } from './KoalaLogo';
 import { PrintCatalogFooter } from './PrintCatalogFooter';
-import { normalizeSearchText } from '../utils/helpers';
+import { BarcodeScannerModal } from './BarcodeScannerModal';
+import { normalizeSearchText, formatCurrency } from '../utils/helpers';
 import { printProductTable } from '../utils/printCatalog';
 
 interface ProductCatalogProps {
@@ -44,6 +53,131 @@ interface ProductCatalogProps {
   externalSearchQuery?: string;
   onOpenTranscriber?: () => void;
 }
+
+const ProductListRow: React.FC<{
+  product: Product | ProductInventoryRecord;
+  onAddToCart: (product: Product, quantity: number, isWholesale: boolean) => void;
+  cartQuantity: number;
+  globalWholesaleMode: boolean;
+}> = ({ product, onAddToCart, cartQuantity, globalWholesaleMode }) => {
+  const [quantity, setQuantity] = React.useState(1);
+  const [addedAnimation, setAddedAnimation] = React.useState(false);
+
+  const currentPrice = globalWholesaleMode
+    ? product.wholesalePrice || Math.round(product.price * 0.85)
+    : product.price;
+
+  const handleAdd = () => {
+    onAddToCart(product as Product, quantity, globalWholesaleMode);
+    setAddedAnimation(true);
+    setTimeout(() => setAddedAnimation(false), 1200);
+  };
+
+  return (
+    <div className="p-3 sm:p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors flex flex-col sm:grid sm:grid-cols-12 gap-3 items-center">
+      {/* Product Image & Name */}
+      <div className="sm:col-span-5 flex items-center gap-3 w-full min-w-0">
+        <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 relative">
+          {product.image ? (
+            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-slate-400">
+              <Package className="w-6 h-6" />
+            </div>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <h4 className="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
+              {product.name}
+            </h4>
+            {product.isManufacturer && (
+              <span className="px-1.5 py-0.2 rounded bg-orange-100 text-orange-800 text-[9px] font-extrabold shrink-0">
+                Fábrica
+              </span>
+            )}
+          </div>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+            {product.description || `Categoría: ${product.category || 'General'}`}
+          </p>
+        </div>
+      </div>
+
+      {/* Category */}
+      <div className="sm:col-span-2 text-left sm:text-center w-full sm:w-auto hidden sm:block">
+        <span className="inline-block px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold">
+          {product.category || 'General'}
+        </span>
+      </div>
+
+      {/* Price */}
+      <div className="sm:col-span-2 text-left sm:text-right w-full sm:w-auto flex sm:block items-baseline justify-between">
+        <span className="sm:hidden text-xs text-slate-500 font-semibold">Precio:</span>
+        <div>
+          <div className="text-sm sm:text-base font-black text-slate-900 dark:text-white font-fredoka">
+            {formatCurrency(currentPrice)}
+          </div>
+          <div className="text-[10px] text-slate-500">
+            {globalWholesaleMode ? 'x Bulto Cerrado' : 'x Unid.'}
+          </div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="sm:col-span-3 flex items-center justify-between sm:justify-end gap-2 w-full">
+        <div className="flex items-center border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 overflow-hidden shadow-2xs shrink-0">
+          <button
+            type="button"
+            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            className="px-2 py-1 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
+            aria-label="Disminuir"
+          >
+            <Minus className="w-3.5 h-3.5" />
+          </button>
+          <span className="px-2 py-1 text-xs font-bold text-slate-800 dark:text-slate-200 min-w-[24px] text-center">
+            {quantity}
+          </span>
+          <button
+            type="button"
+            onClick={() => setQuantity(quantity + 1)}
+            className="px-2 py-1 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
+            aria-label="Aumentar"
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleAdd}
+          className={`py-1.5 px-3 rounded-xl text-xs font-bold shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
+            addedAnimation
+              ? 'bg-emerald-600 text-white'
+              : 'bg-orange-600 hover:bg-orange-500 text-white active:scale-95'
+          }`}
+        >
+          {addedAnimation ? (
+            <>
+              <Check className="w-3.5 h-3.5 animate-bounce" />
+              <span>¡Agregado!</span>
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="w-3.5 h-3.5" />
+              <span>+ Cotizador</span>
+            </>
+          )}
+        </button>
+
+        {cartQuantity > 0 && (
+          <span className="px-2 py-1 rounded-lg bg-slate-900 text-white text-[10px] font-extrabold shrink-0" title={`Llevás ${cartQuantity} en tu lista`}>
+            {cartQuantity}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   categories,
@@ -65,6 +199,8 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   const [filterManufacturer, setFilterManufacturer] = React.useState(false);
   const [filterWholesale, setFilterWholesale] = React.useState(false);
   const [filterBestSeller, setFilterBestSeller] = React.useState(false);
+  const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
+  const [barcodeScannerOpen, setBarcodeScannerOpen] = React.useState(false);
 
   // Sync external search query if provided (e.g. from Audio Transcriber Modal)
   React.useEffect(() => {
@@ -258,6 +394,15 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                   <Mic className="w-3.5 h-3.5" />
                 )}
               </button>
+
+              <button
+                type="button"
+                onClick={() => setBarcodeScannerOpen(true)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-slate-700 transition-all cursor-pointer"
+                title="Escanear Código de Barras o QR con la cámara"
+              >
+                <Scan className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
 
@@ -439,42 +584,92 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
           )}
         </div>
 
-        <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-          Mostrando <strong className="text-slate-900 dark:text-white">{filteredProducts.length}</strong> de {products.length} productos
+        <div className="flex items-center justify-between gap-2 w-full text-xs font-semibold text-slate-500 dark:text-slate-400">
+          <div>
+            Mostrando <strong className="text-slate-900 dark:text-white">{filteredProducts.length}</strong> de {products.length} productos
+          </div>
+
+          {/* View Mode Switcher */}
+          <div className="flex items-center p-0.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'grid'
+                  ? 'bg-orange-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Vista Grilla (Tarjetas)"
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>Grilla</span>
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewMode === 'list'
+                  ? 'bg-orange-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+              title="Vista Lista (Tabla Compacta)"
+            >
+              <List className="w-3.5 h-3.5" />
+              <span>Formato Lista</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Product Grid */}
+      {/* Product Catalog Display (Grid vs List View) */}
       {filteredProducts.length > 0 ? (
-        <motion.div 
-          layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
-        >
-          <AnimatePresence mode="popLayout">
+        viewMode === 'list' ? (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="hidden sm:grid grid-cols-12 gap-3 p-3.5 bg-slate-950 text-slate-300 font-bold text-xs uppercase tracking-wider">
+              <div className="col-span-5">Producto / Marca</div>
+              <div className="col-span-2 text-center">Categoría</div>
+              <div className="col-span-2 text-right">Precio Unitario</div>
+              <div className="col-span-3 text-right pr-2">Cantidad & Cotización</div>
+            </div>
             {filteredProducts.map((product) => (
-              <motion.div
+              <ProductListRow
                 key={product.id}
-                layout
-                initial={{ opacity: 0, scale: 0.94 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.94 }}
-                transition={{ 
-                  duration: 0.28,
-                  ease: [0.16, 1, 0.3, 1],
-                  layout: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
-                }}
-              >
-                <ProductCard
-                  product={product}
-                  onAddToCart={onAddToCart}
-                  cartQuantity={cartItemsMap[product.id] || 0}
-                  currentBranch={currentBranch}
-                  globalWholesaleMode={globalWholesaleMode}
-                />
-              </motion.div>
+                product={product}
+                onAddToCart={onAddToCart}
+                cartQuantity={cartItemsMap[product.id] || 0}
+                globalWholesaleMode={globalWholesaleMode}
+              />
             ))}
-          </AnimatePresence>
-        </motion.div>
+          </div>
+        ) : (
+          <motion.div 
+            layout
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredProducts.map((product) => (
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.94 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.94 }}
+                  transition={{ 
+                    duration: 0.28,
+                    ease: [0.16, 1, 0.3, 1],
+                    layout: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
+                  }}
+                >
+                  <ProductCard
+                    product={product}
+                    onAddToCart={onAddToCart}
+                    cartQuantity={cartItemsMap[product.id] || 0}
+                    currentBranch={currentBranch}
+                    globalWholesaleMode={globalWholesaleMode}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )
       ) : (
         /* Empty State */
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center border border-dashed border-slate-300 dark:border-slate-800 max-w-lg mx-auto space-y-4">
@@ -512,6 +707,16 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
 
       {/* QR Code Footer for Printed Catalog Materials */}
       <PrintCatalogFooter currentBranch={currentBranch} />
+
+      {/* Barcode & QR Code Camera Scanner Modal */}
+      <BarcodeScannerModal
+        isOpen={barcodeScannerOpen}
+        onClose={() => setBarcodeScannerOpen(false)}
+        products={products}
+        onAddToCart={onAddToCart}
+        currentBranch={currentBranch}
+        globalWholesaleMode={globalWholesaleMode}
+      />
     </section>
   );
 };

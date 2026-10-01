@@ -16,6 +16,7 @@ import { MobileCartBar } from './components/MobileCartBar';
 import { CartToast, CartToastItem } from './components/CartToast';
 import { InstitutionalPageModal, InstitutionalPageType } from './components/InstitutionalPageModal';
 import { AudioTranscriberModal } from './components/AudioTranscriberModal';
+import { InstagramBioModal } from './components/InstagramBioModal';
 
 import { STORES_DATA, CATEGORIES, PRODUCTS_CATALOG } from './data/products';
 import { DEFAULT_DEMO_LOYALTY_PROFILE } from './data/loyaltyData';
@@ -182,6 +183,7 @@ export default function App() {
   const [isChatOpen, setIsChatOpen] = React.useState(false);
   const [audioTranscriberOpen, setAudioTranscriberOpen] = React.useState(false);
   const [catalogSearchText, setCatalogSearchText] = React.useState<string>('');
+  const [instagramBioOpen, setInstagramBioOpen] = React.useState(false);
 
   const handleOpenInstitutional = (page: InstitutionalPageType) => {
     setInstitutionalPage(page);
@@ -239,7 +241,17 @@ export default function App() {
           const hasSoporte = parsed.some(e => e.email.toLowerCase() === 'soporte@clientum.com.ar');
           if (!hasSoporte) {
             const soporteUser = INITIAL_EMPLOYEES.find(e => e.email === 'soporte@clientum.com.ar');
-            if (soporteUser) return [...parsed, soporteUser];
+            if (soporteUser) parsed.push(soporteUser);
+          }
+          const hasErpAccount = parsed.some(e => e.email.toLowerCase() === 'erp@koalalotiene.com.ar');
+          if (!hasErpAccount) {
+            const erpUser = INITIAL_EMPLOYEES.find(e => e.email === 'erp@koalalotiene.com.ar');
+            if (erpUser) parsed.push(erpUser);
+          }
+          const hasMarketing = parsed.some(e => e.email.toLowerCase() === 'marketing@koalalotiene.com.ar');
+          if (!hasMarketing) {
+            const marketingUser = INITIAL_EMPLOYEES.find(e => e.email === 'marketing@koalalotiene.com.ar');
+            if (marketingUser) parsed.push(marketingUser);
           }
           return parsed;
         }
@@ -749,13 +761,7 @@ export default function App() {
         cartCount={cartCount}
         currentUser={currentUser}
         onOpenCart={() => setCartOpen(true)}
-        onOpenAdmin={() => {
-          if (currentUser) {
-            navigateTo('/admin');
-          } else {
-            setLoginOpen(true);
-          }
-        }}
+        onOpenAdmin={() => navigateTo('/admin')}
         onOpenLogin={() => setLoginOpen(true)}
         onOpenLoyaltyModal={() => setLoyaltyOpen(true)}
         loyaltyProfile={loyaltyProfile}
@@ -789,6 +795,7 @@ export default function App() {
           currentBranch={currentBranch}
           externalSearchQuery={catalogSearchText}
           onOpenTranscriber={() => setAudioTranscriberOpen(true)}
+          onOpenInstagramBio={() => setInstagramBioOpen(true)}
         />
 
         {/* Store Locations & Maps Section */}
@@ -804,13 +811,7 @@ export default function App() {
         branches={STORES_DATA}
         onScrollToSection={scrollToSection}
         onOpenLoyaltyModal={() => setLoyaltyOpen(true)}
-        onOpenAdmin={() => {
-          if (currentUser) {
-            navigateTo('/admin');
-          } else {
-            setLoginOpen(true);
-          }
-        }}
+        onOpenAdmin={() => navigateTo('/admin')}
         onOpenInstitutional={handleOpenInstitutional}
       />
 
@@ -950,6 +951,16 @@ export default function App() {
           setSelectedCategory('all');
           scrollToSection('catalog');
         }}
+      />
+
+      {/* Instagram Bio & Social Commerce Modal for Visitors */}
+      <InstagramBioModal
+        isOpen={instagramBioOpen}
+        onClose={() => setInstagramBioOpen(false)}
+        inventory={inventory}
+        currentBranch={currentBranch}
+        onAddToCart={handleAddToCart}
+        onNavigateToStore={() => scrollToSection('catalog')}
       />
     </div>
   );

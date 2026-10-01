@@ -2,504 +2,352 @@ import React, { useState } from 'react';
 import { 
   X, 
   Instagram, 
-  MessageCircle, 
-  MapPin, 
   Sparkles, 
   ShoppingBag, 
-  Tag, 
-  ExternalLink, 
-  Copy, 
-  Check, 
-  QrCode, 
-  Gift, 
-  Share2, 
-  Building2, 
-  Phone, 
-  Clock, 
-  ChevronRight,
-  Search,
-  Package,
-  Cake,
-  PartyPopper,
-  UtensilsCrossed,
-  Layers,
-  ArrowRight
+  Send, 
+  Bot, 
+  ArrowDownLeft, 
+  Megaphone, 
+  ExternalLink,
+  MessageCircle,
+  Heart,
+  Tag,
+  CheckCircle2
 } from 'lucide-react';
-import { BranchInfo, BranchId, CategoryId } from '../types';
-import { KoalaLogo } from './KoalaLogo';
-import { STORES_DATA } from '../data/products';
+import { ProductInventoryRecord, BranchInfo } from '../types';
+import { INSTAGRAM_PROFILE_INFO, INITIAL_INSTAGRAM_POSTS } from '../data/instagramData';
+import { formatCurrency } from '../utils/helpers';
 
 interface InstagramBioModalProps {
   isOpen: boolean;
   onClose: () => void;
-  currentBranch: BranchInfo;
-  onSelectBranch: (branchId: BranchId) => void;
-  onSelectCategoryAndClose: (catId: CategoryId) => void;
-  onOpenLoyaltyModal: () => void;
-  onOpenAi: () => void;
-  onOpenCart: () => void;
+  inventory?: ProductInventoryRecord[];
+  currentBranch?: BranchInfo;
+  onAddToCart?: (product: ProductInventoryRecord, quantity: number, isWholesale: boolean) => void;
+  onNavigateToStore?: () => void;
 }
 
 export const InstagramBioModal: React.FC<InstagramBioModalProps> = ({
   isOpen,
   onClose,
+  inventory = [],
   currentBranch,
-  onSelectBranch,
-  onSelectCategoryAndClose,
-  onOpenLoyaltyModal,
-  onOpenAi,
-  onOpenCart,
+  onAddToCart,
+  onNavigateToStore
 }) => {
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<'bio_links' | 'link_generator' | 'story_ctas'>('bio_links');
-  
-  // Custom Campaign Link Generator State
-  const [customCategory, setCustomCategory] = useState<CategoryId>('all');
-  const [customCampaign, setCustomCampaign] = useState('ig_story_promo');
-  const [customDiscount, setCustomDiscount] = useState('KOALA10');
-  const [customMode, setCustomMode] = useState<'minorista' | 'mayorista'>('minorista');
+  const [activeTab, setActiveTab] = useState<'feed' | 'inbound_dm' | 'outbound_campaigns'>('feed');
+  const [selectedPost, setSelectedPost] = useState<typeof INITIAL_INSTAGRAM_POSTS[0] | null>(null);
+  const [simulatedComment, setSimulatedComment] = useState('PRECIO');
+  const [commentSent, setCommentSent] = useState(false);
 
   if (!isOpen) return null;
 
-  const generatedUrl = `https://koalalotiene.com.ar/?src=${customCampaign}&cat=${customCategory}&mode=${customMode}${customDiscount ? `&coupon=${customDiscount}` : ''}`;
-
-  const handleCopyLink = (url: string) => {
-    navigator.clipboard.writeText(url);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
-  };
-
-  const bioLinks = [
-    {
-      title: '🛒 Catálogo Completo & Stock en Vivo',
-      subtitle: 'Consultá precios actualizados en General Roca y Neuquén',
-      action: () => onSelectCategoryAndClose('all'),
-      icon: <ShoppingBag className="w-5 h-5 text-orange-600" />,
-      badge: 'Popular',
-      highlight: true,
-    },
-    {
-      title: '🎂 Repostería, Pastelería & Chocolatería',
-      subtitle: 'Moldes de silicona, chocolates, mangas, cortantes y bases',
-      action: () => onSelectCategoryAndClose('reposteria'),
-      icon: <Cake className="w-5 h-5 text-pink-600" />,
-      badge: '10% OFF',
-    },
-    {
-      title: '🎈 Cotillón, Globología & Eventos',
-      subtitle: 'Globos Chrome, cortinas shimmer, bengalas y cotillón luminoso',
-      action: () => onSelectCategoryAndClose('cotillon'),
-      icon: <PartyPopper className="w-5 h-5 text-purple-600" />,
-    },
-    {
-      title: '📦 Polietileno & Descartables de Fábrica',
-      subtitle: 'Bolsas camiseta, film stretch, Big Bags y envases vianda',
-      action: () => onSelectCategoryAndClose('polietileno'),
-      icon: <Package className="w-5 h-5 text-amber-600" />,
-      badge: 'Fábrica',
-    },
-    {
-      title: '🏷️ Precios Mayoristas (Bulto Cerrado)',
-      subtitle: 'Descuentos por volumen para revendedores y comercios',
-      action: () => onSelectCategoryAndClose('all'),
-      icon: <Tag className="w-5 h-5 text-emerald-600" />,
-      badge: 'Mayorista',
-    },
-    {
-      title: '🎁 Club Koala: Puntos y Tarjeta Digital',
-      subtitle: 'Sumá puntos con cada compra y canjeá premios y descuentos',
-      action: () => {
-        onClose();
-        onOpenLoyaltyModal();
-      },
-      icon: <Gift className="w-5 h-5 text-amber-500" />,
-    },
-    {
-      title: '💬 Hablar con un Vendedor por WhatsApp',
-      subtitle: `Atención directa en ${currentBranch.name}`,
-      action: () => {
-        window.open(`https://wa.me/${currentBranch.whatsapp}?text=${encodeURIComponent(`¡Hola! Vengo desde el enlace de Instagram @koalalotiene y quisiera hacer una consulta sobre productos y stock en ${currentBranch.name}.`)}`, '_blank');
-      },
-      icon: <MessageCircle className="w-5 h-5 text-emerald-500" />,
-      highlight: true,
-    },
-  ];
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col max-h-[92vh]">
-        {/* Header with Instagram Branding */}
-        <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 p-4 sm:p-5 text-white relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors cursor-pointer"
-            aria-label="Cerrar"
-          >
-            <X className="w-4 h-4" />
-          </button>
-
-          <div className="flex flex-col items-center text-center space-y-2">
-            <div className="w-20 h-20 bg-white rounded-full p-1.5 shadow-lg relative ring-4 ring-white/30">
-              <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-orange-50">
-                <KoalaLogo size="sm" variant="mascot-only" />
-              </div>
-              <span className="absolute bottom-0 right-0 p-1 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full text-white shadow-xs">
-                <Instagram className="w-3.5 h-3.5" />
-              </span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col max-h-[92vh] my-auto">
+        
+        {/* Header Bar */}
+        <div className="bg-gradient-to-r from-purple-900 via-rose-900 to-orange-950 text-white p-4 sm:p-5 flex items-center justify-between shrink-0 shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 text-white shadow-md">
+              <Instagram className="w-6 h-6" />
             </div>
-
             <div>
-              <div className="flex items-center justify-center gap-1.5">
-                <h2 className="text-lg font-black font-fredoka">@koalalotiene</h2>
-                <span className="px-1.5 py-0.2 rounded bg-white/20 text-[10px] font-bold tracking-wider uppercase">Oficial</span>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-extrabold font-fredoka tracking-wide">
+                  @koalalotiene — Social Commerce Oficial
+                </h3>
+                <span className="text-[9px] uppercase font-black px-2 py-0.5 rounded-full bg-emerald-500 text-white">
+                  Verificado
+                </span>
               </div>
-              <p className="text-xs text-white/90 font-medium max-w-xs mt-0.5">
-                Fabricantes de Polietileno • Cotillón • Repostería • Descartables
+              <p className="text-xs text-purple-200">
+                Instagram Feed, Inbound Auto-DM y Campañas Outbound
               </p>
-              <div className="flex items-center justify-center gap-2 mt-2 text-[11px] text-white/80">
-                <span className="flex items-center gap-1">📍 General Roca</span>
-                <span>•</span>
-                <span className="flex items-center gap-1">📍 Neuquén Capital</span>
-              </div>
             </div>
           </div>
 
-          {/* Sub Navigation Tabs */}
-          <div className="flex items-center justify-center gap-1 mt-4 pt-3 border-t border-white/20 text-xs font-bold">
-            <button
-              onClick={() => setSelectedTab('bio_links')}
-              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                selectedTab === 'bio_links'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-white/80 hover:bg-white/10'
-              }`}
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer shrink-0"
+            aria-label="Cerrar modal Instagram"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Profile Stats Header */}
+        <div className="p-4 sm:p-5 bg-slate-50 dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <img
+              src="/koala-logo.png"
+              alt="Koala Logo"
+              className="w-12 h-12 rounded-full border-2 border-rose-500 p-0.5 object-cover"
+            />
+            <div>
+              <div className="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>Koala Lo Tiene (LP SRL)</span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Fábrica de Polietileno • Cotillón • Descartables • General Roca & Neuquén
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 text-center text-xs shrink-0">
+            <div>
+              <div className="font-black text-slate-900 dark:text-white text-sm">24.8K</div>
+              <div className="text-[10px] text-slate-500 uppercase font-bold">Seguidores</div>
+            </div>
+            <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />
+            <div>
+              <div className="font-black text-emerald-600 dark:text-emerald-400 text-sm">&lt; 1s</div>
+              <div className="text-[10px] text-slate-500 uppercase font-bold">Auto-DM IA</div>
+            </div>
+            <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />
+            <a
+              href="https://www.instagram.com/koalalotiene/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-rose-600 hover:from-purple-500 hover:to-rose-500 text-white font-extrabold text-xs flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
-              📱 Link en Bio
-            </button>
-            <button
-              onClick={() => setSelectedTab('link_generator')}
-              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                selectedTab === 'link_generator'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-white/80 hover:bg-white/10'
-              }`}
-            >
-              🔗 Generador de Links
-            </button>
-            <button
-              onClick={() => setSelectedTab('story_ctas')}
-              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
-                selectedTab === 'story_ctas'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-white/80 hover:bg-white/10'
-              }`}
-            >
-              📣 Stories & CTAs
-            </button>
+              <span>Seguir en IG</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
           </div>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-4 overflow-y-auto flex-1 space-y-4 bg-slate-50">
-          {/* TAB 1: Mobile-First Link in Bio */}
-          {selectedTab === 'bio_links' && (
-            <div className="space-y-3">
-              {/* Branch Selector Switcher inside Bio */}
-              <div className="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-2xs">
-                <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="font-bold text-slate-700 flex items-center gap-1">
-                    <Building2 className="w-3.5 h-3.5 text-orange-600" />
-                    Sucursal activa para ver stock:
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {STORES_DATA.map((b) => {
-                    const isActive = b.id === currentBranch.id;
-                    return (
-                      <button
-                        key={b.id}
-                        onClick={() => onSelectBranch(b.id)}
-                        className={`p-2 rounded-xl text-left border text-xs font-bold transition-all cursor-pointer ${
-                          isActive
-                            ? 'bg-orange-50 border-orange-400 text-orange-950 shadow-2xs'
-                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                        }`}
-                      >
-                        <div className="font-extrabold text-[11.5px]">{b.city}</div>
-                        <div className="text-[10px] text-slate-500">{b.address}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+        {/* Subtab Selector */}
+        <div className="flex items-center gap-2 p-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => setActiveTab('feed')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'feed'
+                ? 'bg-purple-600 text-white shadow-xs'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+            }`}
+          >
+            <Instagram className="w-3.5 h-3.5" />
+            <span>📱 Feed & Posts Comprables</span>
+          </button>
 
-              {/* Story Highlights simulated badges */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                <button
-                  onClick={() => onSelectCategoryAndClose('reposteria')}
-                  className="flex flex-col items-center gap-1 shrink-0 p-1 cursor-pointer group"
-                >
-                  <div className="w-13 h-13 rounded-full p-0.5 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 group-hover:scale-105 transition-transform">
-                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-sm">
-                      🎂
-                    </div>
-                  </div>
-                  <span className="text-[10.5px] font-bold text-slate-700">Repostería</span>
-                </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('inbound_dm')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'inbound_dm'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+            }`}
+          >
+            <ArrowDownLeft className="w-3.5 h-3.5" />
+            <span>📥 Inbound Auto-DM (Prueba)</span>
+          </button>
 
-                <button
-                  onClick={() => onSelectCategoryAndClose('cotillon')}
-                  className="flex flex-col items-center gap-1 shrink-0 p-1 cursor-pointer group"
-                >
-                  <div className="w-13 h-13 rounded-full p-0.5 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 group-hover:scale-105 transition-transform">
-                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-sm">
-                      🎈
-                    </div>
-                  </div>
-                  <span className="text-[10.5px] font-bold text-slate-700">Cotillón</span>
-                </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('outbound_campaigns')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'outbound_campaigns'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+            }`}
+          >
+            <Megaphone className="w-3.5 h-3.5" />
+            <span>📤 Outbound Ofertas & Broadcast</span>
+          </button>
+        </div>
 
-                <button
-                  onClick={() => onSelectCategoryAndClose('polietileno')}
-                  className="flex flex-col items-center gap-1 shrink-0 p-1 cursor-pointer group"
-                >
-                  <div className="w-13 h-13 rounded-full p-0.5 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 group-hover:scale-105 transition-transform">
-                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-sm">
-                      🏭
-                    </div>
-                  </div>
-                  <span className="text-[10.5px] font-bold text-slate-700">Fábrica</span>
-                </button>
-
-                <button
-                  onClick={() => onSelectCategoryAndClose('descartables')}
-                  className="flex flex-col items-center gap-1 shrink-0 p-1 cursor-pointer group"
-                >
-                  <div className="w-13 h-13 rounded-full p-0.5 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 group-hover:scale-105 transition-transform">
-                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-sm">
-                      🥤
-                    </div>
-                  </div>
-                  <span className="text-[10.5px] font-bold text-slate-700">Descartables</span>
-                </button>
-
-                <button
-                  onClick={onOpenAi}
-                  className="flex flex-col items-center gap-1 shrink-0 p-1 cursor-pointer group"
-                >
-                  <div className="w-13 h-13 rounded-full p-0.5 bg-gradient-to-tr from-orange-400 to-amber-500 group-hover:scale-105 transition-transform">
-                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-sm">
-                      ✨
-                    </div>
-                  </div>
-                  <span className="text-[10.5px] font-bold text-slate-700">Asesor AI</span>
-                </button>
-              </div>
-
-              {/* Bio Links Buttons List */}
-              <div className="space-y-2 pt-1">
-                {bioLinks.map((link, idx) => (
-                  <button
-                    key={idx}
-                    onClick={link.action}
-                    className={`w-full p-3 rounded-2xl text-left border flex items-center justify-between transition-all cursor-pointer group ${
-                      link.highlight
-                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white border-orange-500 shadow-md hover:from-orange-600 hover:to-amber-600 scale-[1.01]'
-                        : 'bg-white hover:bg-slate-100 text-slate-800 border-slate-200/90 shadow-2xs hover:border-orange-300'
-                    }`}
+        {/* Modal Scrollable Body */}
+        <div className="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 text-slate-900 dark:text-white">
+          
+          {/* TAB 1: FEED POSTS GRID */}
+          {activeTab === 'feed' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {INITIAL_INSTAGRAM_POSTS.slice(0, 6).map((post) => (
+                  <div
+                    key={post.id}
+                    onClick={() => setSelectedPost(post)}
+                    className="group relative aspect-square rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer border border-slate-200 dark:border-slate-700 hover:border-purple-500 transition-all shadow-xs"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-xl ${link.highlight ? 'bg-white/20 text-white' : 'bg-slate-100'}`}>
-                        {link.icon}
+                    <img
+                      src={post.mediaUrl}
+                      alt={post.caption}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end text-white">
+                      <div className="flex items-center justify-between text-xs font-bold">
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
+                          <span>{post.likes}</span>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>{post.commentsCount}</span>
+                        </span>
                       </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-extrabold text-xs group-hover:translate-x-0.5 transition-transform">
-                            {link.title}
-                          </span>
-                          {link.badge && (
-                            <span className={`px-1.5 py-0.2 rounded text-[9.5px] font-black uppercase ${
-                              link.highlight ? 'bg-white text-orange-700' : 'bg-orange-100 text-orange-800'
-                            }`}>
-                              {link.badge}
-                            </span>
-                          )}
-                        </div>
-                        <p className={`text-[10.5px] leading-tight ${link.highlight ? 'text-white/90' : 'text-slate-500'}`}>
-                          {link.subtitle}
-                        </p>
-                      </div>
+                      <span className="text-[10px] text-amber-300 font-bold truncate mt-1">
+                        🛍️ {post.title || 'Ver publicación'}
+                      </span>
                     </div>
-                    <ChevronRight className={`w-4 h-4 shrink-0 transition-transform group-hover:translate-x-1 ${
-                      link.highlight ? 'text-white' : 'text-slate-400'
-                    }`} />
-                  </button>
+                  </div>
                 ))}
               </div>
-            </div>
-          )}
 
-          {/* TAB 2: Smart Link & QR Code Generator for Instagram Posts/Stories */}
-          {selectedTab === 'link_generator' && (
-            <div className="space-y-3 bg-white p-4 rounded-2xl border border-slate-200">
-              <div>
-                <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">
-                  Generador de Smart Links con UTM & Descuentos
-                </h3>
-                <p className="text-[11px] text-slate-500 mt-0.5">
-                  Creá enlaces listos para pegar en el sticker de enlace de historias, bio o respuestas automáticas de ManyChat.
-                </p>
-              </div>
-
-              <div className="space-y-2.5 text-xs">
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    Categoría Destino:
-                  </label>
-                  <select
-                    value={customCategory}
-                    onChange={(e) => setCustomCategory(e.target.value as CategoryId)}
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-orange-500"
-                  >
-                    <option value="all">Todo el Catálogo</option>
-                    <option value="reposteria">🎂 Repostería y Pastelería</option>
-                    <option value="cotillon">🎈 Cotillón y Festejos</option>
-                    <option value="polietileno">🏭 Polietileno y Fábrica</option>
-                    <option value="descartables">🥤 Descartables Gastronómicos</option>
-                    <option value="envases">🧴 Envases y PET</option>
-                    <option value="libreria">📚 Librería y Comercial</option>
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                      Campaña / Origen:
-                    </label>
-                    <select
-                      value={customCampaign}
-                      onChange={(e) => setCustomCampaign(e.target.value)}
-                      className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-orange-500"
-                    >
-                      <option value="ig_story_promo">Historia de Instagram</option>
-                      <option value="ig_reel_viral">Reel de Instagram</option>
-                      <option value="ig_dm_auto">Respuesta DM / ManyChat</option>
-                      <option value="meta_ad_boost">Anuncio Pago Meta</option>
-                      <option value="qr_local">Cartel / QR en Mostrador</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                      Modo de Precios:
-                    </label>
-                    <select
-                      value={customMode}
-                      onChange={(e) => setCustomMode(e.target.value as any)}
-                      className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-orange-500"
-                    >
-                      <option value="minorista">Minorista</option>
-                      <option value="mayorista">Mayorista (Bulto)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                    Cupón de Descuento Auto-Aplicable:
-                  </label>
-                  <input
-                    type="text"
-                    value={customDiscount}
-                    onChange={(e) => setCustomDiscount(e.target.value.toUpperCase())}
-                    placeholder="Ej: KOALA10, REPOSTERIA15"
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold uppercase focus:ring-2 focus:ring-orange-500"
-                  >
-                  </input>
-                </div>
-
-                {/* Generated Link Box */}
-                <div className="pt-2">
-                  <span className="block text-[10.5px] font-bold text-slate-500 mb-1">Enlace Generado:</span>
-                  <div className="p-2.5 bg-slate-900 text-emerald-400 rounded-xl font-mono text-[10.5px] break-all border border-slate-800 flex items-center justify-between gap-2">
-                    <span>{generatedUrl}</span>
+              {selectedPost && (
+                <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 space-y-3 animate-in fade-in">
+                  <div className="flex items-center justify-between text-xs font-bold text-purple-900 dark:text-purple-200">
+                    <span className="flex items-center gap-1.5">
+                      <Tag className="w-4 h-4 text-purple-600" />
+                      <span>Producto Etiquetado en Publicación:</span>
+                    </span>
                     <button
-                      onClick={() => handleCopyLink(generatedUrl)}
-                      className="px-2.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-lg font-sans font-bold text-xs shrink-0 flex items-center gap-1 transition-colors cursor-pointer"
+                      onClick={() => setSelectedPost(null)}
+                      className="text-slate-400 hover:text-slate-600"
                     >
-                      {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedLink ? 'Copiado' : 'Copiar'}</span>
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <div>
+                      <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
+                        {selectedPost.title || 'Insumos Koala Lo Tiene'}
+                      </h4>
+                      <p className="text-xs text-slate-500">
+                        Publicado en @koalalotiene • Auto-DM activo con keyword
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onNavigateToStore) {
+                          onNavigateToStore();
+                          onClose();
+                        }
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs shadow-xs cursor-pointer"
+                    >
+                      Ver en Cotizador Web →
                     </button>
                   </div>
                 </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 2: INBOUND DM TEST */}
+          {activeTab === 'inbound_dm' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs space-y-2">
+                <div className="font-extrabold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+                  <ArrowDownLeft className="w-4 h-4 text-emerald-600" />
+                  <span>Probar Respuesta Inbound en Tiempo Real:</span>
+                </div>
+                <p className="text-slate-600 dark:text-slate-300">
+                  Escribí una palabra clave como <strong>PRECIO</strong>, <strong>MAYORISTA</strong>, <strong>POLIETILENO</strong> o <strong>MOLDES</strong> para simular el mensaje privado inmediato que recibe el usuario en Instagram:
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={simulatedComment}
+                    onChange={(e) => setSimulatedComment(e.target.value)}
+                    placeholder="Escribí tu comentario (Ej: PRECIO)..."
+                    className="flex-1 p-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCommentSent(true);
+                      setTimeout(() => setCommentSent(false), 3000);
+                    }}
+                    className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Enviar Comentario</span>
+                  </button>
+                </div>
+
+                {commentSent && (
+                  <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-2 border border-slate-800 shadow-md animate-in zoom-in-95">
+                    <div className="flex items-center justify-between text-[11px] text-emerald-400 font-bold">
+                      <span className="flex items-center gap-1">
+                        <Bot className="w-3.5 h-3.5" />
+                        <span>Respuesta Auto-DM @koalalotiene (&lt; 1s)</span>
+                      </span>
+                      <span className="font-mono text-[10px] text-slate-400">Meta Graph API</span>
+                    </div>
+                    <p className="text-xs text-slate-200 leading-relaxed">
+                      ¡Hola! 🐨 Gracias por comentar en <strong>@koalalotiene</strong>. Para consultar precios actualizados y armar tu presupuesto con envío a General Roca y Neuquén ingresá directamente a la tienda online: 
+                      <a href="https://koalalotiene.com.ar" target="_blank" rel="noreferrer" className="text-amber-400 underline font-bold ml-1">
+                        https://koalalotiene.com.ar/?src=ig_inbound
+                      </a>
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* TAB 3: Story & Post CTA Templates */}
-          {selectedTab === 'story_ctas' && (
-            <div className="space-y-3">
-              <div className="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2">
-                <span className="text-[10px] font-black text-orange-600 uppercase tracking-wider block">
-                  Plantilla 1: Sticker de Enlace para Historias
-                </span>
-                <p className="text-xs text-slate-700 font-medium bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                  "📲 ¡Mirá precios actualizados y stock en vivo de Roca y Neuquén! Tocá el sticker para armar tu pedido online 🛒👇"
+          {/* TAB 3: OUTBOUND BROADCAST */}
+          {activeTab === 'outbound_campaigns' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs space-y-2">
+                <div className="font-extrabold text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
+                  <Megaphone className="w-4 h-4 text-blue-600" />
+                  <span>Campañas Outbound & Ofertas Masivas WhatsApp:</span>
+                </div>
+                <p className="text-slate-600 dark:text-slate-300">
+                  Difusión proactiva de promociones de fábrica para compradores mayoristas de Río Negro y Neuquén:
                 </p>
-                <button
-                  onClick={() => handleCopyLink("📲 ¡Mirá precios actualizados y stock en vivo de Roca y Neuquén! Tocá el sticker para armar tu pedido online 🛒👇")}
-                  className="w-full py-1.5 bg-slate-900 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-slate-800 transition-colors cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>Copiar Texto para Story</span>
-                </button>
               </div>
 
-              <div className="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2">
-                <span className="text-[10px] font-black text-pink-600 uppercase tracking-wider block">
-                  Plantilla 2: Promo Repostería / Pastelería
-                </span>
-                <p className="text-xs text-slate-700 font-medium bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                  "🎂 ¿Tenés una fiesta o emprendimiento pastelero? Encontrá todos los moldes, chocolates e insumos con 10% OFF en nuestra web: www.koalalotiene.com.ar"
-                </p>
-                <button
-                  onClick={() => handleCopyLink("🎂 ¿Tenés una fiesta o emprendimiento pastelero? Encontrá todos los moldes, chocolates e insumos con 10% OFF en nuestra web: www.koalalotiene.com.ar")}
-                  className="w-full py-1.5 bg-slate-900 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-slate-800 transition-colors cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>Copiar Texto para Post / Reel</span>
-                </button>
-              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
+                  <div className="font-bold text-xs text-slate-900 dark:text-white">
+                    📦 Oferta Fábrica Polietileno (Bulto Cerrado)
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Enviado a 480 comercios registrados. Tasa de conversión: 18.6%
+                  </p>
+                  <a
+                    href="https://wa.me/5492984508899?text=Hola!%20Quisiera%20consultar%20lista%20mayorista%20de%20polietileno"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    <span>Consultar por WhatsApp</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
 
-              <div className="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-2">
-                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider block">
-                  Plantilla 3: Compras Mayoristas Bulto Cerrado
-                </span>
-                <p className="text-xs text-slate-700 font-medium bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                  "📦 ¿Buscás polietileno y descartables directo de fábrica? Cotizá por bulto cerrado y recibí en tu comercio en 24/48 hs. 🚛"
-                </p>
-                <button
-                  onClick={() => handleCopyLink("📦 ¿Buscás polietileno y descartables directo de fábrica? Cotizá por bulto cerrado y recibí en tu comercio en 24/48 hs. 🚛")}
-                  className="w-full py-1.5 bg-slate-900 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 hover:bg-slate-800 transition-colors cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>Copiar Texto Mayorista</span>
-                </button>
+                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-2">
+                  <div className="font-bold text-xs text-slate-900 dark:text-white">
+                    🎂 Lanzamiento Moldes Repostería Temporada
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Enviado a 320 reposteros del Alto Valle. Tasa de conversión: 21.2%
+                  </p>
+                  <a
+                    href="https://wa.me/5492984508899?text=Hola!%20Quisiera%20consultar%20moldes%20de%20reposteria"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    <span>Consultar por WhatsApp</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
               </div>
             </div>
           )}
-        </div>
 
-        {/* Modal Footer */}
-        <div className="p-3 bg-white border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
-          <span>Instagram: <strong>@koalalotiene</strong></span>
-          <button
-            onClick={() => onSelectCategoryAndClose('all')}
-            className="px-3 py-1.5 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-500 transition-colors cursor-pointer flex items-center gap-1"
-          >
-            <span>Ir a la Tienda</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
         </div>
       </div>
     </div>
