@@ -11,6 +11,7 @@
     "clean": "rm -rf dist server.js",
     "build:pdf": "node scripts/convert-md-to-pdf.js",
     "archive:docs": "node scripts/archive-obsolete-docs.js",
+    "merge:docs": "node scripts/merge-docs.js",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

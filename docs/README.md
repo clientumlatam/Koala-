@@ -9,6 +9,7 @@ Este repositorio contiene toda la documentación técnica, comercial y operativa
 ```
 /docs/
 ├── README.md                                                 # Este índice maestro
+├── DOCUMENTO_MAESTRO_COMPLETO_KOALA.md                       # DOCUMENTO MAESTRO COMPLETO UNIFICADO (MD + PDF)
 │
 ├── 00-entregables-cliente/                                   # PAQUETE FINAL ORGANIZADO POR DESTINATARIO
 │   ├── README_GUIA_DE_ENVIO.md                               # Guía de despacho paso a paso por canal
@@ -18,6 +19,7 @@ Este repositorio contiene toda la documentación técnica, comercial y operativa
 │   └── 04-sistemas-y-migracion-dns/                          # Planilla de registros DNS y checklist
 │
 ├── 01-comercial/                                             # Propuestas, cartas de oferta y estrategia
+│   ├── 00_COMPENDIO_COMERCIAL_UNIFICADO.md                   # Compendio unificado del módulo comercial (MD + PDF)
 │   ├── 01_propuesta_unificada_koala.md                       # Propuesta integral: Cotillón (LP SRL) + Ferretería
 │   ├── 02_email_propuesta_mikhail.md                         # Plantilla de email comercial para Mikhail Murekian
 │   ├── 03_puntos_de_dolor_redes_ecommerce_erp.md             # Flujo priorizado: Redes → E-Commerce → ERP
