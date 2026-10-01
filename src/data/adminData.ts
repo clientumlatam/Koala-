@@ -73,6 +73,16 @@ export const INITIAL_EMPLOYEES: EmployeeUser[] = [
     active: true,
     lastLogin: 'Hoy, 17:00 hs',
   },
+  {
+    id: 'emp-7',
+    name: 'Rafael González (ICXN ERP)',
+    email: 'rgonzalez@icxn.com.ar',
+    password: 'icxn',
+    role: 'proveedor_erp',
+    branchId: 'todas',
+    active: true,
+    lastLogin: 'Hoy, 17:30 hs',
+  },
 ];
 
 export const INITIAL_ERP_CONFIG: ErpConnectionConfig = {

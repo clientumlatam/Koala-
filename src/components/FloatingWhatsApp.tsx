@@ -749,7 +749,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
   const isCartBarActive = hasCartItems || (typeof document !== 'undefined' && !!document.querySelector('.mobile-cart-bar'));
 
   return (
-    <div className={`fixed ${isCartBarActive ? 'bottom-20 sm:bottom-24 md:bottom-6' : 'bottom-5 sm:bottom-6'} right-4 sm:right-5 z-40 flex flex-col items-end transition-all duration-300 pb-safe mb-safe max-h-[calc(100vh-120px)]`}>
+    <div className={`fixed ${isCartBarActive ? 'bottom-20 sm:bottom-24 md:bottom-6' : 'bottom-5 sm:bottom-6'} right-3 sm:right-5 z-40 flex flex-col items-end transition-all duration-300 pb-safe mb-safe max-h-[calc(100vh-100px)]`}>
       {/* Floating Dialog / Popup */}
       <AnimatePresence>
         {isOpen && (
@@ -758,7 +758,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="mb-3 w-90 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[calc(100vh-150px)]"
+            className="mb-3 w-[calc(100vw-1.5rem)] max-w-sm sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[calc(100vh-140px)] sm:max-h-[580px]"
           >
             {/* WhatsApp Header */}
             <div

@@ -161,21 +161,21 @@ export const InstitutionalPageModal: React.FC<InstitutionalPageModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/80 shrink-0">
-          <div className="flex items-center gap-2.5">
-            {page === 'arrepentimiento' && <RotateCcw className="w-5 h-5 text-rose-600" />}
-            {page === 'contacto' && <Phone className="w-5 h-5 text-orange-600" />}
-            {page === 'derechos-datos' && <ShieldCheck className="w-5 h-5 text-indigo-600" />}
-            {page === 'faq' && <HelpCircle className="w-5 h-5 text-amber-600" />}
-            {page === 'ofertas' && <Percent className="w-5 h-5 text-rose-600" />}
-            {page === 'politicas-devolucion' && <RotateCcw className="w-5 h-5 text-blue-600" />}
-            {page === 'privacidad' && <ShieldCheck className="w-5 h-5 text-emerald-600" />}
-            {page === 'servicio-tecnico' && <Factory className="w-5 h-5 text-orange-600" />}
-            {page === 'sucursales' && <MapPin className="w-5 h-5 text-orange-600" />}
-            {page === 'terminos' && <FileText className="w-5 h-5 text-slate-700" />}
-            {page === 'trabaja' && <Briefcase className="w-5 h-5 text-purple-600" />}
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-200 bg-slate-50/80 shrink-0 gap-2">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            {page === 'arrepentimiento' && <RotateCcw className="w-5 h-5 text-rose-600 shrink-0" />}
+            {page === 'contacto' && <Phone className="w-5 h-5 text-orange-600 shrink-0" />}
+            {page === 'derechos-datos' && <ShieldCheck className="w-5 h-5 text-indigo-600 shrink-0" />}
+            {page === 'faq' && <HelpCircle className="w-5 h-5 text-amber-600 shrink-0" />}
+            {page === 'ofertas' && <Percent className="w-5 h-5 text-rose-600 shrink-0" />}
+            {page === 'politicas-devolucion' && <RotateCcw className="w-5 h-5 text-blue-600 shrink-0" />}
+            {page === 'privacidad' && <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />}
+            {page === 'servicio-tecnico' && <Factory className="w-5 h-5 text-orange-600 shrink-0" />}
+            {page === 'sucursales' && <MapPin className="w-5 h-5 text-orange-600 shrink-0" />}
+            {page === 'terminos' && <FileText className="w-5 h-5 text-slate-700 shrink-0" />}
+            {page === 'trabaja' && <Briefcase className="w-5 h-5 text-purple-600 shrink-0" />}
 
-            <h3 className="text-base sm:text-lg font-bold font-fredoka text-slate-900 capitalize">
+            <h3 className="text-sm sm:text-lg font-bold font-fredoka text-slate-900 truncate">
               {page === 'arrepentimiento' && 'Botón de Arrepentimiento (Res. 424/2020)'}
               {page === 'contacto' && 'Contacto y Atención Comercial'}
               {page === 'derechos-datos' && 'Protección de Datos Personales (Ley 25.326)'}

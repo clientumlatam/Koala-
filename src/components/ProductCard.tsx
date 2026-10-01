@@ -309,8 +309,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </>
             ) : (
               <>
-                <ShoppingCart className="w-4 h-4" />
-                <span>Agregar al Cotizador</span>
+                <ShoppingCart className="w-4 h-4 shrink-0" />
+                <span className="hidden sm:inline">Agregar al Cotizador</span>
+                <span className="sm:hidden">Agregar al Pedido</span>
               </>
             )}
           </button>

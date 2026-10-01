@@ -136,25 +136,25 @@ export const StoreLocationsSection: React.FC<StoreLocationsSectionProps> = ({
                 </div>
 
                 {/* Buttons Bar */}
-                <div className="pt-2 flex flex-wrap items-center gap-3">
+                <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
                   <a
                     href={b.mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                    className="flex-1 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all text-center"
                   >
-                    <Navigation className="w-4 h-4 text-orange-400" />
+                    <Navigation className="w-4 h-4 text-orange-400 shrink-0" />
                     <span>Cómo llegar en Google Maps</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                   </a>
 
                   <a
                     href={`https://wa.me/${b.whatsapp}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all"
+                    className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center"
                   >
-                    <MessageCircle className="w-4 h-4" />
+                    <MessageCircle className="w-4 h-4 shrink-0" />
                     <span>Enviar Mensaje</span>
                   </a>
                 </div>
@@ -164,9 +164,9 @@ export const StoreLocationsSection: React.FC<StoreLocationsSectionProps> = ({
         </div>
 
         {/* Social Media & Contact Info */}
-        <div className="bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-3xl p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-3xl p-5 sm:p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-center md:text-left">
-            <h3 className="text-2xl font-black font-fredoka">
+            <h3 className="text-xl sm:text-2xl font-black font-fredoka">
               ¡Seguinos en Redes Sociales!
             </h3>
             <p className="text-xs text-orange-100 max-w-xl">
@@ -174,14 +174,14 @@ export const StoreLocationsSection: React.FC<StoreLocationsSectionProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             <a
               href="https://www.instagram.com/koalalotiene"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 font-bold text-xs transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 font-bold text-xs transition-colors text-center"
             >
-              <Instagram className="w-4 h-4 text-pink-300" />
+              <Instagram className="w-4 h-4 text-pink-300 shrink-0" />
               <span>@koalalotiene (Roca)</span>
             </a>
 
@@ -189,9 +189,9 @@ export const StoreLocationsSection: React.FC<StoreLocationsSectionProps> = ({
               href="https://www.facebook.com/koalalotiene"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 font-bold text-xs transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 font-bold text-xs transition-colors text-center"
             >
-              <Facebook className="w-4 h-4 text-blue-300" />
+              <Facebook className="w-4 h-4 text-blue-300 shrink-0" />
               <span>Facebook Koala</span>
             </a>
           </div>

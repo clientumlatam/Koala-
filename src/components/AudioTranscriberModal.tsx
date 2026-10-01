@@ -229,28 +229,28 @@ export const AudioTranscriberModal: React.FC<AudioTranscriberModalProps> = ({
         className="w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Header */}
-        <div className="px-6 py-4.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 text-white flex items-center justify-between shadow-xs">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-white/20 backdrop-blur-md text-white shadow-inner">
+        <div className="px-4 py-3 sm:px-6 sm:py-4.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 text-white flex items-center justify-between shadow-xs shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-2 sm:p-2.5 rounded-2xl bg-white/20 backdrop-blur-md text-white shadow-inner shrink-0">
               <AudioLines className="w-5 h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-extrabold font-fredoka tracking-wide">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <h3 className="text-sm sm:text-base font-extrabold font-fredoka tracking-wide truncate">
                   Transcribir Audio
                 </h3>
-                <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-white/25 text-white tracking-wider">
-                  gemini-3.5-transcribe
+                <span className="text-[9px] sm:text-[10px] uppercase font-black px-1.5 sm:px-2 py-0.5 rounded-full bg-white/25 text-white tracking-wider">
+                  gemini
                 </span>
               </div>
-              <p className="text-xs text-orange-100">
+              <p className="text-[11px] sm:text-xs text-orange-100 truncate">
                 Dictá tu consulta con el micrófono y convertila a texto con IA
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer shrink-0 ml-2"
             title="Cerrar ventana"
           >
             <X className="w-5 h-5" />

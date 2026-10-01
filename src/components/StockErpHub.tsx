@@ -367,44 +367,44 @@ export const StockErpHub: React.FC<StockErpHubProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setIsCreatingNewProduct(true)}
-              className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              className="px-3 sm:px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Agregar Nuevo Producto</span>
+              <span>Nuevo Producto</span>
             </button>
 
             <button
               onClick={() => setShowManualMovementModal(true)}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-xs flex items-center gap-1.5 border border-slate-700 transition-all cursor-pointer"
+              className="px-3 sm:px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-bold text-xs flex items-center gap-1.5 border border-slate-700 transition-all cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 text-orange-400" />
-              <span>Nuevo Movimiento Manual</span>
+              <span>Movimiento Manual</span>
             </button>
 
             <button
               onClick={handleExportFullCatalogCsv}
-              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              className="px-3 sm:px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
               title="Exportar catálogo completo con todas las columnas a CSV"
             >
               <FileSpreadsheet className="w-3.5 h-3.5" />
-              <span>Exportar CSV Completo</span>
+              <span>Exportar CSV</span>
             </button>
 
             <button
               onClick={onOpenTransferModal}
-              className="px-3.5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              className="px-3 sm:px-3.5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
             >
               <ArrowRightLeft className="w-3.5 h-3.5" />
-              <span>Transferir Stock (Remito)</span>
+              <span>Transferir (Remito)</span>
             </button>
           </div>
         </div>
 
         {/* Multi-branch KPI Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 mt-4 border-t border-slate-800 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-4 mt-4 border-t border-slate-800 text-xs">
           <div className="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
             <div className="flex items-center justify-between text-slate-400 text-[10px] font-bold">
               <span>Depósito General Roca</span>
@@ -460,7 +460,7 @@ export const StockErpHub: React.FC<StockErpHubProps> = ({
       </div>
 
       {/* Sub-tab Navigation Bar */}
-      <div className="flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1.5 rounded-2xl shadow-2xs overflow-x-auto">
+      <div className="flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1.5 rounded-2xl shadow-2xs overflow-x-auto no-scrollbar overscroll-x-contain">
         <button
           onClick={() => setSubTab('inventory')}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ${

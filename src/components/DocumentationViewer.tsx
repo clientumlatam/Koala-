@@ -856,7 +856,7 @@ ${accessibleDocs.map((doc, idx) => `${idx + 1}. **[${doc.title}](#doc-${doc.id})
         </div>
 
         {/* List of accessible documents */}
-        <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
+        <div className="flex-1 max-h-52 sm:max-h-64 lg:max-h-none overflow-y-auto divide-y divide-slate-100">
           {filteredDocs.length === 0 ? (
             <div className="p-6 text-center text-xs text-slate-400">
               No se encontraron documentos con el criterio seleccionado.
@@ -867,8 +867,16 @@ ${accessibleDocs.map((doc, idx) => `${idx + 1}. **[${doc.title}](#doc-${doc.id})
               return (
                 <button
                   key={doc.id}
-                  onClick={() => setSelectedDocId(doc.id)}
-                  className={`w-full text-left p-3.5 transition-all flex flex-col gap-1.5 ${
+                  onClick={() => {
+                    setSelectedDocId(doc.id);
+                    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                      const readerEl = document.getElementById('doc-reader-pane');
+                      if (readerEl) {
+                        readerEl.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }
+                  }}
+                  className={`w-full text-left p-3.5 transition-all flex flex-col gap-1.5 cursor-pointer ${
                     isSelected
                       ? doc.requiresClientumSupport 
                         ? 'bg-indigo-50/70 border-l-4 border-indigo-600 pl-3' 
@@ -920,7 +928,7 @@ ${accessibleDocs.map((doc, idx) => `${idx + 1}. **[${doc.title}](#doc-${doc.id})
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col bg-white overflow-hidden">
+      <div id="doc-reader-pane" className="flex-1 flex flex-col bg-white overflow-hidden">
         {isSelectedDocRestricted ? (
           /* Access Restricted Shield Screen */
           <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-slate-50">

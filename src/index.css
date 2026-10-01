@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
+/* Touch, Smooth Scroll, and Mobile Safe Area Utilities */
+.safe-bottom {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.mb-safe {
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.overscroll-contain {
+  overscroll-behavior: contain;
+}
+
+/* Hide scrollbar while preserving scroll functionality */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar,
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Global Print Styles for High-Quality PDF & Print Exports */
 @media print {
   /* Page Setup: A4 Portrait with standardized margins */

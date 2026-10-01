@@ -76,7 +76,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   <span>Fábrica de Polietileno & Distribuidora · Alto Valle</span>
                 </div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-fredoka tracking-tight text-white leading-[1.05]">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-fredoka tracking-tight text-white leading-[1.1] sm:leading-[1.05]">
                   Todo para tu comercio <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-400">
                     y tus eventos.
@@ -87,10 +87,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   Bolsas de polietileno, film stretch, insumos gastronómicos, descartables y cotillón para profesionales, comercios y el hogar en <strong>General Roca</strong> (Av. Roca 1350) y <strong>Neuquén Capital</strong> (Mitre 678).
                 </p>
 
-                <div className="flex flex-wrap items-center gap-3 pt-3">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-3">
                   <button
                     onClick={onScrollToCatalog}
-                    className="px-6 py-3.5 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 transform hover:-translate-y-0.5 cursor-pointer"
+                    className="w-full sm:w-auto justify-center px-6 py-3.5 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 transform hover:-translate-y-0.5 cursor-pointer active:scale-95"
                   >
                     <span>Ver Catálogo & Ofertas</span>
                     <ArrowRight className="w-4 h-4" />
@@ -98,7 +98,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
                   <button
                     onClick={onScrollToLocations}
-                    className="px-5 py-3.5 rounded-2xl border-2 border-white/80 hover:bg-white hover:text-slate-950 text-white font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer"
+                    className="w-full sm:w-auto justify-center px-5 py-3.5 rounded-2xl border-2 border-white/80 hover:bg-white hover:text-slate-950 text-white font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer active:scale-95"
                   >
                     <MapPin className="w-4 h-4" />
                     <span>Sucursales Roca & Nqn</span>
@@ -171,51 +171,51 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       {/* ========================================================================= */}
       {/* SECCIÓN 2 — BARRA DE BENEFICIOS (Fondo Oscuro #0C0D0D)                   */}
       {/* ========================================================================= */}
-      <section className="bg-[#0C0D0D] text-white py-5 px-4 border-b border-slate-800">
+      <section className="bg-[#0C0D0D] text-white py-4 sm:py-5 px-3 sm:px-4 border-b border-slate-800">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-800">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
             
             {/* Beneficio 1 */}
-            <div className="flex items-center gap-3.5 pt-2 sm:pt-0 sm:px-4">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-orange-400 shrink-0 border border-slate-800">
-                <Truck className="w-5 h-5" />
+            <div className="flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-0 rounded-2xl bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0 min-w-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-900 flex items-center justify-center text-orange-400 shrink-0 border border-slate-800">
+                <Truck className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <h4 className="text-xs sm:text-sm font-bold text-white">Envíos al Alto Valle</h4>
-                <p className="text-[11px] text-slate-400">Roca, Neuquén y ciudades vecinas</p>
+              <div className="min-w-0">
+                <h4 className="text-xs sm:text-sm font-bold text-white truncate">Envíos Alto Valle</h4>
+                <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">Roca, Nqn y zona</p>
               </div>
             </div>
 
             {/* Beneficio 2 */}
-            <div className="flex items-center gap-3.5 pt-2 sm:pt-0 sm:px-4">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-emerald-400 shrink-0 border border-slate-800">
-                <ShieldCheck className="w-5 h-5" />
+            <div className="flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-0 rounded-2xl bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0 min-w-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-900 flex items-center justify-center text-emerald-400 shrink-0 border border-slate-800">
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <h4 className="text-xs sm:text-sm font-bold text-white">Garantía de Fábrica</h4>
-                <p className="text-[11px] text-slate-400">Micrones reales y sellado industrial</p>
+              <div className="min-w-0">
+                <h4 className="text-xs sm:text-sm font-bold text-white truncate">Garantía Fábrica</h4>
+                <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">Micrones reales</p>
               </div>
             </div>
 
             {/* Beneficio 3 */}
-            <div className="flex items-center gap-3.5 pt-2 sm:pt-0 sm:px-4">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-blue-400 shrink-0 border border-slate-800">
-                <CreditCard className="w-5 h-5" />
+            <div className="flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-0 rounded-2xl bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0 min-w-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-900 flex items-center justify-center text-blue-400 shrink-0 border border-slate-800">
+                <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <h4 className="text-xs sm:text-sm font-bold text-white">Cuotas sin Interés</h4>
-                <p className="text-[11px] text-slate-400">BPN Confiable & 10% OFF transf.</p>
+              <div className="min-w-0">
+                <h4 className="text-xs sm:text-sm font-bold text-white truncate">Cuotas sin Interés</h4>
+                <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">BPN & 10% OFF transf.</p>
               </div>
             </div>
 
             {/* Beneficio 4 */}
-            <div className="flex items-center gap-3.5 pt-2 sm:pt-0 sm:px-4">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-amber-400 shrink-0 border border-slate-800">
-                <Headphones className="w-5 h-5" />
+            <div className="flex items-center gap-2.5 sm:gap-3.5 p-2.5 sm:p-0 rounded-2xl bg-slate-900/60 sm:bg-transparent border border-slate-800/80 sm:border-0 min-w-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-900 flex items-center justify-center text-amber-400 shrink-0 border border-slate-800">
+                <Headphones className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <h4 className="text-xs sm:text-sm font-bold text-white">Asesoramiento Directo</h4>
-                <p className="text-[11px] text-slate-400">Lun–Vie 8:30–12:30 y 16–20 hs</p>
+              <div className="min-w-0">
+                <h4 className="text-xs sm:text-sm font-bold text-white truncate">Asesoramiento</h4>
+                <p className="text-[10px] sm:text-[11px] text-slate-400 truncate">Atención directa</p>
               </div>
             </div>
 
@@ -266,11 +266,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       {/* ========================================================================= */}
       <section className="py-8 px-4 bg-slate-50 border-b border-slate-200">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             
-            <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-                <CreditCard className="w-8 h-8 text-blue-600" />
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+                <CreditCard className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" />
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -279,7 +279,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   </span>
                   <span className="text-xs text-slate-500 font-medium">Banco Provincia del Neuquén</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold font-fredoka text-slate-900">
+                <h3 className="text-lg sm:text-2xl font-bold font-fredoka text-slate-900 leading-snug">
                   3 y 6 Cuotas sin Interés con BPN Confiable
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 max-w-xl">
@@ -288,11 +288,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full md:w-auto shrink-0">
               {onOpenInstitutional && (
                 <button
                   onClick={() => onOpenInstitutional('ofertas')}
-                  className="px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer"
+                  className="px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer text-center"
                 >
                   Ver Promociones
                 </button>
@@ -301,7 +301,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 href={`https://wa.me/${currentBranch.whatsapp}?text=Hola!%20Quiero%20consultar%20por%20las%20cuotas%20sin%20interes%20con%20BPN`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors flex items-center gap-2 cursor-pointer shadow-sm shadow-emerald-600/20"
+                className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm shadow-emerald-600/20 text-center"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Consultar por WhatsApp</span>

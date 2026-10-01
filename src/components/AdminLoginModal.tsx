@@ -47,7 +47,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
     ventas: { title: 'Ejecutivo de Ventas', color: 'bg-orange-100 text-orange-900 border-orange-300 dark:bg-orange-950/80 dark:text-orange-200 dark:border-orange-800', badge: '💼 Ventas' },
     deposito: { title: 'Logística y Depósito', color: 'bg-blue-100 text-blue-900 border-blue-300 dark:bg-blue-950/80 dark:text-blue-200 dark:border-blue-800', badge: '📦 Depósito' },
     facturacion: { title: 'Administración y ERP', color: 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-200 dark:border-emerald-800', badge: '🧾 Facturación' },
-    backend: { title: 'Backend & Integraciones ERP', color: 'bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-800', badge: '⚙️ Backend & Integraciones' },
+    backend: { title: 'Soporte Clientum', color: 'bg-indigo-100 text-indigo-900 border-indigo-300 dark:bg-indigo-950/80 dark:text-indigo-200 dark:border-indigo-800', badge: '🛠️ Soporte Clientum' },
+    proveedor_erp: { title: 'Proveedor ERP (ICXN)', color: 'bg-cyan-100 text-cyan-900 border-cyan-300 dark:bg-cyan-950/80 dark:text-cyan-200 dark:border-cyan-800', badge: '🔌 Proveedor ERP ICXN' },
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -96,29 +97,29 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
         </div>
       )}
 
-      <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col my-auto">
         
         {/* Header */}
-        <div className="bg-slate-950 text-white p-5 sm:p-6 border-b border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 p-0.5 shadow-md flex items-center justify-center">
+        <div className="bg-slate-950 text-white p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 p-0.5 shadow-md flex items-center justify-center shrink-0">
               <div className="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center">
                 <Lock className="w-5 h-5 text-orange-400" />
               </div>
             </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg font-black font-fredoka text-white">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <h2 className="text-base sm:text-lg font-black font-fredoka text-white truncate">
                   Acceso de Personal & ERP
                 </h2>
-                <span className="px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-bold">
+                <span className="px-1.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[9px] sm:text-[10px] font-bold">
                   Koala Lo Tiene
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[10px] font-mono font-bold">
+                <span className="px-1.5 py-0.5 rounded-full bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[9px] sm:text-[10px] font-mono font-bold hidden sm:inline">
                   /admin
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-[11px] sm:text-xs text-slate-400 truncate">
                 Portal interno para sucursales General Roca y Neuquén Capital
               </p>
             </div>
@@ -127,7 +128,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
           {!isStandalonePage && (
             <button
               onClick={onClose}
-              className="p-2 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+              className="p-2 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0 ml-2"
               aria-label="Cerrar modal"
             >
               <X className="w-5 h-5" />
@@ -135,16 +136,16 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
           )}
         </div>
 
-        <div className="p-5 sm:p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1">
           
           {/* Quick Access Account Selector */}
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Users className="w-3.5 h-3.5 text-orange-500" />
                 <span>Cuentas de Acceso Rápido por Rol:</span>
               </label>
-              <span className="text-[10px] text-slate-400 font-medium">Click para autocompletar</span>
+              <span className="text-[10px] text-slate-400 font-medium hidden sm:inline">Click para autocompletar</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">

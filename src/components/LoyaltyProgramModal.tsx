@@ -181,33 +181,33 @@ export const LoyaltyProgramModal: React.FC<LoyaltyProgramModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 my-auto animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xs p-2 sm:p-6 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 my-auto animate-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col">
         
         {/* Modal Header */}
-        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-orange-950 text-white p-6 relative">
+        <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-orange-950 text-white p-4 sm:p-6 relative shrink-0">
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+            className="absolute right-3 top-3 sm:right-4 sm:top-4 p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-white p-1.5 shadow-lg shadow-orange-500/30 shrink-0 flex items-center justify-center">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pr-8 sm:pr-0">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-white p-1 sm:p-1.5 shadow-lg shadow-orange-500/30 shrink-0 flex items-center justify-center">
                 <KoalaLogo size="sm" variant="mascot-only" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-xl sm:text-2xl font-black font-fredoka text-white">
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                  <h2 className="text-lg sm:text-2xl font-black font-fredoka text-white truncate">
                     Club Koala Lo Tiene
                   </h2>
-                  <span className="px-2.5 py-0.5 rounded-full bg-orange-500/30 text-orange-300 border border-orange-400/40 text-[10px] font-black uppercase tracking-wide">
-                    Programa de Fidelidad
+                  <span className="px-2 py-0.5 rounded-full bg-orange-500/30 text-orange-300 border border-orange-400/40 text-[9px] sm:text-[10px] font-black uppercase tracking-wide">
+                    Fidelidad
                   </span>
                 </div>
-                <p className="text-xs text-slate-300 mt-0.5">
+                <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 line-clamp-2">
                   Acumulá puntos con cada compra y sellá tu Tarjeta Digital para obtener descuentos.
                 </p>
               </div>
@@ -215,10 +215,10 @@ export const LoyaltyProgramModal: React.FC<LoyaltyProgramModalProps> = ({
 
             {/* Loyalty Status Badge if Logged In */}
             {loyaltyProfile && (
-              <div className="bg-slate-900/90 border border-slate-700 p-3 rounded-2xl flex items-center gap-3 self-start sm:self-auto shadow-md">
-                <div className="text-right">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Puntos Disponibles</div>
-                  <div className="text-2xl font-black text-amber-400 font-fredoka leading-none">
+              <div className="bg-slate-900/90 border border-slate-700 p-2.5 sm:p-3 rounded-2xl flex items-center gap-3 self-start sm:self-auto shadow-md">
+                <div className="text-left sm:text-right">
+                  <div className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Puntos Disponibles</div>
+                  <div className="text-xl sm:text-2xl font-black text-amber-400 font-fredoka leading-none">
                     {loyaltyProfile.pointsBalance} <span className="text-xs font-bold text-amber-200">pts</span>
                   </div>
                 </div>

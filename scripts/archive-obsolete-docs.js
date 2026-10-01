@@ -16,7 +16,14 @@ const KNOWN_OBSOLETE_FILES = [
   'koala-mensaje-y-dns.docx',
   'koala-revision-bundle.docx',
   'WhatsApp Ptt 2026-09-30 at 12.08.07.ogg',
-  'WhatsApp Ptt 2026-09-30 at 17.14.58.ogg'
+  'WhatsApp Ptt 2026-09-30 at 17.14.58.ogg',
+  '00_COMPENDIO_COMERCIAL_UNIFICADO.md',
+  '00_COMPENDIO_COMERCIAL_UNIFICADO.pdf',
+  '00_COMPENDIO_TECNICO_Y_ERP_UNIFICADO.md',
+  '00_COMPENDIO_TECNICO_Y_ERP_UNIFICADO.pdf',
+  '00_COMPENDIO_DEMO_Y_MEET_UNIFICADO.md',
+  '00_COMPENDIO_DEMO_Y_MEET_UNIFICADO.pdf',
+  'propuesta-cotillon.html'
 ];
 
 // Patterns matching obsolete or draft file names

@@ -365,12 +365,12 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
       <div className="bg-white dark:bg-slate-900 w-full max-w-2xl h-full sm:h-[94vh] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
         
         {/* Header Bar */}
-        <div className="bg-slate-950 text-white p-5 flex items-center justify-between border-b border-slate-800">
-          <div className="flex items-center gap-3">
+        <div className="bg-slate-950 text-white p-3.5 sm:p-5 flex items-center justify-between border-b border-slate-800 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             {checkoutStep > 1 && checkoutStep < 4 && (
               <button
                 onClick={() => setCheckoutStep((prev) => (prev - 1) as any)}
-                className="p-1.5 rounded-xl bg-slate-850 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer mr-1"
+                className="p-1.5 rounded-xl bg-slate-850 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer mr-0.5 sm:mr-1 shrink-0"
                 title="Volver al paso anterior"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -380,28 +380,29 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
             <div className="bg-white p-1 rounded-xl shadow-md flex items-center justify-center shrink-0">
               <KoalaLogo size="xs" variant="mascot-only" />
             </div>
-            <div>
+            <div className="min-w-0 truncate">
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold font-fredoka">
-                  {checkoutStep === 4 ? '¡Pedido Confirmado!' : 'Carrito & Checkout E-Commerce'}
+                <h2 className="text-base sm:text-lg font-bold font-fredoka truncate">
+                  {checkoutStep === 4 ? '¡Pedido Confirmado!' : 'Carrito & Checkout'}
                 </h2>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-[11px] sm:text-xs text-slate-400 truncate">
                 Sucursal: <strong className="text-orange-400">{currentBranch.name}</strong>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {checkoutStep === 4 && (
               <button
                 type="button"
                 onClick={handleExportPDF}
                 disabled={isExportingPdf}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-[11px] sm:text-xs font-bold transition-colors cursor-pointer"
               >
                 <FileDown className="w-4 h-4" />
-                <span>{isExportingPdf ? 'Generando...' : 'Descargar Recibo PDF'}</span>
+                <span className="hidden sm:inline">{isExportingPdf ? 'Generando...' : 'Descargar Recibo PDF'}</span>
+                <span className="sm:hidden">Recibo PDF</span>
               </button>
             )}
 
@@ -417,26 +418,26 @@ export const PresupuestadorModal: React.FC<PresupuestadorModalProps> = ({
 
         {/* Step Progress Tracker */}
         {checkoutStep < 4 && cartItems.length > 0 && (
-          <div className="bg-slate-900 text-slate-400 px-5 py-2.5 border-b border-slate-800 flex items-center justify-between text-xs font-semibold">
-            <div className={`flex items-center gap-1.5 ${checkoutStep === 1 ? 'text-orange-400 font-extrabold' : 'text-slate-400'}`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] ${checkoutStep === 1 ? 'bg-orange-600 text-white' : 'bg-slate-800 text-slate-400'}`}>1</span>
+          <div className="bg-slate-900 text-slate-400 px-3 sm:px-5 py-2 sm:py-2.5 border-b border-slate-800 flex items-center justify-between text-[11px] sm:text-xs font-semibold shrink-0">
+            <div className={`flex items-center gap-1 sm:gap-1.5 ${checkoutStep === 1 ? 'text-orange-400 font-extrabold' : 'text-slate-400'}`}>
+              <span className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] ${checkoutStep === 1 ? 'bg-orange-600 text-white' : 'bg-slate-800 text-slate-400'}`}>1</span>
               <span>1. Carrito</span>
             </div>
             <span className="text-slate-700">›</span>
-            <div className={`flex items-center gap-1.5 ${checkoutStep === 2 ? 'text-orange-400 font-extrabold' : 'text-slate-400'}`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] ${checkoutStep === 2 ? 'bg-orange-600 text-white' : 'bg-slate-800 text-slate-400'}`}>2</span>
-              <span>2. Entrega & Facturación</span>
+            <div className={`flex items-center gap-1 sm:gap-1.5 ${checkoutStep === 2 ? 'text-orange-400 font-extrabold' : 'text-slate-400'}`}>
+              <span className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] ${checkoutStep === 2 ? 'bg-orange-600 text-white' : 'bg-slate-800 text-slate-400'}`}>2</span>
+              <span>2. Entrega</span>
             </div>
             <span className="text-slate-700">›</span>
-            <div className={`flex items-center gap-1.5 ${checkoutStep === 3 ? 'text-orange-400 font-extrabold' : 'text-slate-400'}`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] ${checkoutStep === 3 ? 'bg-orange-600 text-white' : 'bg-slate-800 text-slate-400'}`}>3</span>
+            <div className={`flex items-center gap-1 sm:gap-1.5 ${checkoutStep === 3 ? 'text-orange-400 font-extrabold' : 'text-slate-400'}`}>
+              <span className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] ${checkoutStep === 3 ? 'bg-orange-600 text-white' : 'bg-slate-800 text-slate-400'}`}>3</span>
               <span>3. Pago</span>
             </div>
           </div>
         )}
 
         {/* Main Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-6">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 space-y-4 sm:space-y-6 pb-24 sm:pb-6">
           {cartItems.length > 0 ? (
             <>
               {/* STEP 1: SHOPPING CART & LOYALTY COUPON SELECTION */}

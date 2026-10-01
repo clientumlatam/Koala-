@@ -30,7 +30,10 @@ const MODULES = [
 ];
 
 function mergeSubfolder(moduleInfo) {
-  const folderPath = path.join(DOCS_DIR, moduleInfo.folder);
+  let folderPath = path.join(DOCS_DIR, moduleInfo.folder);
+  if (!fs.existsSync(folderPath)) {
+    folderPath = path.join(DOCS_DIR, 'archivo', 'borradores-previos', moduleInfo.folder);
+  }
   if (!fs.existsSync(folderPath)) return null;
 
   const files = fs.readdirSync(folderPath)

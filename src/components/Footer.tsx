@@ -46,7 +46,7 @@ export const Footer: React.FC<FooterProps> = ({
   };
 
   return (
-    <footer className="bg-slate-950 text-slate-400 text-xs border-t border-slate-900 pt-12 pb-8">
+    <footer className="bg-slate-950 text-slate-400 text-xs border-t border-slate-900 pt-10 sm:pt-12 pb-28 md:pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
         {/* Banner Legal Obligatorio: Botón de Arrepentimiento (Resolución 424/2020) */}
