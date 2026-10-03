@@ -79,7 +79,14 @@ const ProductListRow: React.FC<{
       <div className="sm:col-span-5 flex items-center gap-3 w-full min-w-0">
         <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 relative">
           {product.image ? (
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+            <img 
+              src={product.image} 
+              alt={product.name} 
+              className="w-full h-full object-cover" 
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=200&q=80';
+              }}
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-slate-400">
               <Package className="w-6 h-6" />
@@ -199,6 +206,8 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   const [filterManufacturer, setFilterManufacturer] = React.useState(false);
   const [filterWholesale, setFilterWholesale] = React.useState(false);
   const [filterBestSeller, setFilterBestSeller] = React.useState(false);
+  const [filterRealPhotos, setFilterRealPhotos] = React.useState(false);
+  const [filterIllustrations, setFilterIllustrations] = React.useState(false);
   const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
   const [barcodeScannerOpen, setBarcodeScannerOpen] = React.useState(false);
 
@@ -290,6 +299,8 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
       if (filterManufacturer && !p.isManufacturer) return false;
       if (filterWholesale && !p.wholesalePrice) return false;
       if (filterBestSeller && !p.isBestSeller) return false;
+      if (filterRealPhotos && (!p.image || (!p.image.includes('fotos_reales') && !p.image.includes('unsplash') && !p.image.endsWith('.jpg') && !p.image.endsWith('.jpeg')))) return false;
+      if (filterIllustrations && p.image && (p.image.includes('fotos_reales') || p.image.includes('unsplash') || p.image.endsWith('.jpg') || p.image.endsWith('.jpeg'))) return false;
 
       // Text search query (accent-insensitive & case-insensitive)
       if (activeSearch) {
@@ -302,7 +313,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
 
       return true;
     });
-  }, [products, selectedCategory, searchQuery, searchGlobally, filterManufacturer, filterWholesale, filterBestSeller]);
+  }, [products, selectedCategory, searchQuery, searchGlobally, filterManufacturer, filterWholesale, filterBestSeller, filterRealPhotos, filterIllustrations]);
 
   // Count matches in current category vs all
   const categoryMatchCount = React.useMemo(() => {
@@ -332,6 +343,56 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
 
   return (
     <section id="catalog" className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+      {/* DISTRIBUIDORA MAYORISTA · GENERAL ROCA / NEUQUÉN — Header Principal del Catálogo */}
+      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-orange-950 text-white p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-600/30 border border-orange-500/50 text-orange-400 text-[11px] font-extrabold tracking-widest uppercase">
+              <Factory className="w-3.5 h-3.5 text-orange-400" />
+              <span>DISTRIBUIDORA MAYORISTA · GENERAL ROCA / NEUQUÉN</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-fredoka text-white">
+              Catálogo <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300">Koala</span>
+            </h2>
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              Polietileno industrial, descartables gastronómicos, cotillón, repostería, envases, librería y bazar — emparejado con referencias fotográficas por nombre y categoría.
+            </p>
+          </div>
+
+          {/* Quick Metrics Badges */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
+            <div className="bg-slate-800/80 backdrop-blur-xs p-3.5 rounded-2xl border border-slate-700/80 text-center space-y-0.5">
+              <div className="text-2xl sm:text-3xl font-black font-fredoka text-orange-400">{products.length}</div>
+              <div className="text-[11px] font-bold text-slate-300">productos en catálogo</div>
+            </div>
+            <div className="bg-slate-800/80 backdrop-blur-xs p-3.5 rounded-2xl border border-slate-700/80 text-center space-y-0.5">
+              <div className="text-2xl sm:text-3xl font-black font-fredoka text-emerald-400">
+                {products.filter(p => p.image && (p.image.includes('fotos_reales') || p.image.includes('unsplash') || p.image.endsWith('.jpg') || p.image.endsWith('.jpeg'))).length}
+              </div>
+              <div className="text-[11px] font-bold text-slate-300">con foto de referencia</div>
+            </div>
+            <div className="bg-slate-800/80 backdrop-blur-xs p-3.5 rounded-2xl border border-slate-700/80 text-center space-y-0.5">
+              <div className="text-2xl sm:text-3xl font-black font-fredoka text-amber-400">
+                {products.filter(p => !p.image || p.image.includes('ilustraciones') || p.image.endsWith('.png')).length}
+              </div>
+              <div className="text-[11px] font-bold text-slate-300">con ilustración propia</div>
+            </div>
+            <div className="bg-slate-800/80 backdrop-blur-xs p-3.5 rounded-2xl border border-slate-700/80 text-center space-y-0.5">
+              <div className="text-2xl sm:text-3xl font-black font-fredoka text-cyan-400">{categories.length > 1 ? categories.length - 1 : categories.length}</div>
+              <div className="text-[11px] font-bold text-slate-300">categorías</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Disclaimer Note */}
+        <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 text-xs text-slate-400 flex items-start gap-2.5">
+          <Sparkles className="w-4 h-4 text-orange-400 shrink-0 mt-0.5" />
+          <p className="leading-relaxed">
+            Catálogo generado a partir de <strong>koala_catalogo_completo_erp</strong> ({products.length} productos). Las fotos marcadas <em>"Foto referencia"</em> son referencias de stock emparejadas por nombre/categoría — no fotografía real de cada SKU, a confirmar contra el producto físico antes de publicar en canales de venta. Las tarjetas marcadas <em>"Ilustración"</em> usan un diseño de línea original porque no había una imagen de referencia disponible para ese producto ni forma de descargar fotos de terceros sin arriesgar derechos de autor — reemplazalas por la foto real cuando la tengas.
+          </p>
+        </div>
+      </div>
+
       {/* Section Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
         <div>
@@ -541,6 +602,42 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Más Vendidos</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setFilterRealPhotos(!filterRealPhotos);
+              if (!filterRealPhotos) setFilterIllustrations(false);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+              filterRealPhotos
+                ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+            }`}
+            title="Mostrar solo productos con fotografía de referencia"
+          >
+            <span>📷 Foto Referencia</span>
+            <span className="text-[10px] opacity-75 font-mono">
+              ({products.filter(p => p.image && (p.image.includes('fotos_reales') || p.image.includes('unsplash') || p.image.endsWith('.jpg') || p.image.endsWith('.jpeg'))).length})
+            </span>
+          </button>
+
+          <button
+            onClick={() => {
+              setFilterIllustrations(!filterIllustrations);
+              if (!filterIllustrations) setFilterRealPhotos(false);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+              filterIllustrations
+                ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+            }`}
+            title="Mostrar solo productos con ilustración gráfica propia"
+          >
+            <span>✏️ Ilustración</span>
+            <span className="text-[10px] opacity-75 font-mono">
+              ({products.filter(p => !p.image || p.image.includes('ilustraciones') || p.image.endsWith('.png')).length})
+            </span>
           </button>
 
           {onOpenInstagramBio && (

@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import { getAnalytics, isSupported, logEvent, Analytics } from 'firebase/analytics';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
@@ -76,5 +77,48 @@ export async function testConnection() {
     if (error instanceof Error && error.message.includes('the client is offline')) {
       console.error("Please check your Firebase configuration.");
     }
+  }
+}
+
+// ----------------------------------------------------
+// FIREBASE ANALYTICS TRACKING
+// ----------------------------------------------------
+let analyticsPromise: Promise<Analytics | null> | null = null;
+
+export async function getFirebaseAnalytics(): Promise<Analytics | null> {
+  if (typeof window === 'undefined') return null;
+  if (!analyticsPromise) {
+    analyticsPromise = (async () => {
+      try {
+        const supported = await isSupported();
+        if (supported && firebaseConfig.measurementId) {
+          return getAnalytics(app);
+        }
+        if (supported) {
+          try {
+            return getAnalytics(app);
+          } catch {
+            return null;
+          }
+        }
+      } catch (err) {
+        console.warn('Firebase Analytics not supported in current environment:', err);
+      }
+      return null;
+    })();
+  }
+  return analyticsPromise;
+}
+
+export async function trackAnalyticsEvent(eventName: string, eventParams?: Record<string, any>) {
+  try {
+    const analytics = await getFirebaseAnalytics();
+    if (analytics) {
+      logEvent(analytics, eventName, eventParams);
+    }
+    // Also log to console for development visibility and debugging
+    console.log(`[Firebase Analytics] Event "${eventName}":`, eventParams);
+  } catch (err) {
+    console.warn(`[Firebase Analytics] Error logging event "${eventName}":`, err);
   }
 }

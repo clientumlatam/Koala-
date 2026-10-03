@@ -131,12 +131,26 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-xl hover:-translate-y-1 hover:shadow-orange-900/5 hover:border-orange-300 transition-all duration-300 flex flex-col justify-between overflow-hidden group">
       {/* Product Image */}
       <div className="relative w-full pt-[75%] bg-slate-100 overflow-hidden border-b border-slate-100">
+        {/* Foto de Referencia vs Ilustración Badge */}
+        {product.image && (product.image.includes('fotos_reales') || product.image.includes('unsplash') || product.image.endsWith('.jpg') || product.image.endsWith('.jpeg')) ? (
+          <span className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full bg-slate-900/85 backdrop-blur-xs text-emerald-300 border border-emerald-500/40 text-[9.5px] font-bold flex items-center gap-1 shadow-xs pointer-events-none">
+            📷 Foto referencia
+          </span>
+        ) : (
+          <span className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full bg-slate-900/85 backdrop-blur-xs text-amber-300 border border-amber-500/40 text-[9.5px] font-bold flex items-center gap-1 shadow-xs pointer-events-none">
+            ✏️ Ilustración
+          </span>
+        )}
+
         {product.image ? (
           <img 
             src={product.image} 
             alt={product.name}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
             onClick={() => setShowLightbox(true)}
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=400&q=80';
+            }}
             loading="lazy"
           />
         ) : (

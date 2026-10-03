@@ -17,6 +17,7 @@ import { CartToast, CartToastItem } from './components/CartToast';
 import { InstitutionalPageModal, InstitutionalPageType } from './components/InstitutionalPageModal';
 import { AudioTranscriberModal } from './components/AudioTranscriberModal';
 import { InstagramBioModal } from './components/InstagramBioModal';
+import { trackAnalyticsEvent } from './lib/firebase';
 
 import { STORES_DATA, CATEGORIES, PRODUCTS_CATALOG } from './data/products';
 import { DEFAULT_DEMO_LOYALTY_PROFILE } from './data/loyaltyData';
@@ -367,6 +368,17 @@ export default function App() {
   };
 
   const handleCompletePurchaseLoyaltyUpdate = (pointsEarned: number, earnsStamp: boolean) => {
+    // Log Firebase Analytics event for loyalty rewards engagement
+    trackAnalyticsEvent('earn_virtual_currency', {
+      virtual_currency_name: 'Koala_Puntos',
+      value: pointsEarned,
+      stamps_earned: earnsStamp ? 1 : 0,
+      reward_applied: appliedReward ? appliedReward.title : 'none',
+      user_phone: loyaltyProfile.phoneNumber,
+      branch_id: currentBranch.id,
+      branch_name: currentBranch.name,
+    });
+
     const nowStr = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
     const newTx: LoyaltyPointTransaction = {
       id: `tx-earn-${Date.now()}`,
@@ -550,6 +562,24 @@ export default function App() {
 
   // Cart handlers
   const handleAddToCart = (product: Product, quantity: number, isWholesale: boolean) => {
+    // Log Firebase Analytics event for product engagement
+    trackAnalyticsEvent('add_to_cart', {
+      currency: 'ARS',
+      value: (isWholesale ? product.wholesalePrice : product.price) * quantity,
+      items: [
+        {
+          item_id: product.id,
+          item_name: product.name,
+          item_category: product.category,
+          price: isWholesale ? product.wholesalePrice : product.price,
+          quantity,
+          is_wholesale: isWholesale,
+        },
+      ],
+      branch_id: currentBranch.id,
+      branch_name: currentBranch.name,
+    });
+
     setCartItems((prev) => {
       const existingIndex = prev.findIndex((item) => item.product.id === product.id);
       if (existingIndex > -1) {

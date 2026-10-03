@@ -136,96 +136,74 @@ export const DocumentationViewer: React.FC<DocumentationViewerProps> = ({
     setIsPrintModalOpen(true);
   };
 
-  // Direct client-side PDF download using html2pdf.js
+  // Direct client-side PDF download using html2canvas-pro (with full oklch color support) + jsPDF
   const handleExportPdf = async () => {
     setIsGeneratingPdf(true);
     try {
       const element = document.getElementById('printable-pdf-content');
       if (!element) {
-        handlePrintInNewWindow();
+        handlePrintNative();
         return;
       }
 
-      // Import html2pdf dynamically and cast as any to bypass TS module callable union issue
-      const html2pdfModule = await import('html2pdf.js');
+      // Use html2canvas-pro which natively supports Tailwind CSS v4's oklch color function
+      const html2canvasModule = await import('html2canvas-pro');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const html2pdf = (html2pdfModule.default || html2pdfModule) as any;
+      const html2canvas = ((html2canvasModule as any).default || html2canvasModule) as any;
+      const { jsPDF } = await import('jspdf');
 
       const fileName = printScope === 'all'
         ? 'Dossier_Completo_11_Docs_Koala.pdf'
         : `${selectedDoc.id}_Koala.pdf`;
 
-      const opt = {
-        margin: [10, 10, 10, 10],
-        filename: fileName,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'], before: '.page-break-before' }
-      };
+      // Render high-res canvas supporting oklch, lab, and all modern CSS features
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+      });
 
-      await html2pdf().set(opt).from(element).save();
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      const pdf = new jsPDF({
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
+      });
+
+      const pageWidth = 210; // A4 width mm
+      const pageHeight = 297; // A4 height mm
+      const margin = 8; // 8mm margin
+      const contentWidth = pageWidth - (margin * 2);
+      const contentHeight = (canvas.height * contentWidth) / canvas.width;
+
+      let heightLeft = contentHeight;
+      let position = margin;
+
+      // Add first page
+      pdf.addImage(imgData, 'JPEG', margin, position, contentWidth, contentHeight, undefined, 'FAST');
+      heightLeft -= (pageHeight - (margin * 2));
+
+      // Handle multi-page documents seamlessly
+      while (heightLeft > 0) {
+        position = margin - (contentHeight - heightLeft);
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', margin, position, contentWidth, contentHeight, undefined, 'FAST');
+        heightLeft -= (pageHeight - (margin * 2));
+      }
+
+      pdf.save(fileName);
     } catch (err) {
-      console.error('html2pdf export error, falling back to window print popup:', err);
-      handlePrintInNewWindow();
+      console.warn('PDF export fallback to browser print:', err);
+      handlePrintNative();
     } finally {
       setIsGeneratingPdf(false);
     }
   };
 
-  // Fallback: Opens a clean printable window bypassing iframe restrictions
-  const handlePrintInNewWindow = () => {
-    const element = document.getElementById('printable-pdf-content');
-    if (!element) {
-      window.print();
-      return;
-    }
-
-    const printWindow = window.open('', '_blank', 'width=950,height=1000');
-    if (!printWindow) {
-      window.print();
-      return;
-    }
-
-    const docTitle = printScope === 'all'
-      ? 'Dossier Completo 11 Docs - Koala Lo Tiene'
-      : `${selectedDoc.title} - Koala Lo Tiene`;
-
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html lang="es">
-        <head>
-          <meta charset="utf-8" />
-          <title>${docTitle}</title>
-          <script src="https://cdn.tailwindcss.com"></script>
-          <style>
-            @page { size: A4; margin: 12mm; }
-            body { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; background: #ffffff; color: #0f172a; padding: 24px; }
-            .page-break-before { page-break-before: always; }
-            @media print {
-              body { padding: 0; }
-              .no-print { display: none !important; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="max-w-3xl mx-auto">
-            ${element.innerHTML}
-          </div>
-          <script>
-            window.onload = function() {
-              setTimeout(function() {
-                window.print();
-              }, 600);
-            };
-          </script>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.open();
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
+  // Browser-native print trigger applying @media print styles without window.open restrictions
+  const handlePrintNative = () => {
+    window.print();
   };
 
   // Download individual document as Markdown (.md)
@@ -1288,12 +1266,12 @@ ${accessibleDocs.map((doc, idx) => `${idx + 1}. **[${doc.title}](#doc-${doc.id})
                   )}
                 </button>
                 <button
-                  onClick={handlePrintInNewWindow}
+                  onClick={handlePrintNative}
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-orange-600 hover:bg-orange-700 text-white transition-colors shadow-sm cursor-pointer"
-                  title="Abrir ventana limpia para imprimir o guardar como PDF"
+                  title="Imprimir documento o guardar como PDF mediante el diálogo del sistema"
                 >
                   <Printer className="w-4 h-4" />
-                  <span>Imprimir / Abrir Ventana</span>
+                  <span>Imprimir / PDF del Sistema</span>
                 </button>
                 <button
                   onClick={() => setIsPrintModalOpen(false)}

@@ -78,7 +78,7 @@ import { KoalaLogo } from './KoalaLogo';
 import { INITIAL_STOCK_MOVEMENTS } from '../data/adminData';
 import { STORES_DATA } from '../data/products';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { db, handleFirestoreError, OperationType, trackAnalyticsEvent } from '../lib/firebase';
 
 
 interface AdminPanelModalProps {
@@ -250,8 +250,22 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         const data = docSnap.data();
         // Exclude updatedAt from permissions mapping
         const { updatedAt, ...permissions } = data;
-        setRolePermissions(permissions as Record<EmployeeRole, string[]>);
-        localStorage.setItem('koala_role_permissions', JSON.stringify(permissions));
+        const merged = {
+          admin: [
+            'dashboard', 'inventory', 'transfers', 'quotes', 'prices_import', 'invoices', 'staff', 'social_commerce', 'erp_config', 'icxn_webhooks'
+          ],
+          ventas: ['dashboard', 'quotes', 'inventory', 'social_commerce', 'invoices'],
+          deposito: ['dashboard', 'inventory', 'transfers', 'icxn_webhooks'],
+          facturacion: ['dashboard', 'quotes', 'invoices', 'prices_import'],
+          proveedor_erp: ['icxn_webhooks', 'webhook_logs', 'sync_health', 'erp_config', 'api_tester', 'inventory', 'csv_cron', 'dashboard'],
+          marketing: ['dashboard', 'social_commerce', 'docs'],
+          backend: [
+            'enterprise_demo', 'sync_health', 'icxn_webhooks', 'webhook_logs', 'mcp_protocol', 'dashboard', 'inventory', 'transfers', 'prices_import', 'quotes', 'invoices', 'staff', 'erp_config', 'csv_cron', 'api_tester', 'social_commerce', 'docs'
+          ],
+          ...(permissions as Record<EmployeeRole, string[]>),
+        };
+        setRolePermissions(merged);
+        localStorage.setItem('koala_role_permissions', JSON.stringify(merged));
       } else {
         // Initialize Firebase Firestore with default permissions if document doesn't exist
         const defaultPermissions = {
@@ -262,7 +276,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           deposito: ['dashboard', 'inventory', 'transfers', 'icxn_webhooks'],
           facturacion: ['dashboard', 'quotes', 'invoices', 'prices_import'],
           proveedor_erp: ['icxn_webhooks', 'webhook_logs', 'sync_health', 'erp_config', 'api_tester', 'inventory', 'csv_cron', 'dashboard'],
-          marketing: ['dashboard', 'social_commerce', 'docs']
+          marketing: ['dashboard', 'social_commerce', 'docs'],
+          backend: [
+            'enterprise_demo', 'sync_health', 'icxn_webhooks', 'webhook_logs', 'mcp_protocol', 'dashboard', 'inventory', 'transfers', 'prices_import', 'quotes', 'invoices', 'staff', 'erp_config', 'csv_cron', 'api_tester', 'social_commerce', 'docs'
+          ]
         };
         
         setDoc(docRef, {
@@ -282,7 +299,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   // Role permissions checker helper available from top of component
   const canAccess = (tab: string) => {
     const userRole = currentUser?.role || 'backend';
-    if (userRole === 'backend') return true; // backend always has all permissions
+    if (userRole === 'backend' || userRole === 'admin') return true; // backend and admin always have full management access
     const allowed = rolePermissions[userRole] || [];
     return allowed.includes(tab);
   };
@@ -322,6 +339,15 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       else setActiveTab('dashboard');
     }
   }, [currentUser.role, activeTab]);
+
+  // Track tab navigation in Firebase Analytics
+  React.useEffect(() => {
+    trackAnalyticsEvent('admin_view_tab', {
+      tab_name: activeTab,
+      user_role: currentUser.role,
+      user_email: currentUser.email,
+    });
+  }, [activeTab, currentUser.role, currentUser.email]);
 
 
   const tabsNavRef = React.useRef<HTMLDivElement>(null);
@@ -451,6 +477,13 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       showNotification('⚠️ Error de Autorización: Tu rol no tiene permisos para realizar ajustes o cambios de inventario.');
       return;
     }
+    trackAnalyticsEvent('admin_stock_update', {
+      product_id: productId,
+      branch,
+      new_stock: newStock,
+      user_role: currentUser.role,
+      user_email: currentUser.email,
+    });
     onUpdateStock(productId, branch, newStock);
   };
 
@@ -459,6 +492,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       showNotification('⚠️ Error de Autorización: Tu rol no tiene permisos para sincronizar datos con el ERP.');
       return;
     }
+    trackAnalyticsEvent('admin_erp_sync', {
+      erp_system: erpConfig.systemType,
+      user_role: currentUser.role,
+      user_email: currentUser.email,
+    });
     setIsSyncing(true);
     setTimeout(() => {
       onTriggerErpSync();
@@ -473,6 +511,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       showNotification('⚠️ Error de Autorización: Tu rol no tiene permisos para modificar la configuración del ERP.');
       return;
     }
+    trackAnalyticsEvent('admin_erp_config_update', {
+      system_type: editConfig.systemType,
+      environment: editConfig.environment,
+      user_role: currentUser.role,
+    });
     onUpdateErpConfig(editConfig);
     showNotification('Configuración de conexión ERP guardada y verificada.');
   };
@@ -482,6 +525,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       showNotification('⚠️ Error de Autorización: Tu rol no tiene permisos para realizar aumentos masivos de precios.');
       return;
     }
+    trackAnalyticsEvent('admin_bulk_price_update', {
+      percentage: bulkPercent,
+      user_role: currentUser.role,
+    });
     setIsUpdatingPrices(true);
     setTimeout(() => {
       onBulkPriceUpdate(bulkPercent);
@@ -523,6 +570,16 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       notes: transferNotes.trim() || 'Remito de transferencia interna autorizado desde Panel ERP.',
     };
 
+    trackAnalyticsEvent('admin_stock_transfer', {
+      transfer_id: newTransfer.id,
+      remito_number: newTransfer.remitoNumber,
+      from_branch: transferFrom,
+      to_branch: transferTo,
+      quantity: Number(transferQty),
+      sku: prod.sku,
+      user_role: currentUser.role,
+    });
+
     onCreateTransfer(newTransfer);
     // Adjust local inventory
     if (transferFrom === 'roca') {
@@ -562,6 +619,16 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       date: 'Hoy, ' + new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }) + ' hs',
       status: 'emitida_afip',
     };
+
+    trackAnalyticsEvent('admin_invoice_created', {
+      invoice_type: newInv.invoiceType,
+      invoice_number: newInv.invoiceNumber,
+      cae_number: newInv.caeNumber,
+      total_amount: newInv.totalAmount,
+      quote_id: newInv.quoteId,
+      branch_id: newInv.branchId,
+      user_role: currentUser.role,
+    });
 
     onCreateInvoice(newInv);
     onUpdateQuoteStatus(selectedQuoteForInvoice.id, 'facturado_erp');
@@ -1584,6 +1651,93 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 </div>
               </div>
 
+              {/* Firebase Analytics Telemetry Card */}
+              <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10 dark:from-slate-900 dark:via-orange-950/20 dark:to-slate-900 rounded-2xl border border-amber-300 dark:border-amber-800/60 p-5 space-y-4 shadow-xs">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-200 dark:border-amber-900/60 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black shadow-xs">
+                      🔥
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold font-fredoka text-slate-900 dark:text-white flex items-center gap-2">
+                        <span>Firebase Analytics · Telemetría en Vivo</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-400/40">
+                          Tracking Activo
+                        </span>
+                      </h3>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">
+                        Eventos de interacción de clientes, carrito de compras, fidelización y auditoría operativa del panel.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      trackAnalyticsEvent('admin_telemetry_ping', {
+                        timestamp: new Date().toISOString(),
+                        admin_name: currentUser.name,
+                        role: currentUser.role,
+                      });
+                      showNotification('🔥 Evento de prueba enviado a Firebase Analytics y registrado en consola.');
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                  >
+                    <Activity className="w-3.5 h-3.5" />
+                    <span>Test Ping Analytics</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                  <div className="bg-white/80 dark:bg-slate-800/80 p-3 rounded-xl border border-amber-200/60 dark:border-slate-700 space-y-1">
+                    <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 block font-bold">add_to_cart</span>
+                    <strong className="text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" /> Carritos Web
+                    </strong>
+                    <span className="text-[10px] text-slate-500">Roca y Neuquén</span>
+                  </div>
+
+                  <div className="bg-white/80 dark:bg-slate-800/80 p-3 rounded-xl border border-amber-200/60 dark:border-slate-700 space-y-1">
+                    <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 block font-bold">earn_virtual_currency</span>
+                    <strong className="text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-purple-500" /> Koala Puntos
+                    </strong>
+                    <span className="text-[10px] text-slate-500">Fidelización</span>
+                  </div>
+
+                  <div className="bg-white/80 dark:bg-slate-800/80 p-3 rounded-xl border border-amber-200/60 dark:border-slate-700 space-y-1">
+                    <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 block font-bold">admin_stock_update</span>
+                    <strong className="text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-blue-500" /> Stock Manual
+                    </strong>
+                    <span className="text-[10px] text-slate-500">Kardex / Depósito</span>
+                  </div>
+
+                  <div className="bg-white/80 dark:bg-slate-800/80 p-3 rounded-xl border border-amber-200/60 dark:border-slate-700 space-y-1">
+                    <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 block font-bold">admin_invoice_created</span>
+                    <strong className="text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-orange-500" /> Facturas AFIP
+                    </strong>
+                    <span className="text-[10px] text-slate-500">CAE Electrónico</span>
+                  </div>
+
+                  <div className="bg-white/80 dark:bg-slate-800/80 p-3 rounded-xl border border-amber-200/60 dark:border-slate-700 space-y-1">
+                    <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 block font-bold">admin_stock_transfer</span>
+                    <strong className="text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-teal-500" /> Remitos
+                    </strong>
+                    <span className="text-[10px] text-slate-500">Traspaso Inter-suc.</span>
+                  </div>
+
+                  <div className="bg-white/80 dark:bg-slate-800/80 p-3 rounded-xl border border-amber-200/60 dark:border-slate-700 space-y-1">
+                    <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 block font-bold">admin_permissions</span>
+                    <strong className="text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-rose-500" /> RBAC Matrix
+                    </strong>
+                    <span className="text-[10px] text-slate-500">Seguridad Firestore</span>
+                  </div>
+                </div>
+              </div>
+
               {/* ERP Sync Event Feed & System Log */}
               <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-3">
@@ -2577,6 +2731,13 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                                         await setDoc(docRef, {
                                           ...nextPerms,
                                           updatedAt: new Date().toISOString()
+                                        });
+                                        trackAnalyticsEvent('admin_permissions_updated', {
+                                          modified_role: roleKey,
+                                          permission_module: key,
+                                          status: !isChecked ? 'granted' : 'revoked',
+                                          admin_user: currentUser.name,
+                                          admin_email: currentUser.email,
                                         });
                                         showToast('✅ ¡Permisos de roles sincronizados con Firebase con éxito!');
                                       } catch (err) {

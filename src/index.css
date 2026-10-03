@@ -243,6 +243,7 @@
   }
 
   /* QR Code Print Catalog Footer Rules */
+  #print-catalog-footer-container,
   .print-only,
   .print-catalog-footer-container {
     display: flex !important;
@@ -255,10 +256,30 @@
     background: #ffffff !important;
   }
 
+  #print-catalog-footer-container .qr-box,
+  .print-catalog-footer-container .qr-box {
+    border: 2px dashed #ea580c !important;
+    padding: 3px !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+  }
+
+  #print-catalog-footer-container img,
   .print-catalog-footer-container img,
   .print-catalog-footer-container svg {
-    max-width: 76px !important;
-    max-height: 76px !important;
+    max-width: 84px !important;
+    max-height: 84px !important;
     object-fit: contain !important;
+  }
+
+  #print-catalog-footer-container .qr-label,
+  .print-catalog-footer-container .qr-label {
+    font-size: 7.5pt !important;
+    font-weight: 900 !important;
+    color: #020617 !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    margin-top: 3pt !important;
+    line-height: 1.1 !important;
   }
 }

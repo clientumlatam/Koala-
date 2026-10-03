@@ -42,6 +42,7 @@ import {
 import { BranchInfo, ProductInventoryRecord, Product, LoyaltyProfile, CartItem } from '../types';
 import { KoalaLogo } from './KoalaLogo';
 import { TechnicalExpertModal } from './TechnicalExpertModal';
+import { PrintCatalogFooter } from './PrintCatalogFooter';
 import { checkStoreStatus, formatCurrency } from '../utils/helpers';
 import { TECHNICAL_MATERIAL_FAQS } from '../data/technicalFaqData';
 import { PRODUCTS_CATALOG } from '../data/products';
@@ -1617,6 +1618,9 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
         }}
         isBusinessHours={isBusinessHours}
       />
+
+      {/* Printable Catalog Footer Component with Dynamic QR Code generator for offline access */}
+      <PrintCatalogFooter currentBranch={currentBranch} />
     </div>
   );
 };

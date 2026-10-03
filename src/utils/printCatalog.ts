@@ -144,7 +144,7 @@ export async function printProductTable({
       </tbody>
     </table>
 
-    <div class="print-catalog-footer-container" style="margin-top: 20px; padding-top: 10px; border-top: 2px solid #0f172a; display: flex; justify-content: space-between; align-items: center;">
+    <div id="print-catalog-footer-container" class="print-catalog-footer-container" style="margin-top: 20px; padding-top: 10px; border-top: 2px solid #0f172a; display: flex; justify-content: space-between; align-items: center;">
       <div style="max-width: 75%;">
         <p style="font-size: 9pt; font-weight: bold; color: #0f172a; margin: 0 0 4px 0;">
           KOALA LO TIENE — Cotillón, Descartables, Repostería & Polietileno
@@ -153,17 +153,19 @@ export async function printProductTable({
           ¡Repetí tu pedido en segundos! Escaneá el código QR con tu celular para acceder al catálogo digital de la sucursal ${currentBranch.name} con stock en 0s y precios mayoristas en tiempo real.
         </p>
         <p style="font-size: 7.5pt; color: #64748b; margin: 0;">
-          General Roca: Av. Roca 1350 | Neuquén: Mitre 678 | WhatsApp: +54 9 298 412-3456 | Web: koalalotiene.com.ar
+          General Roca: Av. Roca 1350 | Neuquén: Mitre 678 | WhatsApp: +54 9 298 412-3456 | Web: ${qrTargetUrl.replace(/^https?:\/\//, '')}
         </p>
       </div>
-      <div style="text-align: center; min-width: 90px;">
-        ${
-          qrDataUrl
-            ? `<img src="${qrDataUrl}" alt="QR Catalogo Koala" style="width: 72px; height: 72px; border: 1px solid #cbd5e1; padding: 2px; background: white; object-fit: contain; margin: 0 auto;" />`
-            : `<div style="width: 72px; height: 72px; border: 1px solid #cbd5e1; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 6pt; color: #64748b;">QR KOALA</div>`
-        }
-        <span style="display: block; font-size: 6.5pt; font-weight: bold; color: #1e3a8a; margin-top: 2px; text-transform: uppercase;">
-          ESCANEÁ Y COMPRÁ
+      <div style="text-align: center; min-width: 120px;">
+        <div class="qr-box" style="border: 2px dashed #ea580c; border-radius: 10px; padding: 3px; background: #ffffff; display: inline-block;">
+          ${
+            qrDataUrl
+              ? `<img src="${qrDataUrl}" alt="QR Catalogo Koala" style="width: 80px; height: 84px; object-fit: contain; margin: 0 auto; display: block;" />`
+              : `<div style="width: 80px; height: 84px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 6pt; color: #64748b;">QR KOALA</div>`
+          }
+        </div>
+        <span class="qr-label" style="display: block; font-size: 7.5pt; font-weight: 900; color: #0f172a; margin-top: 4px; text-transform: uppercase; text-align: center; max-width: 130px; line-height: 1.1;">
+          Escaneá para acceder al catálogo digital actualizado
         </span>
       </div>
     </div>

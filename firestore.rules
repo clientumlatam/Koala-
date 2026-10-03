@@ -126,5 +126,10 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isAdmin() && isValidSetting(incoming());
     }
+
+    // Health Check / Connection Test Collection
+    match /test/{docId} {
+      allow read: if true;
+    }
   }
 }
